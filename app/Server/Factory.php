@@ -60,7 +60,7 @@ class Factory
 
         $connectionManager = new ConnectionManager($this->hostname, $this->port);
 
-        $app = new Shaft($connectionManager);
+        $app = new Cloakr($connectionManager);
 
         return new IoServer($app, $socket, $this->loop);
     }

@@ -31,10 +31,13 @@ class AppServiceProvider extends ServiceProvider
 
     protected function loadConfigurationFile()
     {
+        $builtInConfig = config('cloakr');
+
         $localConfigFile = getcwd() . DIRECTORY_SEPARATOR . '.cloakr.php';
 
         if (file_exists($localConfigFile)) {
-            config()->set('cloakr', require_once $localConfigFile);
+            $localConfig = require_once $localConfigFile;
+            config()->set('cloakr', array_merge($builtInConfig, $localConfig));
             return;
         }
 
@@ -46,7 +49,8 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         if (file_exists($configFile)) {
-            config()->set('cloakr', require_once $configFile);
+            $globalConfig = require_once $configFile;
+            config()->set('cloakr', array_merge($builtInConfig, $globalConfig));
         }
     }
 }

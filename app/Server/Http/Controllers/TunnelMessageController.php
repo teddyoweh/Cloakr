@@ -82,6 +82,7 @@ class TunnelMessageController extends PostController
     protected function prepareRequest(Request $request, ControlConnection $controlConnection): Request
     {
         $request->headers->set('Host', $controlConnection->host);
+        $request->headers->set('X-Forwarded-Proto', $request->isSecure() ? 'https' : 'http');
         $request->headers->set('X-Cloakr-Request-ID', uniqid());
         $request->headers->set('X-Cloakrd-By', config('app.name') . ' '. config('app.version'));
         $request->headers->set('X-Original-Host', "{$controlConnection->subdomain}.{$this->configuration->hostname()}:{$this->configuration->port()}");

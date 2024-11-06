@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $localConfigFile = getcwd() . DIRECTORY_SEPARATOR . '.cloakr.php';
 
         if (file_exists($localConfigFile)) {
-            $localConfig = require_once $localConfigFile;
+            $localConfig = require $localConfigFile;
             config()->set('cloakr', array_merge($builtInConfig, $localConfig));
             return;
         }
@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         if (file_exists($configFile)) {
-            $globalConfig = require_once $configFile;
+            $globalConfig = require $configFile;
             config()->set('cloakr', array_merge($builtInConfig, $globalConfig));
         }
     }

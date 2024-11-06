@@ -84,7 +84,7 @@ class Factory
 
     protected function addCloakrRoutes()
     {
-        $this->router->get('/__cloakr_control__', ControlMessageController::class);
+        $this->router->get('/cloakr/control', ControlMessageController::class, 'request.headers.get("x-cloakr-control") matches "/enabled/i"');
 
         $this->router->addSymfonyRoute('tunnel',
             new Route('/{__catchall__}', [

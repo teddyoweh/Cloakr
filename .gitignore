@@ -2,6 +2,7 @@
 /.idea
 /.vscode
 /.vagrant
+/composer.lock
 .phpunit.result.cache
 cloakr.php
 database/cloakr.db

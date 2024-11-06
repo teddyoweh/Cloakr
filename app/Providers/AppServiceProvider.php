@@ -18,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->loadConfigurationFile();
+
         $this->app->singleton(LoopInterface::class, function () {
             return LoopFactory::create();
         });
@@ -25,5 +27,24 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RequestLogger::class, function ($app) {
             return new RequestLogger($app->make(Browser::class), $app->make(CliRequestLogger::class));
         });
+    }
+
+    protected function loadConfigurationFile()
+    {
+        $configFile = implode(DIRECTORY_SEPARATOR, [
+            $_SERVER['HOME'],
+            '.cloakr',
+            'config.php'
+        ]);
+
+        if (file_exists($configFile)) {
+            config()->set('cloakr', require_once $configFile);
+            return;
+        }
+
+        $localConfigFile = getcwd() . DIRECTORY_SEPARATOR . '.cloakr.php';
+        if (file_exists($localConfigFile)) {
+            config()->set('cloakr', require_once $localConfigFile);
+        }
     }
 }

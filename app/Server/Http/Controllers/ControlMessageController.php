@@ -131,7 +131,7 @@ class ControlMessageController implements MessageComponentInterface
     {
         if (! is_null($subdomain)) {
             $controlConnection = $this->connectionManager->findControlConnectionForSubdomain($subdomain);
-            if (! is_null($controlConnection) || $subdomain === config('cloakr.dashboard_subdomain')) {
+            if (! is_null($controlConnection) || $subdomain === config('cloakr.admin.subdomain')) {
                 $connection->send(json_encode([
                     'event' => 'subdomainTaken',
                     'data' => [

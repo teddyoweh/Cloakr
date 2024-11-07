@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'host' => 'cloakr.dev',
-    'port' => 443,
+    'host' => 'localhost',
+    'port' => 8080,
     'auth_token' => '',
 
     'admin' => [

@@ -74,7 +74,7 @@ class ControlMessageController implements MessageComponentInterface
 
     protected function authenticate(ConnectionInterface $connection, $data)
     {
-        if (config('cloakr.validate_auth_tokens') === true) {
+        if (config('cloakr.admin.validate_auth_tokens') === true) {
             $this->verifyAuthToken($connection);
         }
 

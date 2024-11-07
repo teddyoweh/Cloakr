@@ -2,10 +2,14 @@
 
 return [
     'host' => 'cloakr.dev',
-    'port' => 8080,
+    'port' => 443,
     'auth_token' => '',
 
     'admin' => [
+
+        'database' => base_path('database/cloakr.db'),
+
+        'validate_auth_tokens' => false,
 
         /*
         |--------------------------------------------------------------------------

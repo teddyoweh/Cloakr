@@ -32,6 +32,12 @@ class SaveSettingsController extends AdminController
     {
         config()->set('cloakr.admin.validate_auth_tokens', $request->has('validate_auth_tokens'));
 
+        config()->set('cloakr.admin.messages.invalid_auth_token', $request->get('invalid_auth_token'));
+
+        config()->set('cloakr.admin.messages.subdomain_taken', $request->get('subdomain_taken'));
+
+        config()->set('cloakr.admin.messages.message_of_the_day', $request->get('motd'));
+
         $httpConnection->send(str(new Response(301, [
             'Location' => '/settings'
         ])));

@@ -34,7 +34,6 @@ class Configuration
 
     public function __get($key)
     {
-        dump(config('cloakr.admin'));
         return $this->$key ?? config('cloakr.admin.'.$key);
     }
 }

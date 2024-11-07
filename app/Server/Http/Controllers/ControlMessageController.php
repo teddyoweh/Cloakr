@@ -95,7 +95,9 @@ class ControlMessageController implements MessageComponentInterface
             }, function () use ($connection) {
                 $connection->send(json_encode([
                     'event' => 'authenticationFailed',
-                    'data' => []
+                    'data' => [
+                        'message' => config('cloakr.admin.messages.invalid_auth_token')
+                    ]
                 ]));
                 $connection->close();
             });
@@ -148,10 +150,13 @@ class ControlMessageController implements MessageComponentInterface
         if (!is_null($subdomain)) {
             $controlConnection = $this->connectionManager->findControlConnectionForSubdomain($subdomain);
             if (!is_null($controlConnection) || $subdomain === config('cloakr.admin.subdomain')) {
+                $message = config('cloakr.admin.messages.subdomain_taken');
+                $message = str_replace(':subdomain', $subdomain, $message);
+
                 $connection->send(json_encode([
                     'event' => 'subdomainTaken',
                     'data' => [
-                        'subdomain' => $subdomain,
+                        'message' => $message,
                     ]
                 ]));
                 $connection->close();

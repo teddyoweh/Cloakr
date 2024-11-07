@@ -61,7 +61,7 @@
 
             methods: {
                 deleteUser(user) {
-                    fetch('/cloakr/users/delete/' + user.id, {
+                    fetch('/cloakr/users/' + user.id, {
                         method: 'DELETE',
                     }).then((response) => {
                         return response.json();

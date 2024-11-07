@@ -9,7 +9,7 @@ return [
 
         'database' => base_path('database/cloakr.db'),
 
-        'validate_auth_tokens' => true,
+        'validate_auth_tokens' => false,
 
         /*
         |--------------------------------------------------------------------------

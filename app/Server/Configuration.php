@@ -2,7 +2,7 @@
 
 namespace App\Server;
 
-class Configuration
+class Configuration implements \JsonSerializable
 {
     /** @var string */
     protected $hostname;
@@ -35,5 +35,16 @@ class Configuration
     public function __get($key)
     {
         return $this->$key ?? config('cloakr.admin.'.$key);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'hostname' => $this->hostname(),
+            'port' => $this->port(),
+        ], config('cloakr.admin'));
     }
 }

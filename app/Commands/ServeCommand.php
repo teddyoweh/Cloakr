@@ -21,7 +21,7 @@ class ServeCommand extends Command
             $this->info("Cloakr server running on port ".$this->option('port').".");
         });
 
-        $validateAuthTokens = config('cloakr.server.validate_auth_tokens');
+        $validateAuthTokens = config('cloakr.admin.validate_auth_tokens');
 
         if ($this->option('validateAuthTokens')) {
             $validateAuthTokens = true;

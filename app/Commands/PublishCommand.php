@@ -23,6 +23,7 @@ class PublishCommand extends Command
             return;
         }
 
+        @mkdir(dirname($configFile), 0755, true);
         file_put_contents($configFile, file_get_contents(base_path('config/cloakr.php')));
 
         $this->info('Published cloakr configuration file to: ' . $configFile);

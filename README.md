@@ -1,3 +1,5 @@
+![](https://beyondco.de/img/docs/cloakr/img/card.png)
+
 # Cloakr
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/beyondcode/cloakr.svg?style=flat-square)](https://packagist.org/packages/beyondcode/cloakr)

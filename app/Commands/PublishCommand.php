@@ -13,7 +13,7 @@ class PublishCommand extends Command
     public function handle()
     {
         $configFile = implode(DIRECTORY_SEPARATOR, [
-            $_SERVER['HOME'],
+            $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
             '.cloakr',
             'config.php',
         ]);

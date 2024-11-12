@@ -1,8 +1,8 @@
 {
     "name": "beyondcode/cloakr",
     "description": "Cloakr",
-    "keywords": [],
-    "homepage": "https://cloakr.dev",
+    "keywords": ["cloakr", "tunnel", "ngrok"],
+    "homepage": "https://sharedwithcloakr.com",
     "type": "project",
     "license": "MIT",
     "authors": [

@@ -12,7 +12,7 @@ The easiest way to install cloakr is by making it a global composer dependency:
 composer global require beyondcode/cloakr
 ```
 
-Now you're ready to go and can [share your first site](/docs/cloakr/getting-started/share-your-first-site).
+Now you're ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
 
 ### Extending Cloakr
 

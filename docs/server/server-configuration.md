@@ -5,7 +5,7 @@ order: 5
 
 # Server Configuration
 
-Within the Cloakr admin interface, you can configure how you want your specific cloakr server to behave.
+Within the Cloakr admin interface you can configure how you want your specific cloakr server to behave.
 
 Here are the available settings:
 

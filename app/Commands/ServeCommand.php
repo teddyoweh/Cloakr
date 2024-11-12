@@ -18,7 +18,7 @@ class ServeCommand extends Command
         $loop = app(LoopInterface::class);
 
         $loop->futureTick(function () {
-            $this->info("Cloakr server running on port ".$this->option('port').".");
+            $this->info('Cloakr server running on port '.$this->option('port').'.');
         });
 
         $validateAuthTokens = config('cloakr.admin.validate_auth_tokens');

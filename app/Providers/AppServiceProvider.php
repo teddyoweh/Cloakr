@@ -35,19 +35,19 @@ class AppServiceProvider extends ServiceProvider
     {
         $builtInConfig = config('cloakr');
 
-        $localConfigFile = getcwd() . DIRECTORY_SEPARATOR . '.cloakr.php';
+        $localConfigFile = getcwd().DIRECTORY_SEPARATOR.'.cloakr.php';
 
         if (file_exists($localConfigFile)) {
             $localConfig = require $localConfigFile;
             config()->set('cloakr', array_merge($builtInConfig, $localConfig));
+
             return;
         }
-
 
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? __DIR__,
             '.cloakr',
-            'config.php'
+            'config.php',
         ]);
 
         if (file_exists($configFile)) {

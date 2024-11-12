@@ -16,7 +16,7 @@ The result looks like this:
 ```json
 {
    "configuration":{
-      "hostname": "cloakr.dev",
+      "hostname": "sharedwithcloakr.com",
       "port": 8080,
       "database": "/home/forge/cloakr/database/cloakr.db",
       "validate_auth_tokens": false,

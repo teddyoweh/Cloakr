@@ -15,11 +15,11 @@ cd ~/Sites/my-awesome-project/
 cloakr
 ```
 
-This will connect to the provided server at cloakr.dev and give you a tunnel that you can immediately start using.
+This will connect to the provided server at sharedwithcloakr.com and give you a tunnel that you can immediately start using.
 
 To learn more about how you can share your local sites, check out the [sharing local sites](/docs/cloakr/client/sharing) documentation.
 
-## Using the provided server at cloakr.dev
+## Using the provided server at sharedwithcloakr.com
 
 A big advantage of Cloakr over other alternatives such as ngrok, is the ability to host your own server. To make sharing your sites as easy as possible, we provide and host a custom cloakr server on our own - so getting started with cloakr is a breeze.
 

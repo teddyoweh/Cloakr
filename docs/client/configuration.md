@@ -28,7 +28,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The cloakr server to connect to. By default, cloakr is using the free
-    | cloakr.dev server, offered by Beyond Code. You will need a free
+    | sharedwithcloakr.com server, offered by Beyond Code. You will need a free
     | Beyond Code account in order to authenticate with the server.
     | Feel free to host your own server and change this value.
     |

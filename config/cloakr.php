@@ -131,7 +131,11 @@ return [
         | if you enable authentication token validation.
         |
         */
-        'database' => base_path('database/cloakr.db'),
+        'database' => implode(DIRECTORY_SEPARATOR, [
+            $_SERVER['HOME'] ?? __DIR__,
+            '.cloakr',
+            'cloakr.db'
+        ]),
 
         /*
         |--------------------------------------------------------------------------

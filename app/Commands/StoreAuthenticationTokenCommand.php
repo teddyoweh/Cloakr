@@ -18,13 +18,11 @@ class StoreAuthenticationTokenCommand extends Command
 
     public function handle()
     {
-        $config = config('cloakr', []);
-
         if (! is_null($this->argument('token'))) {
             $this->info('Setting the cloakr authentication token to "'.$this->argument('token').'"');
 
             $configFile = implode(DIRECTORY_SEPARATOR, [
-                $_SERVER['HOME'],
+                $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
                 '.cloakr',
                 'config.php',
             ]);

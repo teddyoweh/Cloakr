@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ShareFilesCommand extends Command
 {
-    protected $signature = 'share-files {folder=.} {--name=} {--subdomain=} {--auth=}';
+    protected $signature = 'share-files {folder=.} {--name=} {--subdomain=} {--auth=} {--server-host=} {--server-port=}';
 
     protected $description = 'Share a local folder with a remote cloakr server';
 
@@ -31,11 +31,15 @@ class ShareFilesCommand extends Command
 
         $this->configureConnectionLogger();
 
+        $serverHost = $this->option('server-host') ?? config('cloakr.host', 'localhost');
+        $serverPort = $this->option('server-port') ?? config('cloakr.port', 8080);
+        $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
+
         (new Factory())
             ->setLoop(app(LoopInterface::class))
-            ->setHost(config('cloakr.host', 'localhost'))
-            ->setPort(config('cloakr.port', 8080))
-            ->setAuth($this->option('auth'))
+            ->setHost($serverHost)
+            ->setPort($serverPort)
+            ->setAuth($auth)
             ->createClient()
             ->shareFolder(
                 $this->argument('folder'),

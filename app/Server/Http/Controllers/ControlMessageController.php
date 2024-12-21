@@ -251,7 +251,7 @@ class ControlMessageController implements MessageComponentInterface
 
                     $controlConnection = $this->connectionManager->findControlConnectionForSubdomain($subdomain);
 
-                    if (! is_null($controlConnection) || $subdomain === config('cloakr.admin.subdomain')) {
+                    if (! is_null($controlConnection) || $subdomain === config('cloakr.admin.subdomain') || in_array($subdomain, config('cloakr.admin.reserved_subdomains', []))) {
                         $message = config('cloakr.admin.messages.subdomain_taken');
                         $message = str_replace(':subdomain', $subdomain, $message);
 
@@ -279,7 +279,7 @@ class ControlMessageController implements MessageComponentInterface
             $connection->send(json_encode([
                 'event' => 'authenticationFailed',
                 'data' => [
-                    'message' => config('cloakr.admin.messages.custom_subdomain_unauthorized'),
+                    'message' => config('cloakr.admin.messages.tcp_port_sharing_unauthorized'),
                 ],
             ]));
             $connection->close();

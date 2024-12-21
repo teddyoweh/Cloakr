@@ -4,30 +4,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Host
+    | Servers
     |--------------------------------------------------------------------------
     |
-    | The cloakr server to connect to. By default, cloakr is using the free
-    | sharedwithcloakr.com server, offered by Beyond Code. You will need a free
-    | Beyond Code account in order to authenticate with the server.
-    | Feel free to host your own server and change this value.
+    | The available Cloakr servers that your client can connect to.
+    | When sharing sites or TCP ports, you can specify the server
+    | that should be used using the `--server=` option.
     |
     */
-    'host' => 'sharedwithcloakr.com',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Port
-    |--------------------------------------------------------------------------
-    |
-    | The port that cloakr will try to connect to. If you want to bypass
-    | firewalls and have proper SSL encrypted tunnels, make sure to use
-    | port 443 and use a reverse proxy for Cloakr.
-    |
-    | The free default server is already running on port 443.
-    |
-    */
-    'port' => 443,
+    'servers' => [
+        'default' => [
+            'host' => 'sharedwithcloakr.com',
+            'port' => 443,
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -220,6 +210,17 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Reserved Subdomain
+        |--------------------------------------------------------------------------
+        |
+        | Specify any subdomains that you don't want to be able to register
+        | on your cloakr server.
+        |
+        */
+        'reserved_subdomains' => [],
+
+        /*
+        |--------------------------------------------------------------------------
         | Subdomain Generator
         |--------------------------------------------------------------------------
         |
@@ -276,6 +277,8 @@ return [
             'subdomain_taken' => 'The chosen subdomain :subdomain is already taken. Please choose a different subdomain.',
 
             'custom_subdomain_unauthorized' => 'You are not allowed to specify custom subdomains. Please upgrade to Cloakr Pro. Assigning a random subdomain instead.',
+
+            'tcp_port_sharing_unauthorized' => 'You are not allowed to share TCP ports. Please upgrade to Cloakr Pro.',
 
             'no_free_tcp_port_available' => 'There are no free TCP ports available on this server. Please try again later.',
         ],

@@ -37,6 +37,14 @@ class AppServiceProvider extends ServiceProvider
     {
         $builtInConfig = config('cloakr');
 
+        $keyServerVariable = 'EXPOSE_CONFIG_FILE';
+        if (array_key_exists($keyServerVariable, $_SERVER) && is_string($_SERVER[$keyServerVariable]) && file_exists($_SERVER[$keyServerVariable])) {
+            $localConfig = require $_SERVER[$keyServerVariable];
+            config()->set('cloakr', array_merge($builtInConfig, $localConfig));
+
+            return;
+        }
+
         $localConfigFile = getcwd().DIRECTORY_SEPARATOR.'.cloakr.php';
 
         if (file_exists($localConfigFile)) {

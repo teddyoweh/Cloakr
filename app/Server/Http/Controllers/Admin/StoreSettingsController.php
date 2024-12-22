@@ -31,6 +31,14 @@ class StoreSettingsController extends AdminController
 
         config()->set('cloakr.admin.messages.message_of_the_day', Arr::get($messages, 'message_of_the_day'));
 
+        config()->set('cloakr.admin.messages.custom_subdomain_unauthorized', Arr::get($messages, 'custom_subdomain_unauthorized'));
+
+        config()->set('cloakr.admin.messages.no_free_tcp_port_available', Arr::get($messages, 'no_free_tcp_port_available'));
+
+        config()->set('cloakr.admin.messages.tcp_port_sharing_unauthorized', Arr::get($messages, 'tcp_port_sharing_unauthorized'));
+
+        config()->set('cloakr.admin.messages.tcp_port_sharing_disabled', Arr::get($messages, 'tcp_port_sharing_disabled'));
+
         $httpConnection->send(
             respond_json([
                 'configuration' => $this->configuration,

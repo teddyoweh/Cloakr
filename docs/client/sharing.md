@@ -7,11 +7,11 @@ order: 1
 
 Cloakr allows you to share any kind of HTTP/HTTPS traffic for websites that you can reach on your own computer, with anyone on the internet.
 
-There are multiple different ways on how you can initiate the site sharing with Cloakr. 
+There are multiple ways to share a site with Cloakr. 
 
 ## Sharing the current working directory
 
-To share the current working directory with cloakr, all you need to do is go into the directory and call `cloakr`.
+To share the current working directory with Cloakr, all you need to do is go into the directory and call `cloakr`.
 
 This makes the assumption that you have access to the current working directory name as a domain with the `.test` TLD.  
 
@@ -48,8 +48,7 @@ cloakr share https://my-local-site.dev
 
 ## Share a local site with a given subdomain
 
-You can also share one of your local sites explicitly and specify which exact subdomain you want Cloakr to use when sharing the site.  
-This works similar to the paid offerings of Ngrok - but you can use it with your own custom server.
+You can also share one of your local sites explicitly and specify the exact subdomain that you want to use when sharing the site. This is very useful if you are testing webhooks and want to use the same webhook configuration and don't update the webhook endpoints on every Cloakr connect. Custom subdomains require an own Cloakr server in your infrastructure or Cloakr Pro.
 
 To specify the subdomain, pass the `--subdomain` option to cloakr:
 
@@ -57,4 +56,4 @@ To specify the subdomain, pass the `--subdomain` option to cloakr:
 cloakr share my-site.test --subdomain=my-site
 ```
 
-If the chosen subdomain is already taken on the Cloakr server, you will see an error message and the connection to the Cloakr server gets closed.
+If someone already uses the chosen subdomain on the Cloakr server, you will see an error message and the Cloakr server closes the connection.

@@ -4,20 +4,44 @@ order: 1
 ---
 
 # Installation
-
-Cloakr can be installed using composer.  
-The easiest way to install cloakr is by making it a global composer dependency:
+ 
+Cloakr is a PHP package and you can install the client for your local machine as a global composer dependency:
 
 ```bash
 composer global require beyondcode/cloakr
 ```
 
+After that, you are ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
+
+## As a docker container
+
+Cloakr has a `Dockerfile` already in the source root.
+You can build and use it without requiring any extra effort.
+
+```bash
+docker build -t cloakr .
+```
+
+Usage:
+
+```bash
+docker run cloakr <cloakr command>
+```
+
+Examples:
+
+```bash
+docker run cloakr share http://192.168.2.100 # share a local site
+docker run cloakr serve my-domain.com # start a server
+```
+
 Now you're ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
+
 
 ### Extending Cloakr
 
-By default, cloakr comes as an executable PHAR file. This allows you to use all of the cloakr features, like sharing your local sites, out of the box - without any additional setup required.
+By default, Cloakr comes as an executable PHAR file. This allows you to use all Cloakr features out of the box – without any additional setup required.
 
-If you want to modify cloakr, for example by adding custom request/response modifiers, you will need to clone the GitHub repository instead.
+If you want to modify Cloakr and want to add custom request/response modifiers, you need to clone the GitHub repository instead of the global composer dependency.
 
-You can learn more about how to customize cloakr in the [extending Cloakr](/docs/cloakr/extending-the-server/subdomain-generator) documentation section.
+You can learn more about the customization of Cloakr in the [extending Cloakr](/docs/cloakr/extending-the-server/subdomain-generator) documentation section.

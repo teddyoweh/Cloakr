@@ -13,6 +13,31 @@ composer global require beyondcode/cloakr
 
 After that, you are ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
 
+## As a docker container
+
+Cloakr has a `Dockerfile` already in the source root.
+You can build and use it without requiring any extra effort.
+
+```bash
+docker build -t cloakr .
+```
+
+Usage:
+
+```bash
+docker run cloakr <cloakr command>
+```
+
+Examples:
+
+```bash
+docker run cloakr share http://192.168.2.100 # share a local site
+docker run cloakr serve my-domain.com # start a server
+```
+
+Now you're ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
+
+
 ### Extending Cloakr
 
 By default, Cloakr comes as an executable PHAR file. This allows you to use all Cloakr features out of the box – without any additional setup required.

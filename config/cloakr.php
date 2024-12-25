@@ -32,7 +32,7 @@ return [
     | if available.
     |
     */
-    'server_endpoint' => 'https://beyondco.de/api/cloakr/servers',
+    'server_endpoint' => 'https://cloakr.beyondco.de/api/cloakr/servers',
 
     /*
     |--------------------------------------------------------------------------

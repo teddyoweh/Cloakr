@@ -77,9 +77,11 @@ class Client
         $deferred = new Deferred();
         $promise = $deferred->promise();
 
+        $cloakrVersion = config('app.version');
+
         $wsProtocol = $this->configuration->port() === 443 ? 'wss' : 'ws';
 
-        connect($wsProtocol."://{$this->configuration->host()}:{$this->configuration->port()}/cloakr/control?authToken={$authToken}", [], [
+        connect($wsProtocol."://{$this->configuration->host()}:{$this->configuration->port()}/cloakr/control?authToken={$authToken}&version={$cloakrVersion}", [], [
             'X-Cloakr-Control' => 'enabled',
         ], $this->loop)
             ->then(function (WebSocket $clientConnection) use ($sharedUrl, $subdomain, $serverHost, $deferred, $authToken) {

@@ -14,7 +14,7 @@ abstract class ServerAwareCommand extends Command
 {
     const DEFAULT_HOSTNAME = 'sharedwithcloakr.com';
     const DEFAULT_PORT = 443;
-    const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.beyondco.de/api/servers';
+    const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.dev/api/servers';
 
     public function __construct()
     {

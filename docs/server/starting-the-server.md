@@ -5,7 +5,7 @@ order: 1
 
 # Starting the server
 
-You can host your own custom Cloakr server in order to make use of your own domain, when sharing your local sites.  
+Cloakr is open source and you can host your own Cloakr server in your own infrastructure. The open source core contains the server and the client but does not include the Cloakr platform where you can manage your team, reserve subdomains or add custom domains via the web interface.
 
 The cloakr binary that you install via composer contains both the server and the client, so you do not need any additional software for this to work.
 

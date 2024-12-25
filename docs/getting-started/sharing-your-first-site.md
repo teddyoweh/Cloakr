@@ -5,9 +5,7 @@ order: 2
 
 # Share your first site
 
-Once you have installed Cloakr, you are ready to go and share your first local site.
-
-The easiest way to share your local sites is by going into the folder that you want to share and run the `cloakr` command from your command line:
+If you are on macOS and use Laravel Valet as your local development environment, the easiest way to share your local sites is by going into the folder that you want to share and run the `cloakr` command from your command line:
 
 ```bash
 cd ~/Sites/my-awesome-project/
@@ -15,9 +13,11 @@ cd ~/Sites/my-awesome-project/
 cloakr
 ```
 
+The `cloakr` command assumes that your local site is available at `http://my-awesome-project.test`.
+
 This command uses your Cloakr network token and connects to the Cloakr network server at sharedwithcloakr.com and creates a tunnel. If you don't have an Cloakr token and don't want to host your own server, you can create a free account and get a token [here](https://beyondco.de/login). 
 
-To learn more about sharing your local sites, check out the [sharing local sites](/docs/cloakr/client/sharing) documentation.
+If you run a different operating system or your local application runs in a virtual machine, Docker or uses a custom URL scheme, you can share the site by adding more parameters to the command. To learn more about sharing your local sites, check out the [sharing local sites](/docs/cloakr/client/sharing) documentation.
 
 ## Using the Cloakr network at sharedwithcloakr.com
 

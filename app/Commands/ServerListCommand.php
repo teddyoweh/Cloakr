@@ -8,7 +8,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class ServerListCommand extends Command
 {
-    const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.beyondco.de/api/servers';
+    const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.dev/api/servers';
 
     protected $signature = 'servers';
 

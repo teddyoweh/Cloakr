@@ -1,7 +1,7 @@
 {
     "name": "beyondcode/cloakr",
     "type": "project",
-    "description": "Cloakr",
+    "description": "Create public URLs for local sites through any firewall and VPN.",
     "keywords": [
         "cloakr",
         "tunnel",

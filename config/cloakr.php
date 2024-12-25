@@ -78,7 +78,7 @@ return [
     |
     | The custom domain to use when sharing sites with Cloakr.
     | You can register your own custom domain using Cloakr Pro
-    | Learn more at: https://cloakr.dev/docs/TODO
+    | Learn more at: https://cloakr.dev/get-pro
     |
     | > cloakr default-domain YOUR-CUSTOM-WHITELABEL-DOMAIN
     |

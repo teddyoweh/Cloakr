@@ -14,13 +14,13 @@ abstract class ServerAwareCommand extends Command
 {
     const DEFAULT_HOSTNAME = 'sharedwithcloakr.com';
     const DEFAULT_PORT = 443;
-    const DEFAULT_SERVER_ENDPOINT = 'https://beyondco.de/api/cloakr/servers';
+    const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.beyondco.de/api/servers';
 
     public function __construct()
     {
         parent::__construct();
 
-        $inheritedSignature = '{--server=default} {--server-host=} {--server-port=}';
+        $inheritedSignature = '{--server=} {--server-host=} {--server-port=}';
 
         $this->getDefinition()->addOptions(Parser::parse($inheritedSignature)[2]);
 
@@ -51,7 +51,7 @@ abstract class ServerAwareCommand extends Command
             return static::DEFAULT_HOSTNAME;
         }
 
-        $server = $this->option('server');
+        $server = $this->option('server') ?? config('cloakr.default_server');
         $host = config('cloakr.servers.'.$server.'.host');
 
         if (! is_null($host)) {
@@ -76,7 +76,7 @@ abstract class ServerAwareCommand extends Command
             return static::DEFAULT_PORT;
         }
 
-        $server = $this->option('server');
+        $server = $this->option('server') ?? config('cloakr.default_server');
         $host = config('cloakr.servers.'.$server.'.port');
 
         if (! is_null($host)) {

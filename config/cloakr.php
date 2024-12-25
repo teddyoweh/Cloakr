@@ -13,7 +13,7 @@ return [
     |
     */
     'servers' => [
-        'default' => [
+        'main' => [
             'host' => 'sharedwithcloakr.com',
             'port' => 443,
         ],
@@ -32,7 +32,18 @@ return [
     | if available.
     |
     */
-    'server_endpoint' => 'https://cloakr.beyondco.de/api/cloakr/servers',
+    'server_endpoint' => 'https://cloakr.beyondco.de/api/servers',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Server
+    |--------------------------------------------------------------------------
+    |
+    | The default server from the servers array,
+    | or the servers endpoint above.
+    |
+    */
+    'default_server' => 'main',
 
     /*
     |--------------------------------------------------------------------------
@@ -59,6 +70,20 @@ return [
     |
     */
     'auth_token' => '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Domain
+    |--------------------------------------------------------------------------
+    |
+    | The custom domain to use when sharing sites with Cloakr.
+    | You can register your own custom domain using Cloakr Pro
+    | Learn more at: https://cloakr.beyondco.de/docs/TODO
+    |
+    | > cloakr default-domain YOUR-CUSTOM-WHITELABEL-DOMAIN
+    |
+    */
+    'default_domain' => null,
 
     /*
     |--------------------------------------------------------------------------

@@ -2,6 +2,8 @@ version: "3.7"
 services:
   cloakr:
     image: beyondcodegmbh/cloakr-server:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - 8080:${PORT}
     environment:

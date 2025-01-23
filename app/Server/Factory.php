@@ -310,7 +310,7 @@ class Factory
     protected function registerStatisticsCollector()
     {
         if (config('cloakr.admin.statistics.enable_statistics', true) === false) {
-            return;
+            return $this;
         }
 
         app()->singleton(StatisticsRepository::class, function () {

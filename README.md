@@ -1,4 +1,4 @@
-![](https://cloakr.dev/images/cloakr/og_card.png)
+[![https://cloakr.dev/?ref=github](https://cloakr.dev/images/cloakr/og_card.png)](https://cloakr.dev/?ref=github)
 
 # Cloakr
 

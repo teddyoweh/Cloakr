@@ -16,10 +16,10 @@ chmod +x cloakr
 ./cloakr
 ```
 
-You most likely want to put the `cloakr.phar` into a directory on your `PATH`, so you can simply call cloakr from any directory. For example:
+You most likely want to put the `cloakr` program into a directory on your `PATH`, so you can simply call cloakr from any directory. For example:
 
 ```
-sudo mv cloakr.phar /usr/local/bin/cloakr
+sudo mv cloakr /usr/local/bin/cloakr
 ```
 
 After that, you are ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).

@@ -22,7 +22,7 @@ You most likely want to put the `cloakr` program into a directory on your `PATH`
 sudo mv cloakr /usr/local/bin/cloakr
 ```
 
-After that, you are ready to go and can [share your first site](/docs/cloakr/getting-started/sharing-your-first-site).
+After that, you are ready to go and can [share your first site](/docs/getting-started/sharing-your-first-site).
  
 ## Via Composer
 Cloakr is a PHP application and you can install the client for your local machine as a global composer dependency:

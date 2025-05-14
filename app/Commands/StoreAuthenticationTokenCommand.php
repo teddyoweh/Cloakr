@@ -26,7 +26,7 @@ class StoreAuthenticationTokenCommand extends Command
         $token = $this->argument('token');
 
         if (is_null($token) && config('cloakr.auth_token') !== null) {
-            return $this->call('token:get', ['--clean' => $this->option('clean')]);
+            return $this->call('token:get', ['--no-interaction' => $this->option('no-interaction')]);
         }
 
         $configFile = implode(DIRECTORY_SEPARATOR, [

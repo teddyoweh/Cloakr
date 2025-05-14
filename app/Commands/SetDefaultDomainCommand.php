@@ -52,6 +52,11 @@ class SetDefaultDomainCommand extends Command
             return;
         }
 
+        if($this->option('no-interaction')) {
+            $this->line(config('cloakr.default_domain'));
+            return;
+        }
+
         render('<div class="ml-2"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
 
         if (is_null($domain = config('cloakr.default_domain'))) {

@@ -49,6 +49,11 @@ class SetDefaultServerCommand extends Command
             return;
         }
 
+        if ($this->option('no-interaction')) {
+            $this->line(config('cloakr.default_server'));
+            return;
+        }
+
         render('<div class="ml-2"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
 
 
@@ -59,7 +64,7 @@ class SetDefaultServerCommand extends Command
         }
 
 
-        if(confirm('Would you like to set a new default server?', false)) {
+        if (confirm('Would you like to set a new default server?', false)) {
             (new SetUpCloakrDefaultServer)(config('cloakr.auth_token'));
         }
     }
@@ -69,8 +74,10 @@ class SetDefaultServerCommand extends Command
         $lexer = new Emulative([
             'usedAttributes' => [
                 'comments',
-                'startLine', 'endLine',
-                'startTokenPos', 'endTokenPos',
+                'startLine',
+                'endLine',
+                'startTokenPos',
+                'endTokenPos',
             ],
         ]);
         $parser = new Php7($lexer);

@@ -22,8 +22,8 @@ class SetUpCloakrDefaultDomain implements FetchesPlatformDataContract
 
         $this->token = $token;
 
-        render('<div class="mt-1 ml-3 font-bold">Default Domain</div>');
-        render('<div class="ml-3 mb-1">Use your teams custom whitelabel domains for easier subdomain management and better links.</div>');
+        render('<div class="ml-3 mt-1 font-bold">Default Domain</div>');
+        render('<div class="ml-3">Use your teams custom whitelabel domains for easier subdomain management and better links.</div>');
 
         if ($this->isProToken()) {
             $domains = $this->getTeamDomains();

@@ -15,8 +15,6 @@ use PhpParser\PrettyPrinter\Standard;
 
 use function Termwind\render;
 
-// TODO: no-interactiuon
-
 class StoreAuthenticationTokenCommand extends Command
 {
     protected $signature = 'token {token?} {--clean}';
@@ -48,7 +46,7 @@ class StoreAuthenticationTokenCommand extends Command
 
         if (!$this->option('no-interaction')) {
 
-            render('<div class="ml-2 my-1"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
+            render('<div class="ml-2"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
             render("<div class='ml-3'>Setting up new Cloakr token <span class='font-bold'>$token</span>...</div>");
 
             (new SetupCloakrProToken)($token);

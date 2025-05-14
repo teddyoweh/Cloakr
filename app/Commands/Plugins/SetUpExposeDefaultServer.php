@@ -33,15 +33,11 @@ class SetUpCloakrDefaultServer implements FetchesPlatformDataContract
 
             render('<div class="ml-3 mb-1">This token has access to our high-performance, global server network.</div>');
         } else {
-            $servers = collect()->add([
-                "key" => "free",
-                "host" => "sharedwithcloakr.com",
-                "plan" => "free",
-                "port" => 443,
-                "region" => "EU (Frankfurt)",
-            ]);
+            render('<div class="ml-3 mb-1">The free license is limited to the <span class="font-bold">free server (Region: Europe)</span>.
+            To access our high-performance, global server network, upgrade to <a href="https://cloakr.dev/go-pro">Cloakr Pro</a>.</div>');
 
-            render('<div class="ml-3 mb-1">To access our high-performance, global server network, upgrade to <a href="https://cloakr.dev">Cloakr Pro</a>.</div>');
+            Artisan::call("default-server free");
+            render(Artisan::output());
         }
 
         if ($servers->isNotEmpty()) {

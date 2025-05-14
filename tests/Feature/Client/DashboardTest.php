@@ -110,26 +110,6 @@ class DashboardTest extends TestCase
         $this->assertCount(0, $this->requestLogger->getData());
     }
 
-    /** @test */
-    public function it_can_attach_additional_data_to_requests()
-    {
-        $this->startDashboard();
-
-        $loggedRequest = $this->logRequest(new Request('GET', '/foo'));
-
-        $this->await($this->browser->post("http://127.0.0.1:4040/api/logs/{$loggedRequest->id()}/data", [
-            'Content-Type' => 'application/json',
-        ], json_encode([
-            'data' => [
-                'foo' => 'bar',
-            ],
-        ])));
-
-        $this->assertSame([
-            'foo' => 'bar',
-        ], $this->requestLogger->findLoggedRequest($loggedRequest->id())->getAdditionalData());
-    }
-
     protected function logRequest(RequestInterface $request): LoggedRequest
     {
         return $this->requestLogger->logRequest(str($request), \Laminas\Http\Request::fromString(str($request)));

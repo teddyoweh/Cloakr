@@ -91,7 +91,9 @@ abstract class ServerAwareCommand extends Command
         try {
             return Http::withOptions([
                 'verify' => false,
-            ])->get(config('cloakr.server_endpoint', static::DEFAULT_SERVER_ENDPOINT))->json();
+            ])->get(
+                config('cloakr.server_endpoint', static::DEFAULT_SERVER_ENDPOINT)
+            )->json();
         } catch (\Throwable $e) {
             return [];
         }

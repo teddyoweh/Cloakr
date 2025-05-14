@@ -1,0 +1,169 @@
+<script setup lang="ts">
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+} from '@/components/ui/table'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { Icon } from '@iconify/vue'
+import { JsonViewer } from "vue3-json-viewer"
+import "vue3-json-viewer/dist/index.css";
+import { bodyIsJson, copyToClipboard, isEmptyObject, toPhpArray } from '@/lib/utils'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { useLocalStorage } from '@/lib/composables/useLocalStorage'
+import { useColorMode } from '@vueuse/core'
+
+
+defineProps<{
+    request: RequestData
+}>()
+
+const mode = useColorMode()
+
+const requestHeadersVisible = useLocalStorage<boolean>('requestHeadersVisible', true)
+const postParametersVisible = useLocalStorage<boolean>('postParametersVisible', true)
+const accordionState = ref('requestHeaderOpen' as string);
+const postParametersAccordionState = ref('postParametersOpen' as string);
+
+onMounted(async () => {
+    await nextTick();
+
+    if (requestHeadersVisible.value === false) {
+        accordionState.value = ''
+    }
+    if (postParametersVisible.value === false) {
+        postParametersAccordionState.value = ''
+    }
+})
+
+watch(accordionState, (value) => {
+    if (value === 'requestHeaderOpen') {
+        requestHeadersVisible.value = true;
+    }
+    else {
+        requestHeadersVisible.value = false;
+    }
+});
+
+watch(postParametersAccordionState, (value) => {
+    if (value === 'postParametersOpen') {
+        postParametersVisible.value = true;
+    }
+    else {
+        postParametersVisible.value = false;
+    }
+});
+</script>
+
+<template>
+    <div class="max-w-full">
+        <div v-if="Object.keys(request.query).length > 0" class="mb-4">
+            <div class="pt-4 font-medium text-base mb-2">Query parameters</div>
+            <div class="flex justify-end">
+                <Button @click="copyToClipboard(toPhpArray(request.query, 'queryParameters'))" variant="outline">
+                    <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
+                    Copy as PHP array
+                </Button>
+            </div>
+            <Table class="max-w-full">
+                <TableBody>
+                    <TableRow v-for="[key, value] of Object.entries(request.query)" :key="key">
+                        <TableCell class="w-2/5">
+                            {{ key }}
+                        </TableCell>
+
+                        <TableCell class="w-3/5 break-all">
+                            {{ value }}
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+        <Accordion type="single" collapsible v-model="postParametersAccordionState" v-if="request.post && !isEmptyObject(request.post)">
+            <AccordionItem value="postParametersOpen">
+                <AccordionTrigger>
+                    <div class="flex relative z-10 justify-between items-center w-full pr-4">
+                        Post Parameters
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                    <div class="flex justify-end">
+                        <Button @click="copyToClipboard(toPhpArray(request.post, 'postData'))" variant="outline">
+                            <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
+                            Copy as PHP array
+                        </Button>
+                    </div>
+                    <Table class="max-w-full">
+                        <TableBody>
+                            <TableRow v-for="[key, value] of Object.entries(request.post)" :key="key">
+                                <TableCell class="w-2/5">
+                                    {{ value.name }}
+                                </TableCell>
+
+                                <TableCell class="w-3/5 break-all">
+                                    {{ value.value }}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+
+        <Accordion type="single" collapsible v-model="accordionState">
+            <AccordionItem value="requestHeaderOpen">
+                <AccordionTrigger>
+                    <div class="flex relative z-10 justify-between items-center w-full pr-4">
+                        Headers
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                    <div class="flex justify-end">
+                        <Button @click="copyToClipboard(toPhpArray(request.headers, 'headers'))" variant="outline">
+                            <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
+                            Copy as PHP array
+                        </Button>
+                    </div>
+                    <Table class="max-w-full">
+                        <TableBody>
+                            <TableRow v-for="[key, value] of Object.entries(request.headers)" :key="key">
+                                <TableCell class="w-2/5">
+                                    {{ key }}
+                                </TableCell>
+
+                                <TableCell class="w-3/5 break-all">
+                                    {{ value }}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+
+        <div class="mt-4">
+            <div class="pt-4 font-medium text-base">Body</div>
+
+
+            <div v-if="request.body === null || request.body === undefined || request.body === ''">
+                <span class="text-sm opacity-75 font-mono pt-2 inline-block">Request body is empty.</span>
+            </div>
+
+            <div v-else>
+                <div class="flex justify-end">
+                    <Button @click="copyToClipboard(request.body)" variant="outline">
+                        <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
+                        Copy
+                    </Button>
+                </div>
+                <JsonViewer v-if="bodyIsJson(request)" :expand-depth="2" :value="JSON.parse(request.body ?? '')" :class="{'jv-light': mode === 'light', 'jv-dark': mode === 'dark'}" />
+                <pre v-else class="p-6 prettyprint break-all whitespace-pre-wrap">{{ request.body ?? '' }}
+            </pre>
+            </div>
+        </div>
+    </div>
+</template>

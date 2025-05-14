@@ -37,9 +37,6 @@ class LoggedRequest implements \JsonSerializable
     /** @var string */
     protected $subdomain;
 
-    /** @var array */
-    protected $additionalData = [];
-
     public function __construct(string $rawRequest, Request $parsedRequest)
     {
         $this->startTime = now();
@@ -67,8 +64,7 @@ class LoggedRequest implements \JsonSerializable
                 'body' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->parsedRequest->getContent(),
                 'query' => $this->parsedRequest->getQuery()->toArray(),
                 'post' => $this->getPostData(),
-                'curl' => $this->getRequestAsCurl(),
-                'additional_data' => $this->additionalData,
+                'curl' => $this->getRequestAsCurl()
             ],
         ];
 
@@ -77,16 +73,6 @@ class LoggedRequest implements \JsonSerializable
         }
 
         return $data;
-    }
-
-    public function setAdditionalData(array $data)
-    {
-        $this->additionalData = array_merge($this->additionalData, $data);
-    }
-
-    public function getAdditionalData(): array
-    {
-        return $this->additionalData;
     }
 
     protected function isBinary(string $string): bool
@@ -128,6 +114,12 @@ class LoggedRequest implements \JsonSerializable
         $postData = [];
 
         $contentType = Arr::get($this->parsedRequest->getHeaders()->toArray(), 'Content-Type');
+        if($contentType && Str::contains($contentType, ";")) {
+            $contentType = explode(';', $contentType, 2);
+            if (is_array($contentType) && count($contentType) > 1) {
+                $contentType = $contentType[0];
+            }
+        }
 
         switch ($contentType) {
             case 'application/x-www-form-urlencoded':

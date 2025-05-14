@@ -3,7 +3,6 @@
 namespace App\Client;
 
 use App\Client\Fileserver\Fileserver;
-use App\Client\Http\Controllers\AttachDataToLogController;
 use App\Client\Http\Controllers\ClearLogsController;
 use App\Client\Http\Controllers\CreateTunnelController;
 use App\Client\Http\Controllers\DashboardController;
@@ -144,12 +143,13 @@ class Factory
     {
         $this->router->get('/', DashboardController::class);
 
+        $this->router->addPublicFilesystem();
+
         $this->router->get('/api/tunnels', GetTunnelsController::class);
         $this->router->post('/api/tunnel', CreateTunnelController::class);
         $this->router->get('/api/logs', LogController::class);
         $this->router->post('/api/logs', PushLogsToDashboardController::class);
         $this->router->get('/api/replay/{log}', ReplayLogController::class);
-        $this->router->post('/api/logs/{request_id}/data', AttachDataToLogController::class);
         $this->router->get('/api/logs/clear', ClearLogsController::class);
 
         $this->app->route('/socket', new WsServer(new Socket()), ['*'], '');

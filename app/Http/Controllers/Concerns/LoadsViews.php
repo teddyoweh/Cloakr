@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use GuzzleHttp\Psr7\Utils;
 use Ratchet\ConnectionInterface;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
-
-use function GuzzleHttp\Psr7\stream_for;
 
 trait LoadsViews
 {
@@ -25,9 +24,14 @@ trait LoadsViews
             'request' => $connection->laravelRequest ?? null,
         ]);
         try {
-            return stream_for($twig->render('template', $data));
+            return Utils::streamFor($twig->render('template', $data));
         } catch (\Throwable $e) {
             var_dump($e->getMessage());
         }
+    }
+
+    protected function getBlade(?ConnectionInterface $connection, string $view, array $data = [])
+    {
+        return Utils::streamFor(view($view, $data));
     }
 }

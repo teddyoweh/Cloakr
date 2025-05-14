@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
-use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
 use function Termwind\render;
 use function Termwind\terminal;
@@ -17,39 +16,45 @@ class SetupCloakrProToken extends CommandPlugin
     protected string $token;
 
     protected $closestServer = [];
+
     protected Collection $servers;
+    protected Collection $domains;
+
 
     public function __invoke(...$parameters)
     {
         if (count($parameters) <= 0) return;
         if (!$this->cloakrPlatformSetup()) return;
 
-        // TODO: clear default domain and server, only set new values when process is not aborted somewhere
-
         $this->token = $parameters[0];
 
-        if ($this->tokenConfigExists()) {
-            render("<p class='ml-3'>Found existing configuration for Cloakr token <span class='font-bold'>$this->token</span>.</p>");
+        if ($this->isProToken()) {
 
-            $data = [
-                "Team" => "Beyond Code",
-                "Default Domain" => "share.idontcare.lol",
-                "Default Server" => "Europe 1 (eu-1)",
-            ];
+            render('<p class="ml-3">This token has access to our high-performance, global server network.</p>');
 
-            $this->renderLineTable($data);
+            $this->getTeamDomains();
+            
+            if ($this->domains->isNotEmpty()) {
 
-            $result = confirm("Would you like to apply the existing configuration?");
+                $domain = select(
+                    label: 'What default domain would you like to use?',
+                    options: $this->domains->mapWithKeys(function ($domain) {
+                        return [
+                            $domain['name'] =>  $domain['name'] . ' [' . $domain['server'] . ']'
+                        ];
+                    }),
+                    hint: "You can use `cloakr default-domain` to change this setting."
+                );
 
-            // TODO:
-        } else {
+                dd($domain);
 
-            if ($this->isProToken()) {
+
+            } else {
+
 
                 $this->getServerNetwork();
 
                 if ($this->servers->isNotEmpty()) {
-                    render('<p class="ml-3">This token has access to our high-performance, global server network.</p>');
 
                     $server = select(
                         label: 'What default server would you like to use?',
@@ -65,38 +70,13 @@ class SetupCloakrProToken extends CommandPlugin
                     Artisan::call("default-server $server");
                     render(Artisan::output());
                 }
-
-                // TODO: Fetch team domains and set default-domain
             }
         }
     }
 
-    protected function renderLineTable($data)
-    {
-        $terminalWidth = terminal()->width();
-
-        $template = '<div class="ml-3"><span class="font-bold">$key</span><span class="text-gray-500">...</span>$value</div>';
-
-        foreach ($data as $key => $value) {
-            $keyLength = strlen($key);
-            $valueLength = strlen($value);
-
-            $dotsNeeded = max($terminalWidth - $keyLength - $valueLength - 10, 0);
-            $dots = str_repeat('.', $dotsNeeded);
-
-            $output = str_replace(
-                ['$key', '...', '$value'],
-                [$key, $dots, $value],
-                $template
-            );
-
-            render($output);
-        }
-    }
 
     protected function isProToken(): bool
     {
-
         $response = Http::post($this->platformEndpoint() . 'client/is-pro-token', [
             'token' => $this->token
         ]);
@@ -106,6 +86,10 @@ class SetupCloakrProToken extends CommandPlugin
         }
 
         $result = $response->json();
+
+        if (!$result) {
+            return false;
+        }
 
         if (array_key_exists("is_pro", $result) && $result["is_pro"] === true) {
             return true;
@@ -117,13 +101,6 @@ class SetupCloakrProToken extends CommandPlugin
     protected function platformEndpoint(): string
     {
         return config('cloakr.platform_endpoint') . '/api/';
-    }
-
-    protected function tokenConfigExists(): bool
-    {
-        if ($this->token === "c1b4a91a-a0cb-41c6-9b44-99f854acecb4") return true;
-        if ($this->token === "c1b4a91a-a0cb-41c6-9b44-99f854acecb5") return false;
-        return false; // TODO: Request to cloakr-platform?
     }
 
     protected function getServerNetwork(): void
@@ -141,7 +118,7 @@ class SetupCloakrProToken extends CommandPlugin
 
         $result = $response->json();
 
-        if(!$result) {
+        if (!$result) {
             return;
         }
 
@@ -151,6 +128,29 @@ class SetupCloakrProToken extends CommandPlugin
 
         if (array_key_exists('servers', $result)) {
             $this->servers = collect($result['servers'])->sort();
+        }
+    }
+
+    protected function getTeamDomains(): void
+    {
+        $this->domains = collect();
+
+        $response = Http::post($this->platformEndpoint() . 'client/team-domains', [
+            'token' => $this->token
+        ]);
+
+        if (!$response->ok()) {
+            return;
+        }
+
+        $result = $response->json();
+
+        if (!$result) {
+            return;
+        }
+
+        if (array_key_exists('domains', $result)) {
+            $this->domains = collect($result['domains'])->sort();
         }
     }
 

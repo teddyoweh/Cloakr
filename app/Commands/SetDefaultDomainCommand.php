@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Client\Support\DefaultDomainNodeVisitor;
 use App\Client\Support\DefaultServerNodeVisitor;
 use App\Client\Support\InsertDefaultDomainNodeVisitor;
+use App\Commands\Plugins\SetUpCloakrDefaultDomain;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -14,8 +15,12 @@ use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
 
+use function Laravel\Prompts\confirm;
+use function Termwind\render;
+
 class SetDefaultDomainCommand extends Command
 {
+
     protected $signature = 'default-domain {domain?} {--server=}';
 
     protected $description = 'Set or retrieve the default domain to use with Cloakr.';
@@ -24,8 +29,10 @@ class SetDefaultDomainCommand extends Command
     {
         $domain = $this->argument('domain');
         $server = $this->option('server');
+
         if (! is_null($domain)) {
-            $this->info('Setting the Cloakr default domain to "'.$domain.'"');
+
+            render("<div class='ml-3'>✅ Set Cloakr default domain to <span class='font-bold'>$domain</span>" . ($server ? " on server <span class='font-bold'>$server</span>" : '') . ".</div>");
 
             $configFile = implode(DIRECTORY_SEPARATOR, [
                 $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
@@ -45,10 +52,17 @@ class SetDefaultDomainCommand extends Command
             return;
         }
 
+        render('<div class="ml-2 my-1"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
+
         if (is_null($domain = config('cloakr.default_domain'))) {
-            $this->info('There is no default domain specified.');
+            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no default domain specified.</div>');
         } else {
-            $this->info('Current default domain: '.$domain);
+            render("<div class='ml-3'>Current default domain: <span class='font-bold'>$domain</span>.</div>");
+        }
+
+
+        if(confirm('Would you like to set a new default domain?')) {
+            (new SetUpCloakrDefaultDomain)(config('cloakr.auth_token'));
         }
     }
 
@@ -57,8 +71,10 @@ class SetDefaultDomainCommand extends Command
         $lexer = new Emulative([
             'usedAttributes' => [
                 'comments',
-                'startLine', 'endLine',
-                'startTokenPos', 'endTokenPos',
+                'startLine',
+                'endLine',
+                'startTokenPos',
+                'endTokenPos',
             ],
         ]);
         $parser = new Php7($lexer);

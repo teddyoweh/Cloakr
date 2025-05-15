@@ -133,14 +133,12 @@ class Client
 
                     $this->logger->renderMessageBox($data->message);
 
-                    $connectionData = [
+                    $this->logger->renderConnectionTable([
                         "Shared URL" => $sharedUrl,
                         "Dashboard" => "http://127.0.0.1:".config()->get('cloakr.dashboard_port'),
                         "Public HTTP" => "http://{$data->subdomain}.{$host}{$httpPort}",
                         "Public HTTPS" => "https://{$data->subdomain}.{$host}",
-                    ];
-
-                    $this->logger->renderConnectionTable($connectionData);
+                    ]);
                     $this->logger->line('');
 
                     static::$subdomains[] = "{$httpProtocol}://{$data->subdomain}.{$host}";

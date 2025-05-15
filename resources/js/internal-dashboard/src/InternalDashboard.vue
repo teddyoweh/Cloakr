@@ -29,6 +29,7 @@ const scrollY = ref(0 as number);
 
 onMounted(() => {
     window.addEventListener('scroll', updateScroll);
+    window.addEventListener('keydown', handleKeyDown);
 });
 
 const updateScroll = () => {
@@ -50,6 +51,19 @@ const showScrollUp = computed(() => {
 const scrollUp = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+
+const handleKeyDown = (event: KeyboardEvent) => {
+    if(event.key === 'ArrowDown') {
+        event.preventDefault();
+        logList.value.nextLog()
+    }
+    if(event.key === 'ArrowUp') {
+        event.preventDefault();
+        logList.value.previousLog()
+    }
+}
+
 
 onUnmounted(() => {
     window.removeEventListener('scroll', updateScroll);

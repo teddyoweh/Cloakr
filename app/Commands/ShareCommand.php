@@ -3,20 +3,27 @@
 namespace App\Commands;
 
 use App\Client\Factory;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function Termwind\render;
+
 class ShareCommand extends ServerAwareCommand
 {
+    use RendersBanner;
+
     protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=}';
 
     protected $description = 'Share a local url with a remote cloakr server';
 
     public function handle()
     {
+        $this->renderBanner();
+
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
-        $this->info('Using auth token: '.$auth, OutputInterface::VERBOSITY_DEBUG);
+        render('<div class="ml-3">Using auth token: '.$auth . '</div>', OutputInterface::VERBOSITY_DEBUG);
 
         if (strstr($this->argument('host'), 'host.docker.internal')) {
             config(['cloakr.dns' => true]);
@@ -38,14 +45,18 @@ class ShareCommand extends ServerAwareCommand
 
         if (! is_null($this->option('subdomain'))) {
             $subdomains = explode(',', $this->option('subdomain'));
-            $this->info('Trying to use custom domain: '.$subdomains[0].PHP_EOL, OutputInterface::VERBOSITY_VERBOSE);
+            render('<div class="ml-3">Trying to use custom subdomain: '.$subdomains[0].PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
         } else {
             $host = Str::beforeLast($this->argument('host'), '.');
             $host = str_replace('https://', '', $host);
             $host = str_replace('http://', '', $host);
             $host = Str::beforeLast($host, ':');
             $subdomains = [Str::slug($host)];
-            $this->info('Trying to use custom domain: '.$subdomains[0].PHP_EOL, OutputInterface::VERBOSITY_VERBOSE);
+            render('<div class="ml-3">Trying to use custom subdomain: '.$subdomains[0].PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+
+        if($domain) {
+            render('<div class="ml-3">Using custom domain: '.$domain.PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
         (new Factory())

@@ -7,16 +7,17 @@ import {
 } from '@/components/ui/table'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import RowAccordionButton from '@/components/ui/RowAccordionButton.vue'
 import { Icon } from '@iconify/vue'
 import { JsonViewer } from "vue3-json-viewer"
 import "vue3-json-viewer/dist/index.css";
 import { bodyIsJson, copyToClipboard, isEmptyObject, toPhpArray } from '@/lib/utils'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useLocalStorage } from '@/lib/composables/useLocalStorage'
 import { useColorMode } from '@vueuse/core'
 
 
-defineProps<{
+const props = defineProps<{
     request: RequestData
 }>()
 
@@ -27,6 +28,8 @@ const postParametersVisible = useLocalStorage<boolean>('postParametersVisible', 
 const accordionState = ref('requestHeaderOpen' as string);
 const postParametersAccordionState = ref('postParametersOpen' as string);
 
+const rowAccordion = reactive({} as Record<string, boolean>)
+
 onMounted(async () => {
     await nextTick();
 
@@ -36,7 +39,14 @@ onMounted(async () => {
     if (postParametersVisible.value === false) {
         postParametersAccordionState.value = ''
     }
+
+    checkTruncatedRows();
+    window.addEventListener('resize', checkTruncatedRows);
 })
+
+watch(() => props.request, async () => {
+    checkTruncatedRows();
+});
 
 watch(accordionState, (value) => {
     if (value === 'requestHeaderOpen') {
@@ -55,6 +65,43 @@ watch(postParametersAccordionState, (value) => {
         postParametersVisible.value = false;
     }
 });
+
+const checkTruncatedRows = async () => {
+    await nextTick();
+
+    Object.entries(props.request.post).forEach(([_, value]: [string, PostValue]) => {
+        const el = document.querySelector(`[data-truncate="post_${value.name}"]`);
+        if (el) {
+            const rowName = el.getAttribute('data-truncate') ?? 'post_' + value.name;
+
+            if (el.scrollWidth > el.clientWidth) {
+                rowAccordion[rowName] = false;
+            }
+            else {
+                delete rowAccordion[rowName];
+            }
+        }
+    });
+
+    Object.entries(props.request.headers).forEach(([key, _]) => {
+        const el = document.querySelector(`[data-truncate="headers_${key}"]`);
+
+        if (el) {
+            const rowName = el.getAttribute('data-truncate') ?? 'headers_' + key;
+            if (el.scrollWidth > el.clientWidth) {
+                rowAccordion[rowName] = false;
+            }
+            else {
+                delete rowAccordion[rowName];
+            }
+        }
+
+    });
+}
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkTruncatedRows);
+})
 </script>
 
 <template>
@@ -81,7 +128,8 @@ watch(postParametersAccordionState, (value) => {
                 </TableBody>
             </Table>
         </div>
-        <Accordion type="single" collapsible v-model="postParametersAccordionState" v-if="request.post && !isEmptyObject(request.post)">
+        <Accordion type="single" collapsible v-model="postParametersAccordionState"
+            v-if="request.post && !isEmptyObject(request.post)">
             <AccordionItem value="postParametersOpen">
                 <AccordionTrigger>
                     <div class="flex relative z-10 justify-between items-center w-full pr-4">
@@ -95,16 +143,27 @@ watch(postParametersAccordionState, (value) => {
                             Copy as PHP array
                         </Button>
                     </div>
-                    <Table class="max-w-full">
+                    <Table class="table-fixed max-w-full ">
                         <TableBody>
                             <TableRow v-for="[key, value] of Object.entries(request.post)" :key="key">
-                                <TableCell class="w-2/5">
+                                <TableCell class="w-2/5 align-top">
                                     {{ value.name }}
                                 </TableCell>
 
-                                <TableCell class="w-3/5 break-all">
-                                    {{ value.value }}
+                                <TableCell class="pr-0">
+                                    <div class="group w-[99%] relative flex items-center">
+                                        <div class="pr-6 break-all" :data-truncate="'post_' + value.name"
+                                            :class="{ 'truncate': !rowAccordion.hasOwnProperty('post_' + value.name) || rowAccordion['post_' + value.name] === false }">
+                                            {{ value.value }}
+                                        </div>
+                                        <div>
+                                            <RowAccordionButton v-if="rowAccordion.hasOwnProperty('post_' + key)"
+                                                @click="rowAccordion['post_' + key] = !rowAccordion['post_' + key]"
+                                                :rotate="rowAccordion['post_' + key]" />
+                                        </div>
+                                    </div>
                                 </TableCell>
+
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -127,15 +186,25 @@ watch(postParametersAccordionState, (value) => {
                             Copy as PHP array
                         </Button>
                     </div>
-                    <Table class="max-w-full">
+                    <Table class="max-w-full table-fixed">
                         <TableBody>
                             <TableRow v-for="[key, value] of Object.entries(request.headers)" :key="key">
                                 <TableCell class="w-2/5">
                                     {{ key }}
                                 </TableCell>
 
-                                <TableCell class="w-3/5 break-all">
-                                    {{ value }}
+                                <TableCell class="pr-0">
+                                    <div class="group w-[99%] relative flex items-center">
+                                        <div class="pr-6 break-all" :data-truncate="'headers_' + key"
+                                            :class="{ 'truncate': !rowAccordion.hasOwnProperty('headers_' + key) || rowAccordion['headers_' + key] === false }">
+                                            {{ value }}
+                                        </div>
+                                        <div>
+                                            <RowAccordionButton v-if="rowAccordion.hasOwnProperty('headers_' + key)"
+                                                @click="rowAccordion['headers_' + key] = !rowAccordion['headers_' + key]"
+                                                :rotate="rowAccordion['headers_' + key]" />
+                                        </div>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         </TableBody>
@@ -160,7 +229,8 @@ watch(postParametersAccordionState, (value) => {
                         Copy
                     </Button>
                 </div>
-                <JsonViewer v-if="bodyIsJson(request)" :expand-depth="2" :value="JSON.parse(request.body ?? '')" :class="{'jv-light': mode === 'light', 'jv-dark': mode === 'dark'}" />
+                <JsonViewer v-if="bodyIsJson(request)" :expand-depth="2" :value="JSON.parse(request.body ?? '')"
+                    :class="{ 'jv-light': mode === 'light', 'jv-dark': mode === 'dark' }" />
                 <pre v-else class="p-6 prettyprint break-all whitespace-pre-wrap">{{ request.body ?? '' }}
             </pre>
             </div>

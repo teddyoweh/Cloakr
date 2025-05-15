@@ -14,7 +14,7 @@ class InsertDefaultServerNodeVisitor extends NodeVisitorAbstract
         if ($node instanceof Node\Expr\ArrayItem && $node->key && $node->key->value === 'auth_token') {
             $defaultServerNode = new Node\Expr\ArrayItem(
                 new ConstFetch(
-                    new Name('null')
+                    new Name('main')
                 ),
                 new Node\Scalar\String_('default_server')
             );

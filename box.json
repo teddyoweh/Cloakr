@@ -5,6 +5,7 @@
         "bootstrap",
         "database",
         "resources",
+        "public",
         "config",
         "vendor"
     ],

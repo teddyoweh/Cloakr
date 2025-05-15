@@ -57,7 +57,7 @@ class SetDefaultDomainCommand extends Command
             return;
         }
 
-        render('<div class="ml-2"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
+        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
 
         if (is_null($domain = config('cloakr.default_domain'))) {
             render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no default domain specified.</div>');

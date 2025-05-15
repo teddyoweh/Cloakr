@@ -21,7 +21,7 @@ class GetAuthenticationTokenCommand extends Command
             if ($this->option('no-interaction') === true) {
                 $this->line($token);
             } else {
-                render('<div class="ml-2"><div class="text-pink-500 font-bold"><span class="font-bold pr-0.5">></span> Cloakr</div>');
+                render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
                 render("<div class='ml-3'>Current authentication token: <span class='font-bold'>$token</span></div>");
             }
         }

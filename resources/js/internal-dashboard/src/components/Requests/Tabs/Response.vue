@@ -58,10 +58,11 @@ watch(() => props.response, async () => {
 
 
 const checkTruncatedRows = () => {
-    Object.entries(props.response.headers).forEach(([key, value]) => {
+    Object.entries(props.response.headers).forEach(([key, _]) => {
         const el = document.querySelector(`[data-truncate="headers_${key}"]`);
         if (el) {
-            const rowName = el.getAttribute('data-truncate')
+            const rowName = el.getAttribute('data-truncate') ?? 'headers_' + key;
+
             if (el.scrollWidth > el.clientWidth) {
                 rowAccordion[rowName] = false;
             }

@@ -153,6 +153,8 @@ const isSearchableResponse = (response: ResponseData): boolean => {
         const contentTypes = ["application/json", "application/ld-json", "text/plain"];
         return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
     }
+
+    return false;
 }
 
 defineCloakr({ replay, nextLog, previousLog });

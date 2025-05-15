@@ -43,3 +43,8 @@ declare interface RequestData {
   interface CloakrUser {
     can_specify_subdomains: number;
   }
+
+  interface PostValue {
+    name: string
+    value: string
+  }

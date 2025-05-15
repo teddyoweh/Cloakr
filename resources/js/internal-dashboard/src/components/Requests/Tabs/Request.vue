@@ -29,8 +29,6 @@ const postParametersAccordionState = ref('postParametersOpen' as string);
 
 const rowAccordion = reactive({} as Record<string, boolean>)
 
-
-
 onMounted(async () => {
     await nextTick();
 
@@ -70,10 +68,11 @@ watch(postParametersAccordionState, (value) => {
 });
 
 const checkTruncatedRows = () => {
-    Object.entries(props.request.post).forEach(([key, value]) => {
+    Object.entries(props.request.post).forEach(([_, value]: [string, PostValue]) => {
         const el = document.querySelector(`[data-truncate="post_${value.name}"]`);
         if (el) {
-            const rowName = el.getAttribute('data-truncate')
+            const rowName = el.getAttribute('data-truncate') ?? 'post_' + value.name;
+
             if (el.scrollWidth > el.clientWidth) {
                 rowAccordion[rowName] = false;
             }
@@ -83,11 +82,11 @@ const checkTruncatedRows = () => {
         }
     });
 
-    Object.entries(props.request.headers).forEach(([key, value]) => {
+    Object.entries(props.request.headers).forEach(([key, _]) => {
         const el = document.querySelector(`[data-truncate="headers_${key}"]`);
 
         if (el) {
-            const rowName = el.getAttribute('data-truncate')
+            const rowName = el.getAttribute('data-truncate') ?? 'headers_' + key;
             if (el.scrollWidth > el.clientWidth) {
                 rowAccordion[rowName] = false;
             }

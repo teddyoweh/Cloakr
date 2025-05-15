@@ -19,7 +19,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits(['search-updated', 'show-qr-code'])
-const useDarkMode = useLocalStorage<boolean>('useDarkMode', useColorMode().value === 'dark')
+const useDarkMode = useLocalStorage<boolean>('useDarkMode', useColorMode().value === 'dark') // TODO: Storage or system setting?
 
 const search = ref('' as string)
 

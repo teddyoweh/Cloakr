@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
     <div class="min-h-[500px] flex flex-1 py-32 items-center flex-col text-center">
-        <p class="font-bold text-pink-600">
+        <p class="font-bold text-pink-600 mb-2">
             Waiting for incoming requests...
         </p>
 

@@ -390,4 +390,7 @@ return [
             'repository' => \App\Server\StatisticsRepository\DatabaseStatisticsRepository::class,
         ],
     ],
+
+
+    'platform_url' => 'https://cloakr.dev',
 ];

@@ -154,9 +154,13 @@ onUnmounted(() => {
                     </ToggleGroup>
 
                 </div>
+
                 <pre v-if="responseView == 'raw'"
-                    class="p-6 break-all whitespace-pre-wrap">{{ response.body ?? '' }}</pre>
-                <JsonViewer v-if="responseView == 'json'" :expand-depth="2" :value="JSON.parse(response.body ?? '')" :class="{'jv-light': mode === 'light', 'jv-dark': mode === 'dark'}" />
+                    class="overflow-x-auto p-6 break-all whitespace-pre-wrap break-words">{{ response.body ?? '' }}</pre>
+
+
+                <JsonViewer v-if="responseView == 'json'" :expand-depth="2" :value="JSON.parse(response.body ?? '')"
+                    :class="{ 'jv-light': mode === 'light', 'jv-dark': mode === 'dark' }" />
                 <iframe v-if="responseView == 'preview'" :srcdoc="response.body" style="height: 500px;"
                     class="border border-gray-200 dark:border-gray-700 rounded-md mt-4 w-full h-full"></iframe>
             </div>

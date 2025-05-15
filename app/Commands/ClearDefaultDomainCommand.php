@@ -13,6 +13,8 @@ use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
 
+use function Termwind\render;
+
 class ClearDefaultDomainCommand extends Command
 {
     protected $signature = 'default-domain:clear';
@@ -21,7 +23,7 @@ class ClearDefaultDomainCommand extends Command
 
     public function handle()
     {
-        $this->info('Clearing the default Cloakr domain.');
+        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
 
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
@@ -37,6 +39,8 @@ class ClearDefaultDomainCommand extends Command
         }
 
         file_put_contents($configFile, $updatedConfigFile);
+
+        render("<div class='ml-3'>✔ Cleared the Cloakr default domain.</div>");
     }
 
     protected function modifyConfigurationFile(string $configFile)

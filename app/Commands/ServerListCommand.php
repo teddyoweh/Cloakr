@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -11,6 +12,8 @@ use function Termwind\render;
 
 class ServerListCommand extends Command
 {
+    use RendersBanner;
+
     const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.dev/api/servers';
 
     protected $signature = 'servers {--json}';
@@ -33,7 +36,7 @@ class ServerListCommand extends Command
             return;
         }
 
-        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+        $this->renderBanner();
 
         render("<div class='ml-3'>You can connect to a specific server with the --server=key option or set this server as default with the default-server command.</div>");
 

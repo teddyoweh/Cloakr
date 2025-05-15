@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Client\Support\ClearServerNodeVisitor;
 use App\Client\Support\InsertDefaultServerNodeVisitor;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -17,13 +18,15 @@ use function Termwind\render;
 
 class ClearDefaultServerCommand extends Command
 {
+    use RendersBanner;
+
     protected $signature = 'default-server:clear';
 
     protected $description = 'Clear the default server to use with Cloakr.';
 
     public function handle()
     {
-        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+        $this->renderBanner();
 
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],

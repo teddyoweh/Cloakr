@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -10,6 +11,7 @@ use function Termwind\render;
 
 class RollbackTokenCommand extends Command
 {
+    use RendersBanner;
 
     protected $signature = 'token:rollback';
 
@@ -26,7 +28,7 @@ class RollbackTokenCommand extends Command
             'previous_setup.json',
         ]);
 
-        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+        $this->renderBanner();
 
         if (!file_exists($this->previousSetupPath)) {
             render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">No previous setup found.</div>');

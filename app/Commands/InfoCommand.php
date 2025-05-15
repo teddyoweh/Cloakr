@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\RendersBanner;
 use App\Contracts\FetchesPlatformDataContract;
 use App\Traits\FetchesPlatformData;
 use Exception;
@@ -14,6 +15,7 @@ use function Termwind\render;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
+    use RendersBanner;
 
     protected $signature = 'info {--json}';
 
@@ -23,7 +25,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
     {
 
         if (!$this->option('json')) {
-            render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+            $this->renderBanner();
         }
 
         $configuration = [];
@@ -61,11 +63,8 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
         }
 
         try {
-            $startTime = microtime(true);
-            Http::timeout(5)->get($host);
-            $latency = microtime(true) - $startTime;
-
-            return round($latency * 1000);
+            $result = Http::timeout(5)->get($host);
+            return $result->handlerStats()['connect_time'] * 1000;
         } catch (Exception $e) {
             if ($this->option("verbose")) {
                 render("<div class='ml-3 px-2 text-orange-600 bg-orange-100'>Error while checking latency: {$e->getMessage()}</div>");
@@ -76,9 +75,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
     }
 
     protected function getVersion(): string {
-        Artisan::call("help --version");
-        $version = Artisan::output();
-        return 'v'.str()->after($version, "Cloakr ");
+        return 'v'.config('app.version');
     }
 
     public function getToken()

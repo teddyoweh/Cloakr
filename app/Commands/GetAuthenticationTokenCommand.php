@@ -2,12 +2,15 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 
 use function Termwind\render;
 
 class GetAuthenticationTokenCommand extends Command
 {
+    use RendersBanner;
+
     protected $signature = 'token:get';
     protected $description = 'Retrieve the authentication token to use with Cloakr.';
 
@@ -20,7 +23,7 @@ class GetAuthenticationTokenCommand extends Command
             return;
         }
 
-        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+        $this->renderBanner();
 
         if (is_null($token)) {
             render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no authentication token specified.</div>');

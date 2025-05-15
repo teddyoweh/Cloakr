@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/table'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import RowAccordionButton from '@/components/ui/RowAccordionButton.vue'
 import { Icon } from '@iconify/vue'
 import { JsonViewer } from "vue3-json-viewer"
 import "vue3-json-viewer/dist/index.css";
@@ -109,13 +110,9 @@ onUnmounted(() => {
                                             {{ value }}
                                         </div>
                                         <div>
-                                            <button v-if="rowAccordion.hasOwnProperty('headers_' + key)"
+                                            <RowAccordionButton v-if="rowAccordion.hasOwnProperty('headers_' + key)"
                                                 @click="rowAccordion['headers_' + key] = !rowAccordion['headers_' + key]"
-                                                class="opacity-100 group-hover:opacity-100 transition-150 absolute -top-0.5 -right-0.5 bg-white border rounded-md p-1">
-                                                <Icon icon="radix-icons:chevron-down"
-                                                    class="h-4 w-4 transform animate duration-150"
-                                                    :class="{ 'rotate-180': rowAccordion['headers_' + key] }" />
-                                            </button>
+                                                :rotate="rowAccordion['headers_' + key]" />
                                         </div>
                                     </div>
                                 </TableCell>

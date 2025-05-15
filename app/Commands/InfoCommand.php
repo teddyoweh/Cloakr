@@ -30,8 +30,8 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
 
         $configuration = [
             "token" => config('cloakr.auth_token'),
-            "default-server" => config('cloakr.default_server'),
-            "domain-domain" => config('cloakr.default_domain'),
+            "default_server" => config('cloakr.default_server'),
+            "default_domain" => config('cloakr.default_domain'),
             "plan" => $this->isProToken() ? "pro" : "free",
             "version" => $this->getVersion(),
             "latency" => $this->checkLatency(config('cloakr.default_server')) . "ms"
@@ -44,45 +44,11 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
 
         render('<div class="ml-3 font-bold">Configuration</div>');
 
-        $template = <<<HTML
-        <div class="flex ml-3 mr-6">
-            <span>key</span>
-            <span class="flex-1 content-repeat-[.] text-gray-800"></span>
-            <span>value</span>
-        </div>
-HTML;
+        $configuration = collect($configuration)->mapWithKeys(function ($value, $key) {
+            return [lineTableLabel($key) => lineTableLabel($value)];
+        })->toArray();
 
-        foreach ($configuration as $key => $value) {
-            $output = str_replace(
-                ['key', 'value'],
-                [$this->keyLabel($key), $this->valueLabel($value)],
-                $template
-            );
-
-            render($output);
-        }
-    }
-
-    protected function keyLabel(string $key): string
-    {
-        return match ($key) {
-            'token' => 'Token',
-            'default-server' => 'Default Server',
-            'domain-domain' => 'Default Domain',
-            'plan' => 'Plan',
-            'version' => 'Version',
-            'latency' => 'Latency',
-            default => $key
-        };
-    }
-
-    protected function valueLabel(string $value): string
-    {
-        return match ($value) {
-            'free' => 'Cloakr Free',
-            'pro' => 'Cloakr Pro',
-            default => $value
-        };
+        renderLineTable($configuration);
     }
 
     protected function checkLatency(string $server): int

@@ -44,8 +44,6 @@ onMounted(async () => {
 })
 
 watch(() => props.request, async () => {
-    await nextTick();
-
     checkTruncatedRows();
 });
 
@@ -67,7 +65,9 @@ watch(postParametersAccordionState, (value) => {
     }
 });
 
-const checkTruncatedRows = () => {
+const checkTruncatedRows = async () => {
+    await nextTick();
+
     Object.entries(props.request.post).forEach(([_, value]: [string, PostValue]) => {
         const el = document.querySelector(`[data-truncate="post_${value.name}"]`);
         if (el) {

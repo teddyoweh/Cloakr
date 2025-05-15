@@ -51,13 +51,13 @@ watch(accordionState, (value) => {
 });
 
 watch(() => props.response, async () => {
-    await nextTick();
-
     checkTruncatedRows();
 });
 
 
-const checkTruncatedRows = () => {
+const checkTruncatedRows = async () => {
+    await nextTick();
+
     Object.entries(props.response.headers).forEach(([key, _]) => {
         const el = document.querySelector(`[data-truncate="headers_${key}"]`);
         if (el) {

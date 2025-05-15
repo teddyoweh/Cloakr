@@ -3,10 +3,8 @@
 namespace App\Commands;
 
 use App\Client\Support\TokenNodeVisitor;
-use App\Commands\Plugins\CommandPlugin;
-use App\Commands\Plugins\SetupCloakrProToken;
+use App\Commands\SetupCloakrProToken;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use PhpParser\Lexer\Emulative;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;

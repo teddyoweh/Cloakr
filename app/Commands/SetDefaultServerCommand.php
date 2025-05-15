@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Client\Support\DefaultServerNodeVisitor;
 use App\Client\Support\InsertDefaultServerNodeVisitor;
-use App\Commands\Plugins\SetUpCloakrDefaultServer;
+use App\Commands\SetUpCloakrDefaultServer;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;

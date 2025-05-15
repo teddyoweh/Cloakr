@@ -5,7 +5,7 @@ namespace App\Commands;
 use App\Client\Support\DefaultDomainNodeVisitor;
 use App\Client\Support\DefaultServerNodeVisitor;
 use App\Client\Support\InsertDefaultDomainNodeVisitor;
-use App\Commands\Plugins\SetUpCloakrDefaultDomain;
+use App\Commands\SetUpCloakrDefaultDomain;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;

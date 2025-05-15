@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Plugins;
+namespace App\Commands;
 
 
 use App\Contracts\FetchesPlatformDataContract;

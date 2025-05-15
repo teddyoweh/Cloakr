@@ -52,6 +52,10 @@ class ShareCommand extends ServerAwareCommand
             render('<div class="ml-3">Trying to use custom subdomain: '.$subdomains[0].PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
+        if($domain) {
+            render('<div class="ml-3">Using custom domain: '.$domain.PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+
         (new Factory())
             ->setLoop(app(LoopInterface::class))
             ->setHost($this->getServerHost())

@@ -32,7 +32,7 @@ class SetDefaultDomainCommand extends Command
 
         if (! is_null($domain)) {
 
-            render("<div class='ml-3'>✅ Set Cloakr default domain to <span class='font-bold'>$domain</span>" . ($server ? " on server <span class='font-bold'>$server</span>" : '') . ".</div>");
+            render("<div class='ml-3'>✔ Set Cloakr default domain to <span class='font-bold'>$domain</span>" . ($server ? " on server <span class='font-bold'>$server</span>" : '') . ".</div>");
 
             $configFile = implode(DIRECTORY_SEPARATOR, [
                 $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],

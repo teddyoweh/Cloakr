@@ -29,6 +29,8 @@ class StoreAuthenticationTokenCommand extends Command
             return $this->call('token:get', ['--no-interaction' => $this->option('no-interaction')]);
         }
 
+        $this->rememberPreviousSetup();
+
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
             '.cloakr',
@@ -57,6 +59,23 @@ class StoreAuthenticationTokenCommand extends Command
 
 
         return;
+    }
+
+    protected function rememberPreviousSetup() {
+
+        $previousSetup = [
+            'token' => config('cloakr.auth_token'),
+            'default_server' => config('cloakr.default_server'),
+            'default_domain' => config('cloakr.default_domain'),
+        ];
+
+        $previousSetupPath = implode(DIRECTORY_SEPARATOR, [
+            $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
+            '.cloakr',
+            'previous_setup.json',
+        ]);
+
+        file_put_contents($previousSetupPath, json_encode($previousSetup));
     }
 
     protected function modifyConfigurationFile(string $configFile, string $token)

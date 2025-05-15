@@ -29,7 +29,7 @@ class SetDefaultServerCommand extends Command
 
         if (! is_null($server)) {
 
-            render("<div class='ml-3'>✅ Set Cloakr default server to <span class='font-bold'>$server</span>.</div>");
+            render("<div class='ml-3'>✔ Set Cloakr default server to <span class='font-bold'>$server</span>.</div>");
 
             $configFile = implode(DIRECTORY_SEPARATOR, [
                 $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],

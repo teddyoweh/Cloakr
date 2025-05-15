@@ -8,3 +8,4 @@ cloakr.php
 database/cloakr.db
 .cloakr.php
 .env
+.box_dump

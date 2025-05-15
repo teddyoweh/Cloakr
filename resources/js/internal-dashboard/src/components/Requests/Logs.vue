@@ -91,6 +91,38 @@ const replay = (log: CloakrLog) => {
     fetch('/api/replay/' + log.id);
 }
 
+const nextLog = () => {
+    const currentIndex = logs.value.findIndex(log => log.id === props.currentLog?.id);
+
+    if (currentIndex === -1) {
+        return;
+    }
+
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= logs.value.length) {
+        emit('set-log', logs.value[0]);
+        return;
+    }
+
+    emit('set-log', logs.value[nextIndex]);
+}
+
+const previousLog = () => {
+    const currentIndex = logs.value.findIndex(log => log.id === props.currentLog?.id);
+
+    if (currentIndex === -1) {
+        return;
+    }
+
+    const nextIndex = currentIndex - 1;
+    if (nextIndex < 0) {
+        emit('set-log', logs.value[0]);
+        return;
+    }
+
+    emit('set-log', logs.value[nextIndex]);
+}
+
 const filteredLogs = computed(() => {
     const searchTerm = props.search ?? '';
 
@@ -98,13 +130,34 @@ const filteredLogs = computed(() => {
         return logs.value;
     }
 
-    return logs.value.filter(log => {
-        return log.request.uri.indexOf(searchTerm) !== -1;
-    })
+    if (searchTerm.startsWith("/")) {
+        return logs.value.filter(log => {
+            return log.request.uri.indexOf(searchTerm) !== -1;
+        })
+    }
+    else {
+        return logs.value.filter((log) => {
+            if (isSearchableResponse(log.response)) {
+                return log.response.body.indexOf(searchTerm) !== -1;
+            }
+            else {
+                return log.request.uri.indexOf(searchTerm) !== -1;
+            }
+        })
+    }
+
 })
 
+const isSearchableResponse = (response: ResponseData): boolean => {
+    if(response.headers && response.headers['Content-Type']) {
+        const contentTypes = ["application/json", "application/ld-json", "text/plain"];
+        return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
+    }
 
-defineCloakr({ replay });
+    return false;
+}
+
+defineCloakr({ replay, nextLog, previousLog });
 </script>
 
 <template>

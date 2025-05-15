@@ -7,6 +7,9 @@ use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Terminal;
 
+use function Termwind\render;
+use function Termwind\terminal;
+
 class CliRequestLogger extends Logger
 {
     /** @var Collection */
@@ -66,6 +69,57 @@ class CliRequestLogger extends Logger
     public function getOutput()
     {
         return $this->output;
+    }
+
+    public function renderMessageBox(string $text, string $bgColor = "bg-pink-100", $textColor = "text-pink-600", $additionalClasses = "") {
+        render("");
+
+        $terminalWidth = terminal()->width();
+
+        if (strlen($text) > $terminalWidth) {
+            $lines = collect(explode("\n", wordwrap($text, $terminalWidth, "\n")))
+                ->map(function ($line) {
+                    return trim($line);
+                })
+                ->filter();
+        }
+        else {
+            $lines = [$text];
+        }
+
+        foreach ($lines as $line) {
+            render("<div class='mx-3 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
+        }
+    }
+
+    public function renderInfo($string) {
+        render("<div class='px-2 w-full text-center'> $string </div>");
+    }
+
+    public function renderError($text) {
+        $this->renderMessageBox($text, "bg-red-100", "text-red-600");
+    }
+
+    public function renderConnectionTable($data) {
+        render("");
+
+        $template = <<<HTML
+    <div class="flex ml-3 mr-6">
+        <span class="w-24">key</span>
+        <span class=" text-gray-800">&nbsp;</span>
+        <span class="text-left font-bold">value</span>
+    </div>
+HTML;
+
+        foreach ($data as $key => $value) {
+            $output = str_replace(
+                ['key', 'value'],
+                [$key, $value],
+                $template
+            );
+
+            render($output);
+        }
     }
 
     protected function getRequestColor(?LoggedRequest $request)

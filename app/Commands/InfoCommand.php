@@ -63,11 +63,8 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
         }
 
         try {
-            $startTime = microtime(true);
-            Http::timeout(5)->get($host);
-            $latency = microtime(true) - $startTime;
-
-            return round($latency * 1000);
+            $result = Http::timeout(5)->get($host);
+            return $result->handlerStats()['connect_time'] * 1000;
         } catch (Exception $e) {
             if ($this->option("verbose")) {
                 render("<div class='ml-3 px-2 text-orange-600 bg-orange-100'>Error while checking latency: {$e->getMessage()}</div>");

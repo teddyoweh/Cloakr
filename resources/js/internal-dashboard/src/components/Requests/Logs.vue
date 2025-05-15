@@ -130,10 +130,30 @@ const filteredLogs = computed(() => {
         return logs.value;
     }
 
-    return logs.value.filter(log => {
-        return log.request.uri.indexOf(searchTerm) !== -1;
-    })
+    if (searchTerm.startsWith("/")) {
+        return logs.value.filter(log => {
+            return log.request.uri.indexOf(searchTerm) !== -1;
+        })
+    }
+    else {
+        return logs.value.filter((log) => {
+            if (isSearchableResponse(log.response)) {
+                return log.response.body.indexOf(searchTerm) !== -1;
+            }
+            else {
+                return log.request.uri.indexOf(searchTerm) !== -1;
+            }
+        })
+    }
+
 })
+
+const isSearchableResponse = (response: ResponseData): boolean => {
+    if(response.headers && response.headers['Content-Type']) {
+        const contentTypes = ["application/json", "application/ld-json", "text/plain"];
+        return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
+    }
+}
 
 defineCloakr({ replay, nextLog, previousLog });
 </script>

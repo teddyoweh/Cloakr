@@ -131,11 +131,16 @@ class Client
 
                     $this->configuration->setServerHost($host);
 
-                    $this->logger->info($data->message);
-                    $this->logger->info("Shared URL:\t\t<options=bold>{$sharedUrl}</>");
-                    $this->logger->info("Dashboard:\t\t<options=bold>http://127.0.0.1:".config()->get('cloakr.dashboard_port').'</>');
-                    $this->logger->info("Public HTTP:\t\t<options=bold>http://{$data->subdomain}.{$host}{$httpPort}</>");
-                    $this->logger->info("Public HTTPS:\t\t<options=bold>https://{$data->subdomain}.{$host}</>");
+                    $this->logger->renderMessageBox($data->message);
+
+                    $connectionData = [
+                        "Shared URL" => $sharedUrl,
+                        "Dashboard" => "http://127.0.0.1:".config()->get('cloakr.dashboard_port'),
+                        "Public HTTP" => "http://{$data->subdomain}.{$host}{$httpPort}",
+                        "Public HTTPS" => "https://{$data->subdomain}.{$host}",
+                    ];
+
+                    $this->logger->renderConnectionTable($connectionData);
                     $this->logger->line('');
 
                     static::$subdomains[] = "{$httpProtocol}://{$data->subdomain}.{$host}";
@@ -227,7 +232,7 @@ class Client
         });
 
         $connection->on('error', function ($data) {
-            $this->logger->error($data->message);
+            $this->logger->renderError($data->message);
         });
 
         $connection->on('authenticationFailed', function ($data) use ($deferred) {

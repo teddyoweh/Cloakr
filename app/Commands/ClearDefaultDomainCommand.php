@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Client\Support\ClearDomainNodeVisitor;
 use App\Client\Support\InsertDefaultDomainNodeVisitor;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -17,30 +18,32 @@ use function Termwind\render;
 
 class ClearDefaultDomainCommand extends Command
 {
+    use RendersBanner;
+
     protected $signature = 'default-domain:clear';
 
     protected $description = 'Clear the default domain to use with Cloakr.';
 
     public function handle()
     {
-        
+
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
             '.cloakr',
             'config.php',
         ]);
-        
+
         if (! file_exists($configFile)) {
             @mkdir(dirname($configFile), 0777, true);
             $updatedConfigFile = $this->modifyConfigurationFile(base_path('config/cloakr.php'));
         } else {
             $updatedConfigFile = $this->modifyConfigurationFile($configFile);
         }
-        
+
         file_put_contents($configFile, $updatedConfigFile);
-        
+
         if(!$this->option('no-interaction')) {
-            render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+            $this->renderBanner();
             render("<div class='ml-3'>✔ Cleared the Cloakr default domain.</div>");
         }
     }

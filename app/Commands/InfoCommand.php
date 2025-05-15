@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\RendersBanner;
 use App\Contracts\FetchesPlatformDataContract;
 use App\Traits\FetchesPlatformData;
 use Exception;
@@ -14,6 +15,7 @@ use function Termwind\render;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
+    use RendersBanner;
 
     protected $signature = 'info {--json}';
 
@@ -23,7 +25,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
     {
 
         if (!$this->option('json')) {
-            render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+            $this->renderBanner();
         }
 
         $configuration = [];

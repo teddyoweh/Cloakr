@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Client\Factory;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,13 +12,15 @@ use function Termwind\render;
 
 class ShareCommand extends ServerAwareCommand
 {
+    use RendersBanner;
+
     protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=}';
 
     protected $description = 'Share a local url with a remote cloakr server';
 
     public function handle()
     {
-        render('<div class="ml-2 text-pink-500 font-bold"><span class="pr-0.5">></span> Cloakr</div>');
+        $this->renderBanner();
 
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
         render('<div class="ml-3">Using auth token: '.$auth . '</div>', OutputInterface::VERBOSITY_DEBUG);

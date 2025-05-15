@@ -46,7 +46,7 @@ class SetUpCloakrDefaultDomain implements FetchesPlatformDataContract
             }
 
             else {
-                // TODO: hint how to set up
+                render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">No custom domains found. You can add custom domains in the Cloakr dashboard.</div>');
             }
         }
         else {

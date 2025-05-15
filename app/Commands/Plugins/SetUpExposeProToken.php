@@ -4,6 +4,7 @@ namespace App\Commands\Plugins;
 
 use App\Contracts\FetchesPlatformDataContract;
 use App\Traits\FetchesPlatformData;
+use Illuminate\Support\Facades\Artisan;
 
 class SetupCloakrProToken implements FetchesPlatformDataContract
 {
@@ -21,6 +22,7 @@ class SetupCloakrProToken implements FetchesPlatformDataContract
         if ($this->isProToken() && $this->hasTeamDomains()) {
             return (new SetUpCloakrDefaultDomain)($token);
         } else {
+            Artisan::call("default-domain:clear");
             return (new SetUpCloakrDefaultServer)($token);
         }
     }

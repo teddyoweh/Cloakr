@@ -131,7 +131,9 @@ class Client
 
                     $this->configuration->setServerHost($host);
 
-                    $this->logger->renderMessageBox($data->message);
+                    if($data->message) {
+                        $this->logger->renderMessageBox($data->message);
+                    }
 
                     $this->logger->renderConnectionTable([
                         "Shared URL" => $sharedUrl,

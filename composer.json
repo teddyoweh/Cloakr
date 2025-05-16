@@ -47,8 +47,7 @@
         "riverline/multipart-parser": "^2.0",
         "symfony/expression-language": "^5.2",
         "symfony/http-kernel": "^6.0",
-        "symfony/psr-http-message-bridge": "^2.0",
-        "twig/twig": "^3.1"
+        "symfony/psr-http-message-bridge": "^2.0"
     },
     "config": {
         "optimize-autoloader": true,

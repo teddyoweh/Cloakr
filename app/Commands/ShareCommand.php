@@ -4,6 +4,11 @@ namespace App\Commands;
 
 use App\Client\Factory;
 use App\Commands\Concerns\RendersBanner;
+use chillerlan\QRCode\Common\Version;
+use chillerlan\QRCode\Data\QRMatrix;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -65,6 +70,8 @@ class ShareCommand extends ServerAwareCommand
             $subdomain = $subdomains[0];
 
             $link = "https://$subdomain.$qrDomain";
+
+            render($this->renderQrCode($link));
         }
 
         (new Factory())
@@ -81,5 +88,37 @@ class ShareCommand extends ServerAwareCommand
             )
             ->createHttpServer()
             ->run();
+    }
+
+    protected function renderQrCode(string $link)
+    {
+        $options = new QROptions;
+
+        $options->outputType     = QROutputInterface::STRING_TEXT;
+        $options->version = Version::AUTO;
+        $options->quietzoneSize = 1;
+        $options->eol            = "\n";
+        $options->textLineStart  = str_repeat(' ', 1);
+        $options->textDark  = $this->ansi8('▌', 253);
+        $options->textLight = $this->ansi8(' ', 253);
+        $options->moduleValues = [
+            QRMatrix::M_FINDER_DARK    => $this->ansi8('██', 0),
+            QRMatrix::M_FINDER         => $this->ansi8('░░', 0),
+            QRMatrix::M_FINDER_DOT     => $this->ansi8('██', 0),
+            QRMatrix::M_ALIGNMENT_DARK => $this->ansi8('██', 0),
+            QRMatrix::M_ALIGNMENT      => $this->ansi8('░░', 0),
+            QRMatrix::M_VERSION_DARK   => $this->ansi8('██', 0),
+            QRMatrix::M_VERSION        => $this->ansi8('░░', 0),
+        ];
+
+        return (new QRCode($options))->render($link);
+    }
+
+    protected function ansi8(string $str, int $color, bool $background = false): string
+    {
+        $color      = max(0, min($color, 255));
+        $background = ($background ? 48 : 38);
+
+        return sprintf("\x1b[%s;5;%sm%s\x1b[0m", $background, $color, $str);
     }
 }

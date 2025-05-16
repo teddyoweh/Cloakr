@@ -60,31 +60,11 @@ class ShareCommand extends ServerAwareCommand
         }
 
         if ($this->option('qr-code') || $this->option('qr')) {
-            $tempFile = tempnam(sys_get_temp_dir(), 'cloakr-qr.txt');
 
             $qrDomain = $domain ?? $this->getServerHost();
             $subdomain = $subdomains[0];
 
             $link = "https://$subdomain.$qrDomain";
-            file_put_contents($tempFile, $link);
-
-            $pharBinaryPath = __DIR__ . '/../../resources/bin/qrencode';
-            $tempBinaryPath = sys_get_temp_dir() . '/extracted-binary';
-
-            copy($pharBinaryPath, $tempBinaryPath);
-            chmod($tempBinaryPath, 0755);
-
-            $command = "$tempBinaryPath -m 2 -t utf8 -r $tempFile";
-
-            exec($command, $output, $returnVar);
-
-            if ($returnVar === 0) {
-                $output = "   " . implode("\n   ", $output);
-                render("<div class=''></div>");
-                render($output);
-            } else {
-                $this->error("Command failed to render QR code. Output: " . implode("\n", $output));
-            }
         }
 
         (new Factory())

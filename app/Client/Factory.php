@@ -2,7 +2,6 @@
 
 namespace App\Client;
 
-use App\Client\Fileserver\Fileserver;
 use App\Client\Http\Controllers\ClearLogsController;
 use App\Client\Http\Controllers\CreateTunnelController;
 use App\Client\Http\Controllers\DashboardController;
@@ -36,9 +35,6 @@ class Factory
 
     /** @var App */
     protected $app;
-
-    /** @var Fileserver */
-    protected $fileserver;
 
     /** @var ClientRouteGenerator */
     protected $router;
@@ -130,15 +126,6 @@ class Factory
         return $this;
     }
 
-    public function shareFolder(string $folder, string $name, $subdomain = null, $serverHost = null)
-    {
-        $host = $this->createFileServer($folder, $name);
-
-        $this->share($host, $subdomain, $serverHost);
-
-        return $this;
-    }
-
     protected function addRoutes()
     {
         $this->router->get('/', DashboardController::class);
@@ -181,23 +168,9 @@ class Factory
         return $this;
     }
 
-    public function createFileServer(string $folder, string $name)
-    {
-        $port = $this->detectNextAvailablePort(8090);
-
-        $this->fileserver = new Fileserver($folder, $name, $port, '0.0.0.0', $this->loop);
-
-        return "127.0.0.1:{$port}";
-    }
-
     public function getApp(): App
     {
         return $this->app;
-    }
-
-    public function getFileserver(): Fileserver
-    {
-        return $this->fileserver;
     }
 
     public function run()

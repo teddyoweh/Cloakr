@@ -26,6 +26,7 @@
         "cboden/ratchet": "dev-master",
         "clue/block-react": "^1.4",
         "clue/reactphp-sqlite": "dev-modular-worker-for-phar-support",
+        "beyondcode/cloakr-common": "*",
         "guzzlehttp/guzzle": "^7.5",
         "guzzlehttp/psr7": "^1.7",
         "illuminate/log": "^10.0",
@@ -80,6 +81,10 @@
         {
             "type": "git",
             "url": "https://github.com/beyondcode/cuzzle"
+        },
+        {
+            "type": "path",
+            "url": "../cloakr-common"
         }
     ],
     "minimum-stability": "dev",

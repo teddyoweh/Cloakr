@@ -13,6 +13,7 @@ declare interface RequestData {
     query: any[];
     post: any[];
     curl: string;
+    plugin?: PluginData;
   }
 
   declare interface ResponseData {
@@ -47,4 +48,11 @@ declare interface RequestData {
   interface PostValue {
     name: string
     value: string
+  }
+
+  interface PluginData {
+    plugin: string
+    uiLabel: string
+    cliLabel: string
+    details: Record<string, string>
   }

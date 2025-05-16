@@ -85,9 +85,9 @@ class LoggedRequest implements \JsonSerializable
                 'body' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->parsedRequest->getContent(),
                 'query' => $this->parsedRequest->getQuery()->toArray(),
                 'post' => $this->getPostData(),
-                'curl' => $this->getRequestAsCurl()
+                'curl' => $this->getRequestAsCurl(),
+                'plugin' => $this->pluginData ? $this->pluginData->toArray() : null
             ],
-            'plugin' => $this->pluginData ? $this->pluginData->toArray() : null
         ];
 
         if ($this->response) {

@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersLineTable;
 use App\Contracts\FetchesPlatformDataContract;
 use App\Traits\FetchesPlatformData;
 use Exception;
@@ -15,7 +16,7 @@ use function Termwind\render;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
-    use RendersBanner;
+    use RendersBanner, RendersLineTable;
 
     protected $signature = 'info {--json}';
 
@@ -47,10 +48,10 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
         render('<div class="ml-3 font-bold">Configuration</div>');
 
         $configuration = collect($configuration)->mapWithKeys(function ($value, $key) {
-            return [lineTableLabel($key) => lineTableLabel($value)];
+            return [$this->lineTableLabel($key) => $this->lineTableLabel($value)];
         })->toArray();
 
-        renderLineTable($configuration);
+        $this->renderLineTable($configuration);
     }
 
     protected function checkLatency(string $server): int
@@ -64,7 +65,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
 
         try {
             $result = Http::timeout(5)->get($host);
-            return $result->handlerStats()['connect_time'] * 1000;
+            return round($result->handlerStats()['connect_time'] * 1000);
         } catch (Exception $e) {
             if ($this->option("verbose")) {
                 render("<div class='ml-3 px-2 text-orange-600 bg-orange-100'>Error while checking latency: {$e->getMessage()}</div>");

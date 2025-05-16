@@ -3,7 +3,7 @@
 namespace App\Client\Http\Controllers;
 
 use App\Client\Http\HttpClient;
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use App\Logger\RequestLogger;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;

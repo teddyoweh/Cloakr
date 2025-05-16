@@ -2,7 +2,7 @@
 
 namespace App\Client\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use App\Logger\RequestLogger;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;

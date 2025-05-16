@@ -3,7 +3,7 @@
 namespace App\Client\Http\Controllers;
 
 use App\Client\Client;
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;
 

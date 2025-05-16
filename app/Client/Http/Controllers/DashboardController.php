@@ -3,7 +3,7 @@
 namespace App\Client\Http\Controllers;
 
 use App\Client\Client;
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;
 
@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         $httpConnection->send(respond_html(
             $this->getBlade($httpConnection, 'client.internal_dashboard', [
-                'page' => [  
+                'page' => [
                     'user' => Client::$user,
                     'subdomains' => Client::$subdomains,
                     'max_logs' => config()->get('cloakr.max_logged_requests', 10),

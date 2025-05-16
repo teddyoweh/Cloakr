@@ -2,7 +2,7 @@
 
 namespace App\Client\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;

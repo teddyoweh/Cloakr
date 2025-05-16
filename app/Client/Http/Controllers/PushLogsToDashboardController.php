@@ -2,7 +2,7 @@
 
 namespace App\Client\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Cloakr\Common\Http\Controllers\Controller;
 use App\WebSockets\Socket;
 use Exception;
 use GuzzleHttp\Psr7\Message;

@@ -2,8 +2,8 @@
 
 namespace App\Client\Fileserver;
 
-use App\Http\Controllers\Concerns\LoadsViews;
-use App\Http\QueryParameters;
+use Cloakr\Common\Http\Controllers\Concerns\LoadsViews;
+use Cloakr\Common\Http\QueryParameters;
 use GuzzleHttp\Psr7\ServerRequest;
 use Illuminate\Http\Request;
 use Psr\Http\Message\ServerRequestInterface;

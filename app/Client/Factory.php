@@ -11,10 +11,10 @@ use App\Client\Http\Controllers\LogController;
 use App\Client\Http\Controllers\PushLogsToDashboardController;
 use App\Client\Http\Controllers\ReplayLogController;
 use App\Http\App;
-use App\Http\RouteGenerator;
+use App\Http\ClientRouteGenerator;
 use App\WebSockets\Socket;
 use Ratchet\WebSocket\WsServer;
-use React\EventLoop\Factory as LoopFactory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 
 class Factory
@@ -40,13 +40,13 @@ class Factory
     /** @var Fileserver */
     protected $fileserver;
 
-    /** @var RouteGenerator */
+    /** @var ClientRouteGenerator */
     protected $router;
 
     public function __construct()
     {
-        $this->loop = LoopFactory::create();
-        $this->router = new RouteGenerator();
+        $this->loop = Loop::get();
+        $this->router = new ClientRouteGenerator();
     }
 
     public function setHost(string $host)

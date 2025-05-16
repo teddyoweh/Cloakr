@@ -181,4 +181,8 @@ return [
     ],
 
     'platform_url' => 'https://cloakr.dev',
+
+    'request_plugins' => [
+        App\Logger\Plugins\PaddleBillingPlugin::class
+    ]
 ];

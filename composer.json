@@ -78,8 +78,8 @@
             "url": "https://github.com/beyondcode/cuzzle"
         },
         {
-            "type": "path",
-            "url": "../cloakr-common"
+            "type": "git",
+            "url": "https://github.com/beyondcode/cloakr-common"
         }
     ],
     "minimum-stability": "dev",

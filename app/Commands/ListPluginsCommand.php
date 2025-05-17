@@ -3,15 +3,13 @@
 namespace Cloakr\Client\Commands;
 
 use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Logger\Concerns\PluginAware;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use LaravelZero\Framework\Commands\Command;
 use function Laravel\Prompts\table;
 use function Termwind\render;
 
 class ListPluginsCommand extends Command
 {
-
-    use PluginAware;
     use RendersBanner;
 
     protected $signature = 'plugins';
@@ -25,11 +23,9 @@ class ListPluginsCommand extends Command
 
         render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
 
-        $defaultPlugins = $this->loadDefaultPlugins();
-
-        $customPlugins = $this->loadCustomPlugins();
-        $this->ensureValidPluginConfig();
-
+        $pluginManager = app(PluginManager::class);
+        $defaultPlugins = $pluginManager->getDefaultPlugins();
+        $customPlugins = $pluginManager->getCustomPlugins();
 
         $pluginTable = collect(array_merge($defaultPlugins, $customPlugins))
             ->map(function ($pluginClass) use ($defaultPlugins) {

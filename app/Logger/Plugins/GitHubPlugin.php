@@ -34,8 +34,7 @@ class GitHubPlugin extends BasePlugin
 
             return PluginData::make()
                 ->setPlugin($this->getTitle())
-                ->setUiLabel($this->getEventLabel())
-                ->setCliLabel($this->getEventLabel())
+                ->setLabel($this->getEventLabel())
                 ->setDetails($this->getEventDetails());
         } catch (\Throwable $e) {
             return PluginData::error($this->getTitle(), $e);

@@ -39,8 +39,7 @@ class PaddleBillingPlugin extends BasePlugin
 
         return PluginData::make()
             ->setPlugin($this->getTitle())
-            ->setUiLabel($eventType)
-            ->setCliLabel($eventType)
+            ->setLabel($eventType)
             ->setDetails($details);
     }
 }

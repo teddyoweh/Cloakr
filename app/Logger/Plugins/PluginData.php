@@ -34,6 +34,13 @@ class PluginData
         return $this;
     }
 
+    public function setLabel(string $label): self
+    {
+        $this->uiLabel = $label;
+        $this->cliLabel = $label;
+        return $this;
+    }
+
     public function setUiLabel(string $uiLabel): self
     {
         $this->uiLabel = $uiLabel;

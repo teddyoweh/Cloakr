@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Message;

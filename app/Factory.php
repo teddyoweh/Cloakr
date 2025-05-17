@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Client;
+namespace Cloakr\Client;
 
-use App\Client\Http\Controllers\ClearLogsController;
-use App\Client\Http\Controllers\CreateTunnelController;
-use App\Client\Http\Controllers\DashboardController;
-use App\Client\Http\Controllers\GetTunnelsController;
-use App\Client\Http\Controllers\LogController;
-use App\Client\Http\Controllers\PushLogsToDashboardController;
-use App\Client\Http\Controllers\ReplayLogController;
-use App\Http\App;
-use App\Http\ClientRouteGenerator;
-use App\WebSockets\Socket;
+use Cloakr\Client\Http\App;
+use Cloakr\Client\Http\ClientRouteGenerator;
+use Cloakr\Client\Http\Controllers\ClearLogsController;
+use Cloakr\Client\Http\Controllers\CreateTunnelController;
+use Cloakr\Client\Http\Controllers\DashboardController;
+use Cloakr\Client\Http\Controllers\GetTunnelsController;
+use Cloakr\Client\Http\Controllers\LogController;
+use Cloakr\Client\Http\Controllers\PushLogsToDashboardController;
+use Cloakr\Client\Http\Controllers\ReplayLogController;
+use Cloakr\Client\WebSockets\Socket;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Client\Http\Controllers;
+namespace Cloakr\Client\Http\Controllers;
 
-use App\Logger\RequestLogger;
+use Cloakr\Client\Logger\RequestLogger;
 use Cloakr\Common\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;
 
-class ClearLogsController extends Controller
+class LogController extends Controller
 {
     /** @var RequestLogger */
     protected $requestLogger;
@@ -19,8 +19,6 @@ class ClearLogsController extends Controller
 
     public function handle(Request $request, ConnectionInterface $httpConnection)
     {
-        $this->requestLogger->clear();
-
-        $httpConnection->send(respond_json([], 200));
+        $httpConnection->send(respond_json($this->requestLogger->getData()));
     }
 }

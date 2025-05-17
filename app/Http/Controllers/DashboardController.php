@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Client\Http\Controllers;
+namespace Cloakr\Client\Http\Controllers;
 
-use App\Client\Client;
+use Cloakr\Client\Client;
 use Cloakr\Common\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;

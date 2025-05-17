@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Client\Support;
+namespace Cloakr\Client\Support;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Name;
 use PhpParser\NodeVisitorAbstract;
 
-class InsertDefaultServerNodeVisitor extends NodeVisitorAbstract
+class InsertDefaultDomainNodeVisitor extends NodeVisitorAbstract
 {
     public function leaveNode(Node $node)
     {
         if ($node instanceof Node\Expr\ArrayItem && $node->key && $node->key->value === 'auth_token') {
-            $defaultServerNode = new Node\Expr\ArrayItem(
+            $defaultDomainNode = new Node\Expr\ArrayItem(
                 new ConstFetch(
-                    new Name('main')
+                    new Name('null')
                 ),
-                new Node\Scalar\String_('default_server')
+                new Node\Scalar\String_('default_domain')
             );
 
             return [
                 $node,
-                $defaultServerNode,
+                $defaultDomainNode,
             ];
         }
     }

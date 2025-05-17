@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Client\Connections;
+namespace Cloakr\Client\Connections;
 
-use App\Client\ProxyManager;
+use Cloakr\Client\ProxyManager;
 use Evenement\EventEmitterTrait;
 use Ratchet\Client\WebSocket;
 use Ratchet\ConnectionInterface;

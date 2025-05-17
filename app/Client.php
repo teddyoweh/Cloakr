@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Client;
+namespace Cloakr\Client;
 
-use App\Client\Connections\ControlConnection;
-use App\Logger\CliRequestLogger;
+use Cloakr\Client\Connections\ControlConnection;
+use Cloakr\Client\Logger\CliRequestLogger;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Ratchet\Client\WebSocket;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
-
 use function Ratchet\Client\connect;
 
 class Client

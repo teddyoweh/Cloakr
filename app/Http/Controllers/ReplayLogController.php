@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Client\Http\Controllers;
+namespace Cloakr\Client\Http\Controllers;
 
-use App\Client\Http\HttpClient;
+use Cloakr\Client\Http\HttpClient;
+use Cloakr\Client\Logger\RequestLogger;
 use Cloakr\Common\Http\Controllers\Controller;
-use App\Logger\RequestLogger;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;

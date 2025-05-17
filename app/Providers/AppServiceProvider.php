@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Providers;
+namespace Cloakr\Client\Providers;
 
-use App\Logger\CliRequestLogger;
-use App\Logger\RequestLogger;
+use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\RequestLogger;
 use Illuminate\Support\ServiceProvider;
 use Laminas\Uri\Uri;
 use Laminas\Uri\UriFactory;

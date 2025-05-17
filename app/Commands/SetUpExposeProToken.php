@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Contracts\FetchesPlatformDataContract;
-use App\Traits\FetchesPlatformData;
+use Cloakr\Client\Contracts\FetchesPlatformDataContract;
+use Cloakr\Client\Traits\FetchesPlatformData;
 use Illuminate\Support\Facades\Artisan;
 
 class SetUpCloakrProToken implements FetchesPlatformDataContract

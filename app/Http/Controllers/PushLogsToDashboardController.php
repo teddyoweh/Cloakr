@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Client\Http\Controllers;
+namespace Cloakr\Client\Http\Controllers;
 
-use Cloakr\Common\Http\Controllers\Controller;
-use App\WebSockets\Socket;
+use Cloakr\Client\WebSockets\Socket;
 use Exception;
+use Cloakr\Common\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;

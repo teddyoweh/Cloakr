@@ -57,4 +57,16 @@ class PluginData
         return $this->cliLabel;
     }
 
+    public static function error($plugin, \Exception $e): self {
+        return (new PluginData)
+            ->setPlugin($plugin)
+            ->setUiLabel('plugin.error')
+            ->setCliLabel('plugin.error')
+            ->setDetails([
+                "Error" => $e->getMessage(),
+                "File" => $e->getFile(),
+                "Line" => $e->getLine(),
+            ]);
+    }
+
 }

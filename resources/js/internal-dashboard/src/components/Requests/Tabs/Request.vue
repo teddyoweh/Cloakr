@@ -25,8 +25,11 @@ const mode = useColorMode()
 
 const requestHeadersVisible = useLocalStorage<boolean>('requestHeadersVisible', true)
 const postParametersVisible = useLocalStorage<boolean>('postParametersVisible', true)
+const pluginVisible = useLocalStorage<boolean>('pluginVisible', true)
+
 const accordionState = ref('requestHeaderOpen' as string);
 const postParametersAccordionState = ref('postParametersOpen' as string);
+const pluginAccordionState = ref('pluginOpen' as string);
 
 const rowAccordion = reactive({} as Record<string, boolean>)
 
@@ -38,6 +41,9 @@ onMounted(async () => {
     }
     if (postParametersVisible.value === false) {
         postParametersAccordionState.value = ''
+    }
+    if (pluginVisible.value === false) {
+        pluginAccordionState.value = ''
     }
 
     checkTruncatedRows();
@@ -63,6 +69,15 @@ watch(postParametersAccordionState, (value) => {
     }
     else {
         postParametersVisible.value = false;
+    }
+});
+
+watch(pluginAccordionState, (value) => {
+    if (value === 'pluginOpen') {
+        pluginVisible.value = true;
+    }
+    else {
+        pluginVisible.value = false;
     }
 });
 
@@ -106,9 +121,9 @@ onUnmounted(() => {
 
 <template>
     <div class="max-w-full">
-        <Accordion type="single" collapsible v-model="postParametersAccordionState"
+        <Accordion type="single" collapsible v-model="pluginAccordionState"
             v-if="request.plugin && !isEmptyObject(request.plugin)">
-            <AccordionItem value="postParametersOpen">
+            <AccordionItem value="pluginOpen">
                 <AccordionTrigger>
                     <div class="">
                         <span class="">{{ request.plugin.plugin }}:</span> <span class="font-mono font-xs">{{ request.plugin.uiLabel }}</span>
@@ -122,8 +137,8 @@ onUnmounted(() => {
                                     {{ key }}
                                 </TableCell>
 
-                                <TableCell class="pr-0">
-                                    {{ value }}
+                                <TableCell class="pr-0" v-html="value">
+
                                 </TableCell>
 
                             </TableRow>

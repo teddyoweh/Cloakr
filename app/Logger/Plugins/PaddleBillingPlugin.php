@@ -33,9 +33,8 @@ class PaddleBillingPlugin extends BasePlugin
                 'notification_id' => $content['notification_id'],
                 // TODO
             ];
-        } catch (Exception $e) {
-            $eventType = "Paddle Event";
-            $details = [];
+        } catch (\Throwable $e) {
+            return PluginData::error($this->getTitle(), $e);
         }
 
         return PluginData::make()

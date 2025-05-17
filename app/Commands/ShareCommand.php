@@ -97,7 +97,7 @@ class ShareCommand extends ServerAwareCommand
         $options->version = Version::AUTO;
         $options->quietzoneSize = 1;
         $options->eol            = "\n";
-        $options->textLineStart  = str_repeat(' ', 1);
+        $options->textLineStart  = str_repeat(' ', 2);
         $options->textDark  = $this->ansi8('▌', 0);
         $options->textLight = $this->ansi8(' ', 255);
         $options->moduleValues = [

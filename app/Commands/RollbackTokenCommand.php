@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersLineTable;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersLineTable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 

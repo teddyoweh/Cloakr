@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 
 use function Termwind\render;

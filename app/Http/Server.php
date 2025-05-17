@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace Cloakr\Client\Http;
 
 use Ratchet\Http\HttpServerInterface;
 

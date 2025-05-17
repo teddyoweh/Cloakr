@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Client;
+namespace Cloakr\Client;
 
-use App\Client\Http\HttpClient;
+use Cloakr\Client\Http\HttpClient;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\Frame;
 use React\EventLoop\LoopInterface;
 use React\Socket\Connector;
-
 use function Ratchet\Client\connect;
 
 class ProxyManager

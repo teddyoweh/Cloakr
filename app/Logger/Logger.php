@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;

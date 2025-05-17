@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\Support;
+namespace Cloakr\Client\Support;
 
 use PhpParser\Node;
 use PhpParser\Node\Scalar\String_;

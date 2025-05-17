@@ -173,12 +173,5 @@ return [
         'size' => '1MB',
     ],
 
-    'connection_callbacks' => [
-        'webhook' => [
-            'url' => null,
-            'secret' => null,
-        ],
-    ],
-
     'platform_url' => 'https://cloakr.dev',
 ];

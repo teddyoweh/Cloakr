@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http;
+namespace Cloakr\Client\Http;
 
-use App\Client\Http\Controllers\FileController;
+use Cloakr\Client\Http\Controllers\FileController;
 use Cloakr\Common\Http\RouteGenerator;
 use Symfony\Component\Routing\Route;
 

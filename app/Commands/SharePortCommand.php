@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Factory;
+use Cloakr\Client\Factory;
 use React\EventLoop\LoopInterface;
 
 class SharePortCommand extends ServerAwareCommand

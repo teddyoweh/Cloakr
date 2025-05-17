@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Factory;
-use App\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Factory;
 use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\Output\QROutputInterface;
@@ -12,7 +12,6 @@ use chillerlan\QRCode\QROptions;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function Termwind\render;
 
 class ShareCommand extends ServerAwareCommand
@@ -99,8 +98,8 @@ class ShareCommand extends ServerAwareCommand
         $options->quietzoneSize = 1;
         $options->eol            = "\n";
         $options->textLineStart  = str_repeat(' ', 1);
-        $options->textDark  = $this->ansi8('▌', 253);
-        $options->textLight = $this->ansi8(' ', 253);
+        $options->textDark  = $this->ansi8('▌', 0);
+        $options->textLight = $this->ansi8(' ', 255);
         $options->moduleValues = [
             QRMatrix::M_FINDER_DARK    => $this->ansi8('██', 0),
             QRMatrix::M_FINDER         => $this->ansi8('░░', 0),
@@ -117,7 +116,7 @@ class ShareCommand extends ServerAwareCommand
     protected function ansi8(string $str, int $color, bool $background = false): string
     {
         $color      = max(0, min($color, 255));
-        $background = ($background ? 48 : 38);
+        $background = ($background ? 0 : 255);
 
         return sprintf("\x1b[%s;5;%sm%s\x1b[0m", $background, $color, $str);
     }

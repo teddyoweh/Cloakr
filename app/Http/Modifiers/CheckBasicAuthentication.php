@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Client\Http\Modifiers;
+namespace Cloakr\Client\Http\Modifiers;
 
-use App\Client\Configuration;
+use Cloakr\Client\Configuration;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;

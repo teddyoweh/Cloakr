@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\Support;
+namespace Cloakr\Client\Support;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Helper\Helper;
@@ -84,7 +84,7 @@ class ConsoleSectionOutput extends StreamOutput
     /**
      * {@inheritdoc}
      */
-    protected function doWrite(string $message, bool $newline)
+    protected function doWrite(string $message, bool $newline): void
     {
         if (! $this->isDecorated()) {
             parent::doWrite($message, $newline);

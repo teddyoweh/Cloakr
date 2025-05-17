@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\Http\Controllers;
+namespace Cloakr\Client\Http\Controllers;
 
 use Cloakr\Common\Http\Controllers\Controller;
 use GuzzleHttp\Psr7\Message;

@@ -11,6 +11,7 @@ trait PluginAware
     protected function loadPluginData(): ?PluginData
     {
         $this->loadCustomPlugins();
+        $this->ensureValidPluginConfig();
 
         foreach (config('cloakr.request_plugins') as $pluginClass) {
             try {
@@ -19,33 +20,17 @@ trait PluginAware
                 if ($plugin->matchesRequest()) {
                     return $plugin->getPluginData();
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         return null;
     }
 
-    protected function loadCustomPlugins(): void
+    protected function ensureValidPluginConfig(): void
     {
-        $driverDirectory = implode(DIRECTORY_SEPARATOR, [
-            $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? __DIR__,
-            '.cloakr',
-            'plugins',
-        ]);
 
-        if (!is_dir($driverDirectory)) {
-            return;
-        }
-
-        foreach (scandir($driverDirectory) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            require_once $driverDirectory . DIRECTORY_SEPARATOR . $file;
-
-            $pluginClass = 'App\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
-
+        foreach (config('cloakr.request_plugins') as $pluginClass) {
             if (!class_exists($pluginClass) || !is_subclass_of($pluginClass, BasePlugin::class)) {
                 $configPlugins = config('cloakr.request_plugins');
 
@@ -54,7 +39,71 @@ trait PluginAware
                     config(['cloakr.request_plugins' => $configPlugins]);
                 }
             }
+        }
+    }
+
+    protected function loadCustomPlugins(): array
+    {
+        $customPlugins = [];
+
+        $pluginDirectory = $this->getCustomPluginDirectory();
+
+        if (!is_dir($pluginDirectory)) {
+            return [];
+        }
+
+        foreach (scandir($pluginDirectory) as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            require_once $pluginDirectory . DIRECTORY_SEPARATOR . $file;
+
+            $pluginClass = 'App\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
+
+            $customPlugins[] = $pluginClass;
 
         }
+
+        return $customPlugins;
+    }
+
+    protected function loadDefaultPlugins(): array
+    {
+        $defaultPluginDirectory = scandir($this->getDefaultPluginDirectory());
+        $defaultPlugins = [];
+
+
+        foreach ($defaultPluginDirectory as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            require_once $this->getDefaultPluginDirectory() . DIRECTORY_SEPARATOR . $file;
+
+            $pluginClass = 'App\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
+
+            if (!class_exists($pluginClass) || !is_subclass_of($pluginClass, BasePlugin::class)) {
+                continue;
+            }
+
+            $defaultPlugins[] = $pluginClass;
+        }
+
+        return $defaultPlugins;
+    }
+
+    protected function getDefaultPluginDirectory(): string
+    {
+        return __DIR__ . '/../Plugins';
+    }
+
+    protected function getCustomPluginDirectory(): string
+    {
+        return implode(DIRECTORY_SEPARATOR, [
+            $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? __DIR__,
+            '.cloakr',
+            'plugins'
+        ]);
     }
 }

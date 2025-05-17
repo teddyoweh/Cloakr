@@ -2,10 +2,10 @@
 
 namespace Cloakr\Client\Logger;
 
-use Cloakr\Client\Logger\Concerns\PluginAware;
 use Cloakr\Client\Logger\Plugins\PluginData;
 use Carbon\Carbon;
 use Exception;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -19,8 +19,6 @@ use function GuzzleHttp\Psr7\parse_request;
 
 class LoggedRequest implements \JsonSerializable
 {
-    use PluginAware;
-
     /** @var string */
     protected $rawRequest;
 
@@ -51,7 +49,7 @@ class LoggedRequest implements \JsonSerializable
         $this->parsedRequest = $parsedRequest;
         $this->id = $this->getRequestId();
 
-        $this->pluginData = $this->loadPluginData();
+        $this->pluginData = app(PluginManager::class)->loadPluginData($this);
     }
 
     /**

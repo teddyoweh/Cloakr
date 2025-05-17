@@ -2,6 +2,7 @@
 
 namespace Cloakr\Client\Logger\Plugins;
 
+use Cloakr\Client\Logger\LoggedRequest;
 use Cloakr\Client\Support\InsertRequestPluginsNodeVisitor;
 use Cloakr\Client\Support\RequestPluginsNodeVisitor;
 use PhpParser\Lexer\Emulative;
@@ -16,6 +17,8 @@ class PluginManager
 {
     protected ?array $defaultPlugins = null;
     protected ?array $customPlugins = null;
+
+    protected ?array $pluginConfig = null;
 
     public function __construct()
     {
@@ -39,14 +42,11 @@ class PluginManager
         return array_merge($this->defaultPlugins, $this->customPlugins);
     }
 
-    public function loadPluginData(): ?PluginData // TODO
+    public function loadPluginData(LoggedRequest $loggedRequest): ?PluginData
     {
-        $this->loadCustomPlugins();
-        $this->ensureValidPluginConfig();
-
-        foreach (config('cloakr.request_plugins') as $pluginClass) {
+        foreach ($this->pluginConfig as $pluginClass) {
             try {
-                $plugin = $pluginClass::make($this);
+                $plugin = $pluginClass::make($loggedRequest);
 
                 if ($plugin->matchesRequest()) {
                     return $plugin->getPluginData();
@@ -60,17 +60,16 @@ class PluginManager
 
     protected function ensureValidPluginConfig(): void
     {
-        foreach (config('cloakr.request_plugins') as $pluginClass) {
+        $this->pluginConfig = config('cloakr.request_plugins');
+
+        foreach ($this->pluginConfig as $pluginClass) {
             // Remove invalid plugins from the configuration
             if (!class_exists($pluginClass) || !is_subclass_of($pluginClass, BasePlugin::class)) {
-                $configPlugins = config('cloakr.request_plugins');
-
-                if (in_array($pluginClass, $configPlugins)) {
-                    $configPlugins = array_diff($configPlugins, [$pluginClass]);
-                    config(['cloakr.request_plugins' => $configPlugins]);
-                }
+                $this->pluginConfig = array_diff($this->pluginConfig, [$pluginClass]);
             }
         }
+
+        config(['cloakr.request_plugins' => $this->pluginConfig]);
     }
 
     protected function loadCustomPlugins(): array

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersOutput;
-use App\Logger\Concerns\PluginAware;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Logger\Concerns\PluginAware;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\text;
@@ -48,7 +48,7 @@ class CreateCustomPluginCommand extends Command
 
         render('<div class="ml-3">✔ The plugin has been created at ' . $pluginFile . ' and added to the configuration.</div>');
 
-        $this->call('plugins:manage', ['--add' => 'App\\Logger\\Plugins\\' . $pluginName]);
+        $this->call('plugins:manage', ['--add' => 'Cloakr\\Client\\Logger\\Plugins\\' . $pluginName]);
 
     }
 

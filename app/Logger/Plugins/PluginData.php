@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Logger\Plugins;
+namespace Cloakr\Client\Logger\Plugins;
 
 class PluginData
 {

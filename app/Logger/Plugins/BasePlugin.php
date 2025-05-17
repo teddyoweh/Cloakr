@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Logger\Plugins;
+namespace Cloakr\Client\Logger\Plugins;
 
-use App\Logger\LoggedRequest;
+use Cloakr\Client\Logger\LoggedRequest;
 
 abstract class BasePlugin
 {

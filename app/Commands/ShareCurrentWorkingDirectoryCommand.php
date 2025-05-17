@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
 class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 {

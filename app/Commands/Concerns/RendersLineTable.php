@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Concerns;
+namespace Cloakr\Client\Commands\Concerns;
 
 use function Termwind\render;
 

@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
-use App\Client\Support\ConsoleSectionOutput;
+use Cloakr\Client\Support\ConsoleSectionOutput;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Terminal;
-
 use function Termwind\render;
 use function Termwind\terminal;
 

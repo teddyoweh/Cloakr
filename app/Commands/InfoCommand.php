@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersLineTable;
-use App\Commands\Concerns\RendersOutput;
-use App\Contracts\FetchesPlatformDataContract;
-use App\Traits\FetchesPlatformData;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersLineTable;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Contracts\FetchesPlatformDataContract;
+use Cloakr\Client\Traits\FetchesPlatformData;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;

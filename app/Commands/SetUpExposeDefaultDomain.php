@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
 
-use App\Commands\Concerns\RendersOutput;
-use App\Contracts\FetchesPlatformDataContract;
-use App\Traits\FetchesPlatformData;
+use Cloakr\Client\Contracts\FetchesPlatformDataContract;
+use Cloakr\Client\Traits\FetchesPlatformData;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Illuminate\Support\Facades\Artisan;
 
 use function Laravel\Prompts\select;

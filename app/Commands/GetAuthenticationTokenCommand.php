@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Illuminate\Console\Command;
 
 use function Termwind\render;

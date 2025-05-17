@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Logger\Concerns\PluginAware;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Logger\Concerns\PluginAware;
 use LaravelZero\Framework\Commands\Command;
 use function Laravel\Prompts\table;
 use function Termwind\render;

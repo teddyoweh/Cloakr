@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Support\InsertRequestPluginsNodeVisitor;
-use App\Client\Support\RequestPluginsNodeVisitor;
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersOutput;
-use App\Logger\Concerns\PluginAware;
+use Cloakr\Client\Support\InsertRequestPluginsNodeVisitor;
+use Cloakr\Client\Support\RequestPluginsNodeVisitor;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Logger\Concerns\PluginAware;
 use LaravelZero\Framework\Commands\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -84,7 +84,7 @@ class ManagePluginsCommand extends Command
     protected function addPlugin(string $class): void {
 
         if (!str($class)->contains('\\')) {
-            $this->renderWarning("<span class='font-bold'>$class</span> is not a fully qualified class name. Please try something line <span class='font-bold'>plugins:manage --add=App\\\Logger\\\Plugins\\\MyCustomPlugin</span>.");
+            $this->renderWarning("<span class='font-bold'>$class</span> is not a fully qualified class name. Please try something line <span class='font-bold'>plugins:manage --add=Cloakr\\\Client\\\Logger\\\Plugins\\\MyCustomPlugin</span>.");
             return;
         }
 

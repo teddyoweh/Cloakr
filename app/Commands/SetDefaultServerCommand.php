@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Support\DefaultServerNodeVisitor;
-use App\Client\Support\InsertDefaultServerNodeVisitor;
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\Concerns\RendersOutput;
-use App\Commands\SetUpCloakrDefaultServer;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Support\DefaultServerNodeVisitor;
+use Cloakr\Client\Support\InsertDefaultServerNodeVisitor;
+use Cloakr\Client\Commands\SetUpCloakrDefaultServer;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -15,7 +15,6 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
-
 use function Laravel\Prompts\confirm;
 use function Termwind\render;
 

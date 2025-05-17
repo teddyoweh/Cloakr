@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
-use App\Logger\Concerns\PluginAware;
-use App\Logger\Plugins\PluginData;
+use Cloakr\Client\Logger\Concerns\PluginAware;
+use Cloakr\Client\Logger\Plugins\PluginData;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Psr7\Message;

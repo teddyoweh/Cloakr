@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Logger\Concerns;
+namespace Cloakr\Client\Logger\Concerns;
 
-use App\Logger\Plugins\BasePlugin;
-use App\Logger\Plugins\PluginData;
+use Cloakr\Client\Logger\Plugins\BasePlugin;
+use Cloakr\Client\Logger\Plugins\PluginData;
 
 trait PluginAware
 {
@@ -59,7 +59,7 @@ trait PluginAware
 
             require_once $pluginDirectory . DIRECTORY_SEPARATOR . $file;
 
-            $pluginClass = 'App\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
+            $pluginClass = 'Cloakr\\Client\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
 
             $customPlugins[] = $pluginClass;
 
@@ -81,7 +81,7 @@ trait PluginAware
 
             require_once $this->getDefaultPluginDirectory() . DIRECTORY_SEPARATOR . $file;
 
-            $pluginClass = 'App\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
+            $pluginClass = 'Cloakr\\Client\\Logger\\Plugins\\' . pathinfo($file, PATHINFO_FILENAME);
 
             if (!class_exists($pluginClass) || !is_subclass_of($pluginClass, BasePlugin::class)) {
                 continue;

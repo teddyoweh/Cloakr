@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Factory;
-use App\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Factory;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function Termwind\render;
 
 class ShareCommand extends ServerAwareCommand

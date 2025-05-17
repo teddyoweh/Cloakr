@@ -173,17 +173,10 @@ return [
         'size' => '1MB',
     ],
 
-    'connection_callbacks' => [
-        'webhook' => [
-            'url' => null,
-            'secret' => null,
-        ],
-    ],
-
     'platform_url' => 'https://cloakr.dev',
 
     'request_plugins' => [
-        \App\Logger\Plugins\PaddleBillingPlugin::class,
-        \App\Logger\Plugins\GitHubPlugin::class
+        \Cloakr\Client\Logger\Plugins\PaddleBillingPlugin::class,
+        \Cloakr\ClientLogger\Plugins\GitHubPlugin::class
     ]
 ];

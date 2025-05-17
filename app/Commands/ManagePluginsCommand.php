@@ -2,39 +2,33 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Support\InsertRequestPluginsNodeVisitor;
-use Cloakr\Client\Support\RequestPluginsNodeVisitor;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use Cloakr\Client\Commands\Concerns\RendersBanner;
 use Cloakr\Client\Commands\Concerns\RendersOutput;
-use Cloakr\Client\Logger\Concerns\PluginAware;
 use LaravelZero\Framework\Commands\Command;
-use PhpParser\Lexer\Emulative;
-use PhpParser\Node;
-use PhpParser\NodeFinder;
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\CloningVisitor;
-use PhpParser\Parser\Php7;
-use PhpParser\PrettyPrinter\Standard;
 use function Laravel\Prompts\multiselect;
 use function Termwind\render;
 
 class ManagePluginsCommand extends Command
 {
     use RendersBanner, RendersOutput;
-    use PluginAware;
 
     protected $signature = 'plugins:manage {--add=}';
 
     protected $description = 'Activate and deactivate request plugins.';
 
+    protected PluginManager $pluginManager;
+
+    public function __construct(PluginManager $pluginManager)
+    {
+        parent::__construct();
+        $this->pluginManager = $pluginManager;
+    }
 
     public function handle()
     {
 
-        $defaultPlugins = $this->loadDefaultPlugins();
-
-        $customPlugins = $this->loadCustomPlugins();
-        $this->ensureValidPluginConfig();
+        $plugins = $this->pluginManager->getPlugins();
 
         if($this->option('add')) {
             $this->addPlugin($this->option('add'));
@@ -55,7 +49,7 @@ class ManagePluginsCommand extends Command
             ->toArray();
 
 
-        $pluginSelectList = collect(array_merge($defaultPlugins, $customPlugins))
+        $pluginSelectList = collect($plugins)
             ->mapWithKeys(function ($pluginClass) {
                 return [str($pluginClass)->afterLast('\\')->__toString() => $pluginClass];
             })
@@ -76,7 +70,7 @@ class ManagePluginsCommand extends Command
 
         config(['cloakr.request_plugins' => $pluginsToEnable]);
 
-        $this->modifyConfigurationFile($pluginsToEnable);
+        $this->pluginManager->modifyPluginConfiguration($pluginsToEnable);
 
         render("<div class='ml-3'>✔ Request plugins have been updated.</div>");
     }
@@ -96,68 +90,7 @@ class ManagePluginsCommand extends Command
 
         config(['cloakr.request_plugins' => $pluginsToEnable]);
 
-        $this->modifyConfigurationFile($pluginsToEnable);
-    }
-
-
-    protected function modifyConfigurationFile(array $pluginsToEnable): void
-    {
-        $configFile = implode(DIRECTORY_SEPARATOR, [
-            $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
-            '.cloakr',
-            'config.php',
-        ]);
-
-        if (!file_exists($configFile)) {
-            @mkdir(dirname($configFile), 0777, true);
-            $updatedConfigFile = $this->writePluginConfig(base_path('config/cloakr.php'), $pluginsToEnable);
-        } else {
-            $updatedConfigFile = $this->writePluginConfig($configFile, $pluginsToEnable);
-        }
-
-        file_put_contents($configFile, $updatedConfigFile);
-    }
-
-    protected function writePluginConfig(string $configFile, array $pluginsToEnable)
-    {
-        $lexer = new Emulative([
-            'usedAttributes' => [
-                'comments',
-                'startLine',
-                'endLine',
-                'startTokenPos',
-                'endTokenPos',
-            ],
-        ]);
-        $parser = new Php7($lexer);
-
-        $oldStmts = $parser->parse(file_get_contents($configFile));
-        $oldTokens = $lexer->getTokens();
-
-        $nodeTraverser = new NodeTraverser;
-        $nodeTraverser->addVisitor(new CloningVisitor());
-        $newStmts = $nodeTraverser->traverse($oldStmts);
-
-        $nodeFinder = new NodeFinder;
-
-        $requestPluginsNode = $nodeFinder->findFirst($newStmts, function (Node $node) {
-            return $node instanceof Node\Expr\ArrayItem && $node->key && $node->key->value === 'request_plugins';
-        });
-
-        if (is_null($requestPluginsNode)) {
-            $nodeTraverser = new NodeTraverser;
-            $nodeTraverser->addVisitor(new InsertRequestPluginsNodeVisitor());
-            $newStmts = $nodeTraverser->traverse($newStmts);
-        }
-
-        $nodeTraverser = new NodeTraverser;
-        $nodeTraverser->addVisitor(new RequestPluginsNodeVisitor($pluginsToEnable));
-
-        $newStmts = $nodeTraverser->traverse($newStmts);
-
-        $prettyPrinter = new Standard();
-
-        return $prettyPrinter->printFormatPreserving($newStmts, $oldStmts, $oldTokens);
+        $this->pluginManager->modifyPluginConfiguration($pluginsToEnable);
     }
 
 }

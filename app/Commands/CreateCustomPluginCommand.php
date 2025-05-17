@@ -4,7 +4,7 @@ namespace Cloakr\Client\Commands;
 
 use Cloakr\Client\Commands\Concerns\RendersBanner;
 use Cloakr\Client\Commands\Concerns\RendersOutput;
-use Cloakr\Client\Logger\Concerns\PluginAware;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use LaravelZero\Framework\Commands\Command;
 
 use function Laravel\Prompts\text;
@@ -13,7 +13,6 @@ use function Termwind\render;
 class CreateCustomPluginCommand extends Command
 {
     use RendersBanner, RendersOutput;
-    use PluginAware;
 
     protected $signature = 'make:plugin';
 
@@ -32,7 +31,9 @@ class CreateCustomPluginCommand extends Command
             required: true
         );
 
-        $customPluginDirectory = $this->getCustomPluginDirectory();
+        $pluginName = preg_replace('/[^a-zA-Z0-9]/', '', $pluginName);
+
+        $customPluginDirectory = app(PluginManager::class)->getCustomPluginDirectory();
 
         $pluginFile = implode(DIRECTORY_SEPARATOR, [$customPluginDirectory, $pluginName . '.php']);
 

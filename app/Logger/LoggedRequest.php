@@ -2,6 +2,7 @@
 
 namespace App\Logger;
 
+use App\Logger\Concerns\PluginAware;
 use App\Logger\Plugins\PluginData;
 use Carbon\Carbon;
 use Exception;
@@ -18,6 +19,8 @@ use function GuzzleHttp\Psr7\parse_request;
 
 class LoggedRequest implements \JsonSerializable
 {
+    use PluginAware;
+
     /** @var string */
     protected $rawRequest;
 
@@ -48,22 +51,7 @@ class LoggedRequest implements \JsonSerializable
         $this->parsedRequest = $parsedRequest;
         $this->id = $this->getRequestId();
 
-        $this->detectPlugin();
-    }
-
-    protected function detectPlugin(): void
-    {
-        foreach(config('cloakr.request_plugins') as $pluginClass) { // TODO: Custom Plugins
-            try {
-                $plugin = $pluginClass::make($this);
-
-                if($plugin->matchesRequest()) {
-                    $this->pluginData = $plugin->getPluginData();
-                }
-            } catch (Exception $e) {
-                $this->pluginData = null;
-            }
-        }
+        $this->pluginData = $this->loadPluginData();
     }
 
     /**
@@ -247,10 +235,6 @@ class LoggedRequest implements \JsonSerializable
         $this->getRequest()->getHeaders()->addHeader(new GenericHeader('x-cloakr-request-id', $requestId));
 
         $this->id = $requestId;
-    }
-
-    public function getPluginData(): ?PluginData {
-        return $this->pluginData;
     }
 
     public function getCliLabel(): string {

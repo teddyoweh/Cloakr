@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Commands\Concerns\RendersBanner;
 use App\Commands\Concerns\RendersLineTable;
+use App\Commands\Concerns\RendersOutput;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -12,7 +13,7 @@ use function Termwind\render;
 
 class RollbackTokenCommand extends Command
 {
-    use RendersBanner, RendersLineTable;
+    use RendersBanner, RendersLineTable, RendersOutput;
 
     protected $signature = 'token:rollback';
 
@@ -32,7 +33,7 @@ class RollbackTokenCommand extends Command
         $this->renderBanner();
 
         if (!file_exists($this->previousSetupPath)) {
-            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">No previous setup found.</div>');
+            $this->renderWarning('No previous setup found.');
             return;
         }
 

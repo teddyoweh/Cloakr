@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Client\Support\DefaultServerNodeVisitor;
 use App\Client\Support\InsertDefaultServerNodeVisitor;
 use App\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersOutput;
 use App\Commands\SetUpCloakrDefaultServer;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
@@ -20,7 +21,7 @@ use function Termwind\render;
 
 class SetDefaultServerCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersOutput;
 
     protected $signature = 'default-server {server?}';
 
@@ -60,7 +61,7 @@ class SetDefaultServerCommand extends Command
         $this->renderBanner();
 
         if (is_null($server = config('cloakr.default_server'))) {
-            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no default server specified.</div>');
+            $this->renderWarning('There is no default server specified.');
         } else {
             render("<div class='ml-3'>Current default server: <span class='font-bold'>$server</span>.</div>");
         }

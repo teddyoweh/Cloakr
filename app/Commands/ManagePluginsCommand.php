@@ -23,21 +23,28 @@ class ManagePluginsCommand extends Command
     use RendersBanner;
     use PluginAware;
 
-    protected $signature = 'plugins:manage';
+    protected $signature = 'plugins:manage {--add=}';
 
     protected $description = 'Activate and deactivate request plugins.';
 
 
     public function handle()
     {
-        $this->renderBanner();
-
-        render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
 
         $defaultPlugins = $this->loadDefaultPlugins();
 
         $customPlugins = $this->loadCustomPlugins();
         $this->ensureValidPluginConfig();
+
+        if($this->option('add')) {
+            $this->addPlugin($this->option('add'));
+            return;
+        }
+
+
+        $this->renderBanner();
+
+        render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
 
 
         // Build key-based list for easier Windows support
@@ -72,6 +79,24 @@ class ManagePluginsCommand extends Command
         $this->modifyConfigurationFile($pluginsToEnable);
 
         render("<div class='ml-3'>✔ Request plugins have been updated.</div>");
+    }
+
+    protected function addPlugin(string $class): void {
+
+        if (!str($class)->contains('\\')) {
+            render("<div class='ml-3'>✘ $class is not a valid fully qualified class name.</div>");
+            return;
+        }
+
+        $pluginsToEnable = collect(config('cloakr.request_plugins'))
+            ->push($class)
+            ->unique()
+            ->values()
+            ->toArray();
+
+        config(['cloakr.request_plugins' => $pluginsToEnable]);
+
+        $this->modifyConfigurationFile($pluginsToEnable);
     }
 
 

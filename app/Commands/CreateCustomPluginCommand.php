@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersOutput;
 use App\Logger\Concerns\PluginAware;
 use LaravelZero\Framework\Commands\Command;
 
@@ -11,7 +12,7 @@ use function Termwind\render;
 
 class CreateCustomPluginCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersOutput;
     use PluginAware;
 
     protected $signature = 'make:plugin';
@@ -36,7 +37,7 @@ class CreateCustomPluginCommand extends Command
         $pluginFile = implode(DIRECTORY_SEPARATOR, [$customPluginDirectory, $pluginName . '.php']);
 
         if (file_exists($pluginFile)) {
-            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">The file at ' . $pluginFile . ' already exists.</div>');
+            $this->renderWarning("The file at $pluginFile already exists.");
             return;
         }
 

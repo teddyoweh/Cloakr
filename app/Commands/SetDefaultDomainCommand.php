@@ -6,6 +6,7 @@ use App\Client\Support\DefaultDomainNodeVisitor;
 use App\Client\Support\DefaultServerNodeVisitor;
 use App\Client\Support\InsertDefaultDomainNodeVisitor;
 use App\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersOutput;
 use App\Commands\SetUpCloakrDefaultDomain;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
@@ -21,7 +22,7 @@ use function Termwind\render;
 
 class SetDefaultDomainCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersOutput;
 
     protected $signature = 'default-domain {domain?} {--server=}';
 
@@ -62,7 +63,7 @@ class SetDefaultDomainCommand extends Command
         $this->renderBanner();
 
         if (is_null($domain = config('cloakr.default_domain'))) {
-            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no default domain specified.</div>');
+            $this->renderWarning('There is no default domain specified.');
         } else {
             render("<div class='ml-3'>Current default domain: <span class='font-bold'>$domain</span>.</div>");
         }

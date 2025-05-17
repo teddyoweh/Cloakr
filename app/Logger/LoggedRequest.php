@@ -55,9 +55,9 @@ class LoggedRequest implements \JsonSerializable
     {
         foreach(config('cloakr.request_plugins') as $pluginClass) { // TODO: Custom Plugins
             try {
-                if($pluginClass::make($this)->matchesRequest()) {
-                    $plugin = $pluginClass::make($this);
+                $plugin = $pluginClass::make($this);
 
+                if($plugin->matchesRequest()) {
                     $this->pluginData = $plugin->getPluginData();
                 }
             } catch (Exception $e) {

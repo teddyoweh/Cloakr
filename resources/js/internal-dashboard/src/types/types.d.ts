@@ -48,3 +48,10 @@ declare interface RequestData {
     name: string
     value: string
   }
+
+  interface ReplayRequest {
+    uri: string
+    method: string;
+    headers: Record<string, string>
+    body?: string;
+  }

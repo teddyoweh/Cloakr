@@ -12,6 +12,7 @@ use Cloakr\Client\Http\Controllers\LogController;
 use Cloakr\Client\Http\Controllers\PushLogsToDashboardController;
 use Cloakr\Client\Http\Controllers\ReplayLogController;
 use Cloakr\Client\WebSockets\Socket;
+use Cloakr\Client\Http\Controllers\ReplayModifiedLogController;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
@@ -137,6 +138,7 @@ class Factory
         $this->router->get('/api/logs', LogController::class);
         $this->router->post('/api/logs', PushLogsToDashboardController::class);
         $this->router->get('/api/replay/{log}', ReplayLogController::class);
+        $this->router->post('/api/replay-modified', ReplayModifiedLogController::class);
         $this->router->get('/api/logs/clear', ClearLogsController::class);
 
         $this->app->route('/socket', new WsServer(new Socket()), ['*'], '');

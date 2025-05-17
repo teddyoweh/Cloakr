@@ -57,9 +57,12 @@ class CliRequestLogger extends Logger
     {
         parent::__construct($consoleOutput);
 
-        $this->section = new ConsoleSectionOutput($this->output->getStream(), $this->consoleSectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
-
+        $this->section = $this->getSection();
         $this->requests = new Collection();
+    }
+
+    public function getSection() {
+        return new ConsoleSectionOutput($this->output->getStream(), $this->consoleSectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
     }
 
     /**
@@ -87,7 +90,7 @@ class CliRequestLogger extends Logger
         }
 
         foreach ($lines as $line) {
-            render("<div class='mx-3 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
+            render("<div class='mx-2 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
         }
     }
 
@@ -103,7 +106,7 @@ class CliRequestLogger extends Logger
         render("");
 
         $template = <<<HTML
-    <div class="flex ml-3 mr-6">
+    <div class="flex ml-2 mr-6">
         <span class="w-24">key</span>
         <span class=" text-gray-800">&nbsp;</span>
         <span class="text-left font-bold">value</span>

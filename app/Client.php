@@ -241,7 +241,7 @@ class Client
         });
 
         $connection->on('setMaximumConnectionLength', function ($data) {
-            $timeoutSection = $this->logger->getOutput()->section();
+            $timeoutSection = $this->logger->getSection();
 
             $this->loop->addPeriodicTimer(1, function () use ($data, $timeoutSection) {
                 $this->timeConnected++;
@@ -249,8 +249,7 @@ class Client
                 $secondsRemaining = $data->length * 60 - $this->timeConnected;
                 $remaining = Carbon::now()->diff(Carbon::now()->addSeconds($secondsRemaining));
 
-                $timeoutSection->clear();
-                $timeoutSection->writeln('Remaining time: '.$remaining->format('%H:%I:%S'));
+                $timeoutSection->overwrite('  Remaining time: '.$remaining->format('%H:%I:%S'));
             });
         });
     }

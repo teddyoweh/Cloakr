@@ -50,6 +50,13 @@ declare interface RequestData {
     value: string
   }
 
+  interface ReplayRequest {
+    uri: string
+    method: string;
+    headers: Record<string, string>
+    body?: string;
+  }
+
   interface PluginData {
     plugin: string
     uiLabel: string

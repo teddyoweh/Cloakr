@@ -2,6 +2,7 @@
 import Header from '@/components/Header.vue'
 import Logs from '@/components/Requests/Logs.vue'
 import QrCodeModal from '@/components/QrCodeModal.vue'
+import ModifiedReplayModal from '@/components/ModifiedReplayModal.vue'
 import LogDetail from '@/components/Requests/LogDetail.vue'
 import { exampleSubdomains, exampleUser } from './lib/devUtils';
 import { Card } from './components/ui/card';
@@ -25,6 +26,7 @@ const currentLog = ref(null as CloakrLog | null)
 const search = ref('' as string)
 const logList = ref()
 const qrCodeModal = ref()
+const modifiedReplayModal = ref()
 const scrollY = ref(0 as number);
 
 onMounted(() => {
@@ -42,6 +44,10 @@ const setLog = (log: CloakrLog | null) => {
 
 const showQrCode = () => {
     qrCodeModal.value.show = true;
+}
+
+const showModifiedReplay = () => {
+    modifiedReplayModal.value.show = true;
 }
 
 const showScrollUp = computed(() => {
@@ -91,12 +97,13 @@ onUnmounted(() => {
 
                 <Card class="p-4 w-full">
                     <EmptyState v-if="isEmptyObject(currentLog)" :subdomains="page.subdomains" />
-                    <LogDetail v-else :log="currentLog" @replay="logList.replay" />
+                    <LogDetail v-else :log="currentLog" @replay="logList.replay" @modified-replay="showModifiedReplay" />
                 </Card>
             </div>
 
             <Teleport to="body">
                 <QrCodeModal ref="qrCodeModal" :subdomains="page.subdomains" />
+                <ModifiedReplayModal ref="modifiedReplayModal" :currentLog="currentLog"/>
             </Teleport>
         </div>
 

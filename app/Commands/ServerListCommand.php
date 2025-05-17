@@ -2,17 +2,17 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
 use function Laravel\Prompts\table;
-use function Termwind\render;
 
 class ServerListCommand extends Command
 {
-    use RendersBanner;
 
     const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.dev/api/servers';
 
@@ -36,9 +36,9 @@ class ServerListCommand extends Command
             return;
         }
 
-        $this->renderBanner();
+        banner();
 
-        render("<div class='ml-3'>You can connect to a specific server with the --server=key option or set this server as default with the default-server command.</div>");
+        info('You can connect to a specific server with the <span class="font-bold">--server=key</span> option or set this server as default with the <span class="font-bold">default-server</span> command.');
 
         table(['Key', 'Region', 'Type'], $servers);
     }

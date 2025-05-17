@@ -2,18 +2,20 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Commands\Concerns\RendersLineTable;
-use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
+use function Cloakr\Common\banner;
+use function Cloakr\Common\lineTable;
+use function Cloakr\Common\lineTableLabel;
+use function Cloakr\Common\warning;
+use function Cloakr\Common\info;
+use function Cloakr\Common\headline;
 use function Laravel\Prompts\confirm;
-use function Termwind\render;
 
 class RollbackTokenCommand extends Command
 {
-    use RendersBanner, RendersLineTable, RendersOutput;
+
 
     protected $signature = 'token:rollback';
 
@@ -30,22 +32,22 @@ class RollbackTokenCommand extends Command
             'previous_setup.json',
         ]);
 
-        $this->renderBanner();
+        banner();
 
         if (!file_exists($this->previousSetupPath)) {
-            $this->renderWarning('No previous setup found.');
+            warning('No previous setup found.');
             return;
         }
 
-        render('<div class="ml-3 font-bold">Previous Setup</div>');
+        headline('Previous Setup');
 
         $previousSetup = json_decode(file_get_contents($this->previousSetupPath), true);
 
         $previousSetupTable = collect($previousSetup)->mapWithKeys(function ($value, $key) {
-            return [$this->lineTableLabel($key) => $this->lineTableLabel($value)];
+            return [lineTableLabel($key) => lineTableLabel($value)];
         })->toArray();
 
-        $this->renderLineTable($previousSetupTable);
+        lineTable($previousSetupTable);
 
         if (!confirm("Do you want to rollback your Cloakr setup to the previous state?", false)) {
             return;
@@ -57,7 +59,7 @@ class RollbackTokenCommand extends Command
 
         Artisan::call("token $token --no-interaction");
 
-        render("<div class='ml-3'>✔ Set Cloakr token to <span class='font-bold'>$token</span>.</div>");
+        info("✔ Set Cloakr token to <span class='font-bold'>$token</span>.");
 
         if ($domain = $previousSetup['default_domain']) {
             Artisan::call("default-domain $domain");

@@ -22,7 +22,6 @@ class SetUpCloakrProToken implements FetchesPlatformDataContract
         if ($this->isProToken() && $this->hasTeamDomains()) {
             return (new SetUpCloakrDefaultDomain)($token);
         } else {
-            Artisan::call("default-domain:clear --no-interaction");
             return (new SetUpCloakrDefaultServer)($token);
         }
     }

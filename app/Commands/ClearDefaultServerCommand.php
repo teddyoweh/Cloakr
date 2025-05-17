@@ -2,7 +2,7 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+
 use Cloakr\Client\Support\ClearServerNodeVisitor;
 use Cloakr\Client\Support\InsertDefaultServerNodeVisitor;
 use Illuminate\Console\Command;
@@ -13,11 +13,13 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
-use function Termwind\render;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
 
 class ClearDefaultServerCommand extends Command
 {
-    use RendersBanner;
+
 
     protected $signature = 'default-server:clear';
 
@@ -25,7 +27,7 @@ class ClearDefaultServerCommand extends Command
 
     public function handle()
     {
-        $this->renderBanner();
+        banner();
 
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
@@ -42,7 +44,7 @@ class ClearDefaultServerCommand extends Command
 
         file_put_contents($configFile, $updatedConfigFile);
 
-        render("<div class='ml-3'>✔ Cleared the Cloakr default server.</div>");
+        info("✔ Cleared the Cloakr default server.");
     }
 
     protected function modifyConfigurationFile(string $configFile)

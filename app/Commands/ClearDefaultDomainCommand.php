@@ -2,7 +2,7 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+
 use Cloakr\Client\Support\ClearDomainNodeVisitor;
 use Cloakr\Client\Support\InsertDefaultDomainNodeVisitor;
 use Illuminate\Console\Command;
@@ -13,11 +13,14 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
-use function Termwind\render;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
+
 
 class ClearDefaultDomainCommand extends Command
 {
-    use RendersBanner;
+
 
     protected $signature = 'default-domain:clear';
 
@@ -42,8 +45,8 @@ class ClearDefaultDomainCommand extends Command
         file_put_contents($configFile, $updatedConfigFile);
 
         if(!$this->option('no-interaction')) {
-            $this->renderBanner();
-            render("<div class='ml-3'>✔ Cleared the Cloakr default domain.</div>");
+            banner();
+            info("✔ Cleared the Cloakr default domain.");
         }
     }
 

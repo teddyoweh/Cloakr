@@ -2,22 +2,20 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Commands\Concerns\RendersLineTable;
-use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Cloakr\Client\Contracts\FetchesPlatformDataContract;
 use Cloakr\Client\Traits\FetchesPlatformData;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
-use function Termwind\render;
+use function Cloakr\Common\banner;
+use function Cloakr\Common\headline;
+use function Cloakr\Common\lineTable;
+use function Cloakr\Common\lineTableLabel;
 
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
-    use RendersBanner, RendersLineTable, RendersOutput;
 
     protected $signature = 'info {--json}';
 
@@ -27,7 +25,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
     {
 
         if (!$this->option('json')) {
-            $this->renderBanner();
+            banner();
         }
 
         $configuration = [];
@@ -46,13 +44,13 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
             return;
         }
 
-        render('<div class="ml-3 font-bold">Configuration</div>');
+        headline('Configuration');
 
         $configuration = collect($configuration)->mapWithKeys(function ($value, $key) {
-            return [$this->lineTableLabel($key) => $this->lineTableLabel($value)];
+            return [lineTableLabel($key) => lineTableLabel($value)];
         })->toArray();
 
-        $this->renderLineTable($configuration);
+        lineTable($configuration);
     }
 
     protected function checkLatency(string $server): int
@@ -69,7 +67,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
             return round($result->handlerStats()['connect_time'] * 1000);
         } catch (Exception $e) {
             if ($this->option("verbose")) {
-                $this->renderWarning("Error while checking latency: {$e->getMessage()}");
+                warning("Error while checking latency: {$e->getMessage()}");
             }
 
             return 999;

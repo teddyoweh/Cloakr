@@ -2,8 +2,7 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Commands\Concerns\RendersOutput;
+
 use Cloakr\Client\Support\DefaultDomainNodeVisitor;
 use Cloakr\Client\Support\DefaultServerNodeVisitor;
 use Cloakr\Client\Support\InsertDefaultDomainNodeVisitor;
@@ -16,13 +15,14 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
+use function Cloakr\Common\warning;
 use function Laravel\Prompts\confirm;
-use function Termwind\render;
 
 class SetDefaultDomainCommand extends Command
 {
-    use RendersBanner, RendersOutput;
-
     protected $signature = 'default-domain {domain?} {--server=}';
 
     protected $description = 'Set or retrieve the default domain to use with Cloakr.';
@@ -34,7 +34,7 @@ class SetDefaultDomainCommand extends Command
 
         if (! is_null($domain)) {
 
-            render("<div class='ml-3'>✔ Set Cloakr default domain to <span class='font-bold'>$domain</span>" . ($server ? " on server <span class='font-bold'>$server</span>" : '') . ".</div>");
+            info("✔ Set Cloakr default domain to <span class='font-bold'>$domain</span>" . ($server ? " on server <span class='font-bold'>$server</span>" : ''));
 
             $configFile = implode(DIRECTORY_SEPARATOR, [
                 $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
@@ -59,12 +59,12 @@ class SetDefaultDomainCommand extends Command
             return;
         }
 
-        $this->renderBanner();
+        banner();
 
         if (is_null($domain = config('cloakr.default_domain'))) {
-            $this->renderWarning('There is no default domain specified.');
+            warning('There is no default domain specified.');
         } else {
-            render("<div class='ml-3'>Current default domain: <span class='font-bold'>$domain</span>.</div>");
+            info("Current default domain: <span class='font-bold'>$domain</span>.");
         }
 
 

@@ -2,15 +2,16 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
 use Cloakr\Client\Logger\Plugins\PluginManager;
 use LaravelZero\Framework\Commands\Command;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
 use function Laravel\Prompts\table;
-use function Termwind\render;
 
 class ListPluginsCommand extends Command
 {
-    use RendersBanner;
+
 
     protected $signature = 'plugins';
 
@@ -19,9 +20,9 @@ class ListPluginsCommand extends Command
     public function handle(PluginManager $pluginManager)
     {
 
-        $this->renderBanner();
+        banner();
 
-        render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
+        info('Explanation text about request plugins goes here.'); // TODO:
 
         $defaultPlugins = $pluginManager->getDefaultPlugins();
         $customPlugins = $pluginManager->getCustomPlugins();
@@ -42,7 +43,7 @@ class ListPluginsCommand extends Command
             rows: $pluginTable
         );
 
-        render('<div class="ml-3 mb-1">Use the <span class="font-bold">plugins:manage</span> command to activate and deactivate request plugins.</div>');
+        info('Use the <span class="font-bold">plugins:manage</span> command to activate and deactivate request plugins.');
     }
 
 }

@@ -2,15 +2,15 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Illuminate\Console\Command;
 
-use function Termwind\render;
+use function Cloakr\Common\banner;
+use function Cloakr\Common\warning;
+use function Cloakr\Common\info;
 
 class GetAuthenticationTokenCommand extends Command
 {
-    use RendersBanner, RendersOutput;
+
 
     protected $signature = 'token:get';
     protected $description = 'Retrieve the authentication token to use with Cloakr.';
@@ -24,12 +24,12 @@ class GetAuthenticationTokenCommand extends Command
             return;
         }
 
-        $this->renderBanner();
+        banner();
 
         if (is_null($token)) {
-            $this->renderWarning('There is no authentication token specified.');
+            warning('There is no authentication token specified.');
         } else {
-            render("<div class='ml-3'>Current authentication token: <span class='font-bold'>$token</span></div>");
+            info("Current authentication token: <span class='font-bold'>$token</span>");
         }
     }
 }

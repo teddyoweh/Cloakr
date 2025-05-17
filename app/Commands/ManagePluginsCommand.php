@@ -3,15 +3,15 @@
 namespace Cloakr\Client\Commands;
 
 use Cloakr\Client\Logger\Plugins\PluginManager;
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Commands\Concerns\RendersOutput;
 use LaravelZero\Framework\Commands\Command;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
+use function Cloakr\Common\warning;
 use function Laravel\Prompts\multiselect;
-use function Termwind\render;
 
 class ManagePluginsCommand extends Command
 {
-    use RendersBanner, RendersOutput;
 
     protected $signature = 'plugins:manage {--add=}';
 
@@ -32,9 +32,9 @@ class ManagePluginsCommand extends Command
         }
 
 
-        $this->renderBanner();
+        banner();
 
-        render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
+        info('Explanation text about request plugins goes here.'); // TODO:
 
 
         // Build key-based list for easier Windows support
@@ -66,13 +66,13 @@ class ManagePluginsCommand extends Command
 
         $this->pluginManager->modifyPluginConfiguration($pluginsToEnable);
 
-        render("<div class='ml-3'>✔ Request plugins have been updated.</div>");
+        info("✔ Request plugins have been updated.");
     }
 
     protected function addPlugin(string $class): void {
 
         if (!str($class)->contains('\\')) {
-            $this->renderWarning("<span class='font-bold'>$class</span> is not a fully qualified class name. Please try something line <span class='font-bold'>plugins:manage --add=Cloakr\\\Client\\\Logger\\\Plugins\\\MyCustomPlugin</span>.");
+            warning("<span class='font-bold'>$class</span> is not a fully qualified class name. Please try something line <span class='font-bold'>plugins:manage --add=Cloakr\\\Client\\\Logger\\\Plugins\\\MyCustomPlugin</span>.");
             return;
         }
 

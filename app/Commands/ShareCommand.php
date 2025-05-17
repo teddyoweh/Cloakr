@@ -2,7 +2,7 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+
 use Cloakr\Client\Factory;
 use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -12,11 +12,14 @@ use chillerlan\QRCode\QROptions;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
 use function Termwind\render;
 
 class ShareCommand extends ServerAwareCommand
 {
-    use RendersBanner;
+
 
     protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--qr} {--qr-code}';
 
@@ -24,10 +27,10 @@ class ShareCommand extends ServerAwareCommand
 
     public function handle()
     {
-        $this->renderBanner();
+        banner();
 
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
-        render('<div class="ml-3">Using auth token: ' . $auth . '</div>', OutputInterface::VERBOSITY_DEBUG);
+        info("Using auth token: $auth", OutputInterface::VERBOSITY_VERBOSE);
 
         if (strstr($this->argument('host'), 'host.docker.internal')) {
             config(['cloakr.dns' => true]);
@@ -49,18 +52,18 @@ class ShareCommand extends ServerAwareCommand
 
         if (! is_null($this->option('subdomain'))) {
             $subdomains = explode(',', $this->option('subdomain'));
-            render('<div class="ml-3">Trying to use custom subdomain: ' . $subdomains[0] . PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
+            info("Trying to use custom subdomain $subdomains[0]", OutputInterface::VERBOSITY_VERBOSE);
         } else {
             $host = Str::beforeLast($this->argument('host'), '.');
             $host = str_replace('https://', '', $host);
             $host = str_replace('http://', '', $host);
             $host = Str::beforeLast($host, ':');
             $subdomains = [Str::slug($host)];
-            render('<div class="ml-3">Trying to use custom subdomain: ' . $subdomains[0] . PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
+            info("Trying to use custom subdomain: $subdomains[0]", OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if ($domain) {
-            render('<div class="ml-3">Using custom domain: ' . $domain . PHP_EOL . '</div>', OutputInterface::VERBOSITY_VERBOSE);
+            info("Using custom domain $domain", OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if ($this->option('qr-code') || $this->option('qr')) {

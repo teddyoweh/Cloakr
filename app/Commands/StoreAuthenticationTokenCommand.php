@@ -2,7 +2,7 @@
 
 namespace Cloakr\Client\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+
 use Cloakr\Client\Support\TokenNodeVisitor;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
@@ -10,11 +10,12 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
-use function Termwind\render;
+
+use function Cloakr\Common\banner;
+use function Cloakr\Common\info;
 
 class StoreAuthenticationTokenCommand extends Command
 {
-    use RendersBanner;
 
     protected $signature = 'token {token?} {--clean}';
 
@@ -47,17 +48,15 @@ class StoreAuthenticationTokenCommand extends Command
 
         if (!$this->option('no-interaction')) {
 
-            $this->renderBanner();
-            render("<div class='ml-3'>Setting up new Cloakr token <span class='font-bold'>$token</span>...</div>");
+            banner();
+            info("Setting up new Cloakr token <span class='font-bold'>$token</span>...");
 
             (new SetupCloakrProToken)($token);
         }
         else {
-            $this->line("Token set to $token.");
+            info("Token set to $token.");
         }
 
-
-        return;
     }
 
     protected function rememberPreviousSetup() {

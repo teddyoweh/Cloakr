@@ -46,9 +46,9 @@ class CreateCustomPluginCommand extends Command
 
         file_put_contents($pluginFile, $pluginStub);
 
-        render('<div class="ml-3">✔ The plugin has been created at ' . $pluginFile . '.</div>');
+        render('<div class="ml-3">✔ The plugin has been created at ' . $pluginFile . ' and added to the configuration.</div>');
 
-        // TODO: Add the plugin to the config file
+        $this->call('plugins:manage', ['--add' => 'App\\Logger\\Plugins\\' . $pluginName]);
 
     }
 

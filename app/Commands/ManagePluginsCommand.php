@@ -5,8 +5,8 @@ namespace App\Commands;
 use App\Client\Support\InsertRequestPluginsNodeVisitor;
 use App\Client\Support\RequestPluginsNodeVisitor;
 use App\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersOutput;
 use App\Logger\Concerns\PluginAware;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -20,7 +20,7 @@ use function Termwind\render;
 
 class ManagePluginsCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersOutput;
     use PluginAware;
 
     protected $signature = 'plugins:manage {--add=}';
@@ -84,12 +84,12 @@ class ManagePluginsCommand extends Command
     protected function addPlugin(string $class): void {
 
         if (!str($class)->contains('\\')) {
-            render("<div class='ml-3'>✘ $class is not a valid fully qualified class name.</div>");
+            $this->renderWarning("<span class='font-bold'>$class</span> is not a fully qualified class name. Please try something line <span class='font-bold'>plugins:manage --add=App\\\Logger\\\Plugins\\\MyCustomPlugin</span>.");
             return;
         }
 
         $pluginsToEnable = collect(config('cloakr.request_plugins'))
-            ->push($class)
+            ->prepend($class)
             ->unique()
             ->values()
             ->toArray();

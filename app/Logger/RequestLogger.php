@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
 use Laminas\Http\Request;
 use Laminas\Http\Response;

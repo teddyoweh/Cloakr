@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Logger\CliRequestLogger;
-use App\Logger\RequestLogger;
+use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\RequestLogger;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Laminas\Http\Request as LaminasRequest;

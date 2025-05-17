@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersLineTable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -11,7 +12,7 @@ use function Termwind\render;
 
 class RollbackTokenCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersLineTable;
 
     protected $signature = 'token:rollback';
 
@@ -40,10 +41,10 @@ class RollbackTokenCommand extends Command
         $previousSetup = json_decode(file_get_contents($this->previousSetupPath), true);
 
         $previousSetupTable = collect($previousSetup)->mapWithKeys(function ($value, $key) {
-            return [lineTableLabel($key) => lineTableLabel($value)];
+            return [$this->lineTableLabel($key) => $this->lineTableLabel($value)];
         })->toArray();
 
-        renderLineTable($previousSetupTable);
+        $this->renderLineTable($previousSetupTable);
 
         if (!confirm("Do you want to rollback your Cloakr setup to the previous state?", false)) {
             return;

@@ -212,7 +212,7 @@ return [
         | a random string for you. Feel free to change this.
         |
         */
-        'subdomain_generator' => \App\Server\SubdomainGenerator\RandomSubdomainGenerator::class,
+        'subdomain_generator' => \Cloakr\Client\Server\SubdomainGenerator\RandomSubdomainGenerator::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -238,7 +238,7 @@ return [
         | if you want to store your users in a different store (Redis, MySQL, etc.)
         |
         */
-        'user_repository' => \App\Server\UserRepository\DatabaseUserRepository::class,
+        'user_repository' => \Cloakr\Client\Server\UserRepository\DatabaseUserRepository::class,
 
         /*
         |--------------------------------------------------------------------------

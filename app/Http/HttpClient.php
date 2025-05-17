@@ -151,6 +151,10 @@ class HttpClient
             return $response;
         }
 
+        if(!$this->connectionData) {
+            return $response;
+        }
+
         $location = $response->getHeaderLine('Location');
 
         if (! strstr($location, $this->connectionData->host)) {

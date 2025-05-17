@@ -3,6 +3,7 @@
 namespace Cloakr\Client\Providers;
 
 use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use Cloakr\Client\Logger\RequestLogger;
 use Illuminate\Support\ServiceProvider;
 use Laminas\Uri\Uri;
@@ -27,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(LoopInterface::class, function () {
             return Loop::get();
+        });
+
+        $this->app->singleton(PluginManager::class, function () {
+            return new PluginManager;
         });
 
         $this->app->bind(Browser::class, function ($app) {

@@ -174,4 +174,19 @@ return [
     ],
 
     'platform_url' => 'https://cloakr.dev',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Request Plugins
+    |--------------------------------------------------------------------------
+    |
+    | Request plugins analyze the incoming HTTP request and extract certain
+    | data of interest to show in the CLI or UI, for example which event
+    | was sent by a billing provider or a webhook from a service like GitHub.
+    |
+    */
+    'request_plugins' => [
+        \Cloakr\Client\Logger\Plugins\PaddleBillingPlugin::class,
+        \Cloakr\ClientLogger\Plugins\GitHubPlugin::class
+    ]
 ];

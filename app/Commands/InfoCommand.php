@@ -4,6 +4,7 @@ namespace Cloakr\Client\Commands;
 
 use Cloakr\Client\Commands\Concerns\RendersBanner;
 use Cloakr\Client\Commands\Concerns\RendersLineTable;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
 use Cloakr\Client\Contracts\FetchesPlatformDataContract;
 use Cloakr\Client\Traits\FetchesPlatformData;
 use Exception;
@@ -16,7 +17,7 @@ use function Termwind\render;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
-    use RendersBanner, RendersLineTable;
+    use RendersBanner, RendersLineTable, RendersOutput;
 
     protected $signature = 'info {--json}';
 
@@ -68,7 +69,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
             return round($result->handlerStats()['connect_time'] * 1000);
         } catch (Exception $e) {
             if ($this->option("verbose")) {
-                render("<div class='ml-3 px-2 text-orange-600 bg-orange-100'>Error while checking latency: {$e->getMessage()}</div>");
+                $this->renderWarning("Error while checking latency: {$e->getMessage()}");
             }
 
             return 999;

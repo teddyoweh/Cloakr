@@ -2,7 +2,10 @@
 
 namespace Cloakr\Client\Logger;
 
+use Cloakr\Client\Logger\Plugins\PluginData;
 use Carbon\Carbon;
+use Exception;
+use Cloakr\Client\Logger\Plugins\PluginManager;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -37,12 +40,16 @@ class LoggedRequest implements \JsonSerializable
     /** @var string */
     protected $subdomain;
 
+    protected ?PluginData $pluginData = null;
+
     public function __construct(string $rawRequest, Request $parsedRequest)
     {
         $this->startTime = now();
         $this->rawRequest = $rawRequest;
         $this->parsedRequest = $parsedRequest;
         $this->id = $this->getRequestId();
+
+        $this->pluginData = app(PluginManager::class)->loadPluginData($this);
     }
 
     /**
@@ -64,7 +71,8 @@ class LoggedRequest implements \JsonSerializable
                 'body' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->parsedRequest->getContent(),
                 'query' => $this->parsedRequest->getQuery()->toArray(),
                 'post' => $this->getPostData(),
-                'curl' => $this->getRequestAsCurl()
+                'curl' => $this->getRequestAsCurl(),
+                'plugin' => $this->pluginData ? $this->pluginData->toArray() : null
             ],
         ];
 
@@ -114,7 +122,7 @@ class LoggedRequest implements \JsonSerializable
         $postData = [];
 
         $contentType = Arr::get($this->parsedRequest->getHeaders()->toArray(), 'Content-Type');
-        if($contentType && Str::contains($contentType, ";")) {
+        if ($contentType && Str::contains($contentType, ";")) {
             $contentType = explode(';', $contentType, 2);
             if (is_array($contentType) && count($contentType) > 1) {
                 $contentType = $contentType[0];
@@ -225,5 +233,9 @@ class LoggedRequest implements \JsonSerializable
         $this->getRequest()->getHeaders()->addHeader(new GenericHeader('x-cloakr-request-id', $requestId));
 
         $this->id = $requestId;
+    }
+
+    public function getCliLabel(): string {
+        return $this->pluginData ? $this->pluginData->getCliLabel() : '';
     }
 }

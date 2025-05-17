@@ -49,8 +49,6 @@ const loadLogs = () => {
         .then((data) => {
             logs.value = data;
 
-            console.debug("loadLogs");
-            console.debug(logs.value);
             emit('set-log', logs.value[0]);
         });
 }
@@ -62,8 +60,6 @@ const clearLogs = () => {
 }
 
 const connect = () => {
-    console.debug("connecting to websocket:");
-    console.debug(`ws://${window.location.hostname}:${window.location.port}/socket`);
     let conn = new ReconnectingWebSocket(`ws://${window.location.hostname}:${window.location.port}/socket`);
 
     conn.onmessage = (e) => {
@@ -86,7 +82,6 @@ const connect = () => {
 }
 
 const replay = (log: CloakrLog) => {
-    console.debug("replay " + '/api/replay/' + log.id);
     highlightNextLog.value = true;
     fetch('/api/replay/' + log.id);
 }
@@ -195,7 +190,7 @@ defineCloakr({ replay, nextLog, previousLog });
                             :statusCode="request.response && request.response.status ? request.response.status : null" />
                     </TableCell>
 
-                    <TableCell class="text-left pr-0">
+                    <TableCell class="text-left pr-0 flex flex-col items-start">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
@@ -206,6 +201,16 @@ defineCloakr({ replay, nextLog, previousLog });
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     {{ request.request.uri }}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider v-if="request.request.plugin">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <span class="text-xs">{{ request.request.plugin?.uiLabel }}</span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {{ request.request.plugin?.uiLabel }} -  {{ request.request.plugin?.plugin }}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>

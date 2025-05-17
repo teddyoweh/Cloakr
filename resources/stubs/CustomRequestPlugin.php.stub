@@ -1,0 +1,37 @@
+<?php
+
+namespace Cloakr\Client\Logger\Plugins;
+
+class __CLASSNAME__ extends BasePlugin {
+
+
+    public function getTitle(): string
+    {
+        return '__CLASSNAME__';
+    }
+
+    public function matchesRequest(): bool
+    {
+
+        // For example: Check if the payload contains a specific key or the headers
+        // contain a specific User-Agent etc.
+        // $headers = $this->loggedRequest->getRequest()->getHeaders();
+        // $payload = $this->loggedRequest->getRequest()->getContent();
+
+        return true;
+    }
+
+    public function getPluginData(): PluginData
+    {
+        try {
+            return PluginData::make()
+                ->setPlugin($this->getTitle())
+                ->setLabel("custom.event")
+                ->setDetails([
+                    "Your" => "Details"
+                ]);
+        } catch (\Throwable $e) {
+            return PluginData::error($this->getTitle(), $e);
+        }
+    }
+}

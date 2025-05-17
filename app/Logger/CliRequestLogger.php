@@ -163,6 +163,7 @@ HTML;
                 'time' => $loggedRequest->getStartTime()->isToday() ? $loggedRequest->getStartTime()->toTimeString() : $loggedRequest->getStartTime()->toDateTimeString(),
                 'color' => $this->getRequestColor($loggedRequest),
                 'status' => optional($loggedRequest->getResponse())->getStatusCode(),
+                'cliLabel' => $loggedRequest->getCliLabel()
             ];
         });
 
@@ -178,17 +179,19 @@ HTML;
             $durationSpaces = str_repeat(' ', max($maxDuration + 2 - mb_strlen($duration), 0));
             $color = $loggedRequest['color'];
             $status = $loggedRequest['status'];
+            $cliLabel = $loggedRequest['cliLabel'];
 
-            $dots = str_repeat('.', max($terminalWidth - strlen($method.$spaces.$url.$time.$durationSpaces.$duration) - 16, 0));
+
+            $dots = str_repeat('.', max($terminalWidth - strlen($method.$spaces.$cliLabel.$url.$time.$durationSpaces.$duration) - 20, 0));
 
             if (empty($dots)) {
-                $url = substr($url, 0, $terminalWidth - strlen($method.$spaces.$time.$durationSpaces.$duration) - 15 - 3).'...';
+                $url = substr($url, 0, $terminalWidth - strlen($method.$spaces.$cliLabel.$time.$durationSpaces.$duration) - 20 - 3).'...';
             } else {
                 $dots .= ' ';
             }
 
             return sprintf(
-                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</> %s<fg=#6C7280> %s%s%s%s ms</>',
+                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</><options=bold>%s</> %s<fg=#6C7280>%s %s%s%s ms</>',
                 $color,
                 $status,
                 $this->verbColors[$method] ?? 'default',
@@ -196,6 +199,7 @@ HTML;
                 $spaces,
                 $url,
                 $dots,
+                $cliLabel,
                 $time,
                 $durationSpaces,
                 $duration,

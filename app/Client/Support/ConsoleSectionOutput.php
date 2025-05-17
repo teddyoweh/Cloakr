@@ -84,7 +84,7 @@ class ConsoleSectionOutput extends StreamOutput
     /**
      * {@inheritdoc}
      */
-    protected function doWrite(string $message, bool $newline)
+    protected function doWrite(string $message, bool $newline): void
     {
         if (! $this->isDecorated()) {
             parent::doWrite($message, $newline);

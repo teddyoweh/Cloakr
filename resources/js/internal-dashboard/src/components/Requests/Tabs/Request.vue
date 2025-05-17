@@ -25,8 +25,11 @@ const mode = useColorMode()
 
 const requestHeadersVisible = useLocalStorage<boolean>('requestHeadersVisible', true)
 const postParametersVisible = useLocalStorage<boolean>('postParametersVisible', true)
+const pluginVisible = useLocalStorage<boolean>('pluginVisible', true)
+
 const accordionState = ref('requestHeaderOpen' as string);
 const postParametersAccordionState = ref('postParametersOpen' as string);
+const pluginAccordionState = ref('pluginOpen' as string);
 
 const rowAccordion = reactive({} as Record<string, boolean>)
 
@@ -38,6 +41,9 @@ onMounted(async () => {
     }
     if (postParametersVisible.value === false) {
         postParametersAccordionState.value = ''
+    }
+    if (pluginVisible.value === false) {
+        pluginAccordionState.value = ''
     }
 
     checkTruncatedRows();
@@ -63,6 +69,15 @@ watch(postParametersAccordionState, (value) => {
     }
     else {
         postParametersVisible.value = false;
+    }
+});
+
+watch(pluginAccordionState, (value) => {
+    if (value === 'pluginOpen') {
+        pluginVisible.value = true;
+    }
+    else {
+        pluginVisible.value = false;
     }
 });
 
@@ -106,6 +121,38 @@ onUnmounted(() => {
 
 <template>
     <div class="max-w-full">
+        <Accordion type="single" collapsible v-model="pluginAccordionState"
+            v-if="request.plugin && !isEmptyObject(request.plugin)">
+            <AccordionItem value="pluginOpen">
+                <AccordionTrigger>
+                    <div class="">
+                        <span class="">{{ request.plugin.plugin }}:</span> <span class="font-mono font-xs">{{ request.plugin.uiLabel }}</span>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                    <Table class="table-fixed max-w-full ">
+                        <TableBody>
+                            <TableRow v-for="[key, value] of Object.entries(request.plugin.details)" :key="key">
+                                <TableCell class="w-2/5 align-top">
+                                    {{ key }}
+                                </TableCell>
+
+                                <TableCell class="pr-0" v-html="value">
+
+                                </TableCell>
+
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+
+                    <div class="p-4 rounded-md bg-gray-50 dark:bg-gray-800 mt-4 flex items-center">
+                        <Icon icon="radix-icons:info-circled" class="h-4 w-4 mr-2" />
+                        <p>Learn how to use and write your own <a class="text-pink-600 dark:text-pink-400 underline">Request Plugins</a> in the documentation.</p>
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+
         <div v-if="Object.keys(request.query).length > 0" class="mb-4">
             <div class="pt-4 font-medium text-base mb-2">Query parameters</div>
             <div class="flex justify-end">
@@ -157,9 +204,9 @@ onUnmounted(() => {
                                             {{ value.value }}
                                         </div>
                                         <div>
-                                            <RowAccordionButton v-if="rowAccordion.hasOwnProperty('post_' + key)"
-                                                @click="rowAccordion['post_' + key] = !rowAccordion['post_' + key]"
-                                                :rotate="rowAccordion['post_' + key]" />
+                                            <RowAccordionButton v-if="rowAccordion.hasOwnProperty('post_' + value.name)"
+                                                @click="rowAccordion['post_' + value.name] = !rowAccordion['post_' + value.name]"
+                                                :rotate="rowAccordion['post_' + value.name]" />
                                         </div>
                                     </div>
                                 </TableCell>

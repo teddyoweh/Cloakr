@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => \App\Commands\ShareCurrentWorkingDirectoryCommand::class,
+    'default' => \Cloakr\Client\Commands\ShareCurrentWorkingDirectoryCommand::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -60,7 +60,7 @@ return [
         Illuminate\Console\Scheduling\ScheduleRunCommand::class,
         Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
         Illuminate\Foundation\Console\VendorPublishCommand::class,
-        \App\Commands\ShareCurrentWorkingDirectoryCommand::class,
+        \Cloakr\Client\Commands\ShareCurrentWorkingDirectoryCommand::class,
     ],
 
     /*

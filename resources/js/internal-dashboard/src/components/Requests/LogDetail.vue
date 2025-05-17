@@ -19,7 +19,7 @@ defineProps<{
     log: CloakrLog | null
 }>()
 
-const emit = defineEmits(['replay'])
+const emit = defineEmits(['replay', 'modified-replay'])
 
 const sideBySide = useLocalStorage<boolean>('sideBySide', true)
 </script>
@@ -44,7 +44,14 @@ const sideBySide = useLocalStorage<boolean>('sideBySide', true)
                         </Tooltip>
                     </TooltipProvider>
                     <div class="flex items-center justify-end w-full mb-2 sm:mb-0 sm:w-auto space-x-2">
-                        <Button variant="outline" @click="emit('replay', log)">Replay</Button>
+                        <div class="flex">
+                            <Button variant="outline" class="rounded-r-none"
+                                @click="emit('replay', log)">Replay</Button>
+                            <Button variant="outline" class="rounded-l-none border-l-0 px-2"
+                                @click="emit('modified-replay', log)">
+                                <Icon icon="radix-icons:gear"/>
+                            </Button>
+                        </div>
                         <Button variant="outline" @click="copyToClipboard(log.request.curl)">
                             <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
                             cURL
@@ -52,7 +59,8 @@ const sideBySide = useLocalStorage<boolean>('sideBySide', true)
                     </div>
                 </div>
                 <div class="flex items-end justify-between mt-2">
-                    <ResponseBadge v-if="log.response" :status-code="log.response.status" :reason="log.response.reason" />
+                    <ResponseBadge v-if="log.response" :status-code="log.response.status"
+                        :reason="log.response.reason" />
 
                     <div class="opacity-75 text-sm">
                         Received at <span class="font-medium">{{ log.performed_at }}</span>
@@ -86,11 +94,13 @@ const sideBySide = useLocalStorage<boolean>('sideBySide', true)
             </Tabs>
 
             <div v-else>
-                <div class="text-sm font-medium rounded-sm border-4 border-gray-100 dark:border-gray-800 px-3 py-1.5 mb-2 text-center">
+                <div
+                    class="text-sm font-medium rounded-sm border-4 border-gray-100 dark:border-gray-800 px-3 py-1.5 mb-2 text-center">
                     Request
                 </div>
                 <Request :request="log.request" />
-                <div class="mt-16 text-sm font-medium rounded-sm border-4 border-gray-100 dark:border-gray-800 px-3 py-1.5 mb-2 text-center">
+                <div
+                    class="mt-16 text-sm font-medium rounded-sm border-4 border-gray-100 dark:border-gray-800 px-3 py-1.5 mb-2 text-center">
                     Response
                 </div>
                 <Response :response="log.response" />

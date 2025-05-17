@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Client\Support\DefaultServerNodeVisitor;
-use App\Client\Support\InsertDefaultServerNodeVisitor;
-use App\Commands\Concerns\RendersBanner;
-use App\Commands\SetUpCloakrDefaultServer;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Support\DefaultServerNodeVisitor;
+use Cloakr\Client\Support\InsertDefaultServerNodeVisitor;
+use Cloakr\Client\Commands\SetUpCloakrDefaultServer;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -14,13 +15,12 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
-
 use function Laravel\Prompts\confirm;
 use function Termwind\render;
 
 class SetDefaultServerCommand extends Command
 {
-    use RendersBanner;
+    use RendersBanner, RendersOutput;
 
     protected $signature = 'default-server {server?}';
 
@@ -60,7 +60,7 @@ class SetDefaultServerCommand extends Command
         $this->renderBanner();
 
         if (is_null($server = config('cloakr.default_server'))) {
-            render('<div class="ml-3 px-2 text-orange-600 bg-orange-100">There is no default server specified.</div>');
+            $this->renderWarning('There is no default server specified.');
         } else {
             render("<div class='ml-3'>Current default server: <span class='font-bold'>$server</span>.</div>");
         }

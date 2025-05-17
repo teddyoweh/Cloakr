@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Logger;
+namespace Cloakr\Client\Logger;
 
-use App\Client\Support\ConsoleSectionOutput;
+use Cloakr\Client\Support\ConsoleSectionOutput;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Terminal;
-
 use function Termwind\render;
 use function Termwind\terminal;
 
@@ -58,9 +57,12 @@ class CliRequestLogger extends Logger
     {
         parent::__construct($consoleOutput);
 
-        $this->section = new ConsoleSectionOutput($this->output->getStream(), $this->consoleSectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
-
+        $this->section = $this->getSection();
         $this->requests = new Collection();
+    }
+
+    public function getSection() {
+        return new ConsoleSectionOutput($this->output->getStream(), $this->consoleSectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
     }
 
     /**
@@ -88,7 +90,7 @@ class CliRequestLogger extends Logger
         }
 
         foreach ($lines as $line) {
-            render("<div class='mx-3 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
+            render("<div class='mx-2 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
         }
     }
 
@@ -104,7 +106,7 @@ class CliRequestLogger extends Logger
         render("");
 
         $template = <<<HTML
-    <div class="flex ml-3 mr-6">
+    <div class="flex ml-2 mr-6">
         <span class="w-24">key</span>
         <span class=" text-gray-800">&nbsp;</span>
         <span class="text-left font-bold">value</span>
@@ -161,6 +163,7 @@ HTML;
                 'time' => $loggedRequest->getStartTime()->isToday() ? $loggedRequest->getStartTime()->toTimeString() : $loggedRequest->getStartTime()->toDateTimeString(),
                 'color' => $this->getRequestColor($loggedRequest),
                 'status' => optional($loggedRequest->getResponse())->getStatusCode(),
+                'cliLabel' => $loggedRequest->getCliLabel()
             ];
         });
 
@@ -176,17 +179,19 @@ HTML;
             $durationSpaces = str_repeat(' ', max($maxDuration + 2 - mb_strlen($duration), 0));
             $color = $loggedRequest['color'];
             $status = $loggedRequest['status'];
+            $cliLabel = $loggedRequest['cliLabel'];
 
-            $dots = str_repeat('.', max($terminalWidth - strlen($method.$spaces.$url.$time.$durationSpaces.$duration) - 16, 0));
+
+            $dots = str_repeat('.', max($terminalWidth - strlen($method.$spaces.$cliLabel.$url.$time.$durationSpaces.$duration) - 20, 0));
 
             if (empty($dots)) {
-                $url = substr($url, 0, $terminalWidth - strlen($method.$spaces.$time.$durationSpaces.$duration) - 15 - 3).'...';
+                $url = substr($url, 0, $terminalWidth - strlen($method.$spaces.$cliLabel.$time.$durationSpaces.$duration) - 20 - 3).'...';
             } else {
                 $dots .= ' ';
             }
 
             return sprintf(
-                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</> %s<fg=#6C7280> %s%s%s%s ms</>',
+                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</><options=bold>%s</> %s<fg=#6C7280>%s %s%s%s ms</>',
                 $color,
                 $status,
                 $this->verbColors[$method] ?? 'default',
@@ -194,6 +199,7 @@ HTML;
                 $spaces,
                 $url,
                 $dots,
+                $cliLabel,
                 $time,
                 $durationSpaces,
                 $duration,

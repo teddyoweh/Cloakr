@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Providers;
+namespace Cloakr\Client\Providers;
 
-use App\Logger\CliRequestLogger;
-use App\Logger\RequestLogger;
+use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\Plugins\PluginManager;
+use Cloakr\Client\Logger\RequestLogger;
 use Illuminate\Support\ServiceProvider;
 use Laminas\Uri\Uri;
 use Laminas\Uri\UriFactory;
-use React\EventLoop\Factory as LoopFactory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
 
@@ -26,7 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->setMemoryLimit();
 
         $this->app->singleton(LoopInterface::class, function () {
-            return LoopFactory::create();
+            return Loop::get();
+        });
+
+        $this->app->singleton(PluginManager::class, function () {
+            return new PluginManager;
         });
 
         $this->app->bind(Browser::class, function ($app) {

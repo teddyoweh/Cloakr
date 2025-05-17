@@ -1,1 +1,0 @@
-ALTER TABLE users ADD max_connections INTEGER NOT NULL DEFAULT 0;

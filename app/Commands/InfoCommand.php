@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Commands;
+namespace Cloakr\Client\Commands;
 
-use App\Commands\Concerns\RendersBanner;
-use App\Contracts\FetchesPlatformDataContract;
-use App\Traits\FetchesPlatformData;
+use Cloakr\Client\Commands\Concerns\RendersBanner;
+use Cloakr\Client\Commands\Concerns\RendersLineTable;
+use Cloakr\Client\Commands\Concerns\RendersOutput;
+use Cloakr\Client\Contracts\FetchesPlatformDataContract;
+use Cloakr\Client\Traits\FetchesPlatformData;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +17,7 @@ use function Termwind\render;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
-    use RendersBanner;
+    use RendersBanner, RendersLineTable, RendersOutput;
 
     protected $signature = 'info {--json}';
 
@@ -47,10 +49,10 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
         render('<div class="ml-3 font-bold">Configuration</div>');
 
         $configuration = collect($configuration)->mapWithKeys(function ($value, $key) {
-            return [lineTableLabel($key) => lineTableLabel($value)];
+            return [$this->lineTableLabel($key) => $this->lineTableLabel($value)];
         })->toArray();
 
-        renderLineTable($configuration);
+        $this->renderLineTable($configuration);
     }
 
     protected function checkLatency(string $server): int
@@ -64,10 +66,10 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
 
         try {
             $result = Http::timeout(5)->get($host);
-            return $result->handlerStats()['connect_time'] * 1000;
+            return round($result->handlerStats()['connect_time'] * 1000);
         } catch (Exception $e) {
             if ($this->option("verbose")) {
-                render("<div class='ml-3 px-2 text-orange-600 bg-orange-100'>Error while checking latency: {$e->getMessage()}</div>");
+                $this->renderWarning("Error while checking latency: {$e->getMessage()}");
             }
 
             return 999;

@@ -11,7 +11,7 @@ The default generator looks like this:
 
 ```php
 use Illuminate\Support\Str;
-use Cloakr\Client\Contracts\SubdomainGenerator;
+use App\Contracts\SubdomainGenerator;
 
 class RandomSubdomainGenerator implements SubdomainGenerator
 {
@@ -39,5 +39,5 @@ Next you need to specify your custom subdomain generator in your cloakr configur
 | a random string for you. Feel free to change this.
 |
 */
-'subdomain_generator' => \Cloakr\Client\Server\SubdomainGenerator\RandomSubdomainGenerator::class,
+'subdomain_generator' => \App\Server\SubdomainGenerator\RandomSubdomainGenerator::class,
 ```

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Client;
 
-use Cloakr\Client\Client;
-use Cloakr\Client\Configuration;
-use Cloakr\Client\Factory;
-use Cloakr\Client\Logger\RequestLogger;
+use App\Client\Client;
+use App\Client\Configuration;
+use App\Client\Factory;
+use App\Logger\RequestLogger;
 use Psr\Http\Message\ResponseInterface;
 use React\Http\Browser;
 use Tests\Feature\TestCase;

@@ -1,0 +1,93 @@
+{% extends "app" %}
+{% block title %}Sites{% endblock %}
+{% block content %}
+    <div class="flex flex-col py-8">
+        <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+            <div
+                class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+                <table class="min-w-full" v-if="sites.length > 0">
+                    <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            Host
+                        </th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            Subdomain
+                        </th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            User
+                        </th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            Shared At
+                        </th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        <tr v-for="site in sites">
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium text-gray-900">
+                                @{ site.host }
+                            </td>
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                                @{ site.subdomain }.{{ configuration.hostname()}}:{{ configuration.port() }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                                @{ site.user?.name }
+                            </td>
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                                @{ site.shared_at }
+                            </td>
+                            <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                                <a :href="'{{ scheme|raw }}://'+site.subdomain+'.{{ configuration.hostname()}}:{{ configuration.port() }}'" target="_blank"
+                                   class="text-indigo-600 hover:text-indigo-900">Visit</a>
+                                <a href="#"
+                                   @click.prevent="disconnectSite(site.client_id)"
+                                   class="pl-2 text-red-600 hover:text-red-900">Disconnect</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="flex items-center justify-center text-gray-900 p-4" v-else>
+                    <span class="text-xl">There are no sites shared with this server yet.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        new Vue({
+            el: '#app',
+
+            delimiters: ['@{', '}'],
+
+            data: {
+                sites: []
+            },
+
+            methods: {
+                getSites() {
+                    fetch('/api/sites')
+                        .then((response) => {
+                            return response.json();
+                        }).then((data) => {
+                            this.sites = data.sites;
+                        });
+                },
+                disconnectSite(id) {
+                    fetch('/api/sites/' + id, {
+                        method: 'DELETE',
+                    }).then((response) => {
+                        return response.json();
+                    }).then((data) => {
+                        this.sites = data.sites;
+                    });
+                }
+            },
+
+            mounted() {
+                this.getSites();
+            }
+        })
+    </script>
+{% endblock %}

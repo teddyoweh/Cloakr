@@ -1,6 +1,6 @@
 <?php
 
-namespace Cloakr\Client\Commands;
+namespace App\Commands;
 
 use Illuminate\Console\Command;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cloakr\Client\Contracts;
+namespace App\Contracts;
 
 interface FetchesPlatformDataContract
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Cloakr\Client\Commands;
+namespace App\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;

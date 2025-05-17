@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Cloakr - {{ subdomain }}</title>
+
+    <script src="https://unpkg.com/tailwindcss-jit-cdn"></script>
+
+    <script type="tailwind-config">
+{
+    theme: {
+        extend: {
+            colors: {
+                'brand': {
+                    600: '#D4019C'
+                },
+                steel: {
+                    800: '#535765',
+                    900: '#171C2E'
+                }
+            },
+        }
+        }
+}
+    </script>
+
+</head>
+<body>
+<div
+    style="background-image: linear-gradient(to top, #ee12b4, #ee20a6, #ed2c99, #e9388d, #e54283, #e75585, #e96688, #ea768d, #f1919f, #f7abb2, #fcc5c7, #ffdede);"
+
+    class="bg-no-repeat w-full min-h-screen">
+    <div class="container px-4 md:px-8 mx-auto pt-4 flex flex-col">
+        <header class="pb-6 flex w-full justify-between items-center mt-8">
+            <a href="https://cloakr.beyondco.de">
+                <img src="https://cloakr.beyondco.de/images/cloakr/logo_wide.svg"
+                     class="w-48" alt="Cloakr"/>
+            </a>
+            <div class="text-steel-800">
+                <a class="flex justify-center items-center" href="https://beyondco.de/" target="_blank">
+                    <span class="mr-3">A product by</span>
+                    <img src="https://usewindy.com/img/bc_logo_full.svg" class="h-8" alt="Beyond Code">
+                </a>
+            </div>
+        </header>
+        <div class="text-steel-900 text-xl w-1/2 mx-auto pt-16">
+            <h1 class="text-6xl font-extrabold">Welcome to Cloakr!</h1>
+            <p class="px-4 py-2 bg-white bg-opacity-50 rounded mx-auto mt-8 text-lg">
+                You can create public URLs for your local applications through any firewall and VPN with <span class="font-medium">Cloakr</span>.
+                Receive webhooks, test local sites on mobile devices and share them with others.
+
+                <a href="https://cloakr.beyondco.de/docs" class="underline text-brand-600 font-medium">
+                    Learn more</a>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

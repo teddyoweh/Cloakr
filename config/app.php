@@ -54,7 +54,7 @@ return [
     */
 
     'providers' => [
-        Cloakr\Client\Providers\AppServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
     ],

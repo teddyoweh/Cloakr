@@ -1,10 +1,10 @@
 <?php
 
-namespace Cloakr\Client\Commands;
+namespace App\Commands;
 
-use Cloakr\Client\Commands\Concerns\RendersBanner;
-use Cloakr\Client\Support\ClearServerNodeVisitor;
-use Cloakr\Client\Support\InsertDefaultServerNodeVisitor;
+use App\Client\Support\ClearServerNodeVisitor;
+use App\Client\Support\InsertDefaultServerNodeVisitor;
+use App\Commands\Concerns\RendersBanner;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node;
@@ -13,6 +13,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
+
 use function Termwind\render;
 
 class ClearDefaultServerCommand extends Command

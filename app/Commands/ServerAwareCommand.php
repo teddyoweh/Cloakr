@@ -1,9 +1,9 @@
 <?php
 
-namespace Cloakr\Client\Commands;
+namespace App\Commands;
 
-use Cloakr\Client\Exceptions\InvalidServerProvided;
-use Cloakr\Client\Logger\CliRequestLogger;
+use App\Client\Exceptions\InvalidServerProvided;
+use App\Logger\CliRequestLogger;
 use Illuminate\Console\Parser;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;

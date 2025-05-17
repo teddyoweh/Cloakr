@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Client;
 
-use Cloakr\Client\Configuration;
-use Cloakr\Client\Factory;
-use Cloakr\Client\Http\HttpClient;
-use Cloakr\Client\Logger\LoggedRequest;
-use Cloakr\Client\Logger\RequestLogger;
+use App\Client\Configuration;
+use App\Client\Factory;
+use App\Client\Http\HttpClient;
+use App\Logger\LoggedRequest;
+use App\Logger\RequestLogger;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Arr;
@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use React\Http\Browser;
 use React\Http\Message\ResponseException;
 use Tests\Feature\TestCase;
+
 use function GuzzleHttp\Psr7\str;
 
 class DashboardTest extends TestCase

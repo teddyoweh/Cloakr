@@ -1,6 +1,6 @@
 <?php
 
-namespace Cloakr\Client\Logger;
+namespace App\Logger;
 
 use Illuminate\Support\Str;
 use Laminas\Http\Request;

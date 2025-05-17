@@ -1,10 +1,10 @@
 <?php
 
-namespace Cloakr\Client\Commands;
+namespace App\Commands;
 
 
-use Cloakr\Client\Contracts\FetchesPlatformDataContract;
-use Cloakr\Client\Traits\FetchesPlatformData;
+use App\Contracts\FetchesPlatformDataContract;
+use App\Traits\FetchesPlatformData;
 use Illuminate\Support\Facades\Artisan;
 
 use function Laravel\Prompts\select;

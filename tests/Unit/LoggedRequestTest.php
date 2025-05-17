@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Cloakr\Client\Logger\LoggedRequest;
+use App\Logger\LoggedRequest;
 use GuzzleHttp\Psr7\Request;
 use Laminas\Http\Request as LaminasRequest;
 use Tests\TestCase;

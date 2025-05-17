@@ -19,14 +19,10 @@ class ManagePluginsCommand extends Command
 
     protected PluginManager $pluginManager;
 
-    public function __construct(PluginManager $pluginManager)
-    {
-        parent::__construct();
-        $this->pluginManager = $pluginManager;
-    }
 
-    public function handle()
+    public function handle(PluginManager $pluginManager)
     {
+        $this->pluginManager = $pluginManager;
 
         $plugins = $this->pluginManager->getPlugins();
 
@@ -42,9 +38,9 @@ class ManagePluginsCommand extends Command
 
 
         // Build key-based list for easier Windows support
-        $activePlugins = collect(config('cloakr.request_plugins'))
+        $activePlugins = collect($this->pluginManager->getEnabledPlugins())
             ->map(function ($pluginClass) {
-                return str($pluginClass)->afterLast('\\')->__toString();
+                return class_basename($pluginClass);
             })
             ->toArray();
 
@@ -68,8 +64,6 @@ class ManagePluginsCommand extends Command
             ->values()
             ->toArray();
 
-        config(['cloakr.request_plugins' => $pluginsToEnable]);
-
         $this->pluginManager->modifyPluginConfiguration($pluginsToEnable);
 
         render("<div class='ml-3'>✔ Request plugins have been updated.</div>");
@@ -82,13 +76,11 @@ class ManagePluginsCommand extends Command
             return;
         }
 
-        $pluginsToEnable = collect(config('cloakr.request_plugins'))
+        $pluginsToEnable = collect($this->pluginManager->getEnabledPlugins())
             ->prepend($class)
             ->unique()
             ->values()
             ->toArray();
-
-        config(['cloakr.request_plugins' => $pluginsToEnable]);
 
         $this->pluginManager->modifyPluginConfiguration($pluginsToEnable);
     }

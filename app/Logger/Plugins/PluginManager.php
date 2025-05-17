@@ -58,6 +58,16 @@ class PluginManager
         return null;
     }
 
+    public function getEnabledPlugins(): array
+    {
+        return $this->pluginConfig;
+    }
+
+    public function isEnabled(string $pluginClass): bool
+    {
+        return in_array($pluginClass, $this->pluginConfig);
+    }
+
     protected function ensureValidPluginConfig(): void
     {
         $this->pluginConfig = config('cloakr.request_plugins');
@@ -68,8 +78,6 @@ class PluginManager
                 $this->pluginConfig = array_diff($this->pluginConfig, [$pluginClass]);
             }
         }
-
-        config(['cloakr.request_plugins' => $this->pluginConfig]);
     }
 
     protected function loadCustomPlugins(): array
@@ -94,7 +102,7 @@ class PluginManager
             $this->customPlugins[] = $pluginClass;
         }
 
-       return $this->customPlugins;
+        return $this->customPlugins;
     }
 
     protected function loadDefaultPlugins(): array

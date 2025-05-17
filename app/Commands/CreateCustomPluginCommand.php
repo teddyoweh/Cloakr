@@ -18,7 +18,7 @@ class CreateCustomPluginCommand extends Command
 
     protected $description = 'Create a new custom request plugin.';
 
-    public function handle()
+    public function handle(PluginManager $pluginManager)
     {
 
         $this->renderBanner();
@@ -33,7 +33,7 @@ class CreateCustomPluginCommand extends Command
 
         $pluginName = preg_replace('/[^a-zA-Z0-9]/', '', $pluginName);
 
-        $customPluginDirectory = app(PluginManager::class)->getCustomPluginDirectory();
+        $customPluginDirectory = $pluginManager->getCustomPluginDirectory();
 
         $pluginFile = implode(DIRECTORY_SEPARATOR, [$customPluginDirectory, $pluginName . '.php']);
 

@@ -16,23 +16,22 @@ class ListPluginsCommand extends Command
 
     protected $description = 'List all active request plugins.';
 
-    public function handle()
+    public function handle(PluginManager $pluginManager)
     {
 
         $this->renderBanner();
 
         render('<div class="ml-3">Explanation text about request plugins goes here.</div>'); // TODO:
 
-        $pluginManager = app(PluginManager::class);
         $defaultPlugins = $pluginManager->getDefaultPlugins();
         $customPlugins = $pluginManager->getCustomPlugins();
 
         $pluginTable = collect(array_merge($defaultPlugins, $customPlugins))
-            ->map(function ($pluginClass) use ($defaultPlugins) {
+            ->map(function ($pluginClass) use ($defaultPlugins, $pluginManager) {
                 return [
                     'Plugin' => $pluginClass,
                     'Type' => in_array($pluginClass, $defaultPlugins) ? 'Default' : 'Custom',
-                    'Active' => in_array($pluginClass, config('cloakr.request_plugins')) ? '✔' : '✘',
+                    'Active' => $pluginManager->isEnabled($pluginClass) ? '✔' : '✘',
                 ];
             })
             ->toArray();

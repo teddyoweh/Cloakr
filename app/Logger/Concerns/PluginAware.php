@@ -53,7 +53,7 @@ trait PluginAware
         }
 
         foreach (scandir($pluginDirectory) as $file) {
-            if ($file === '.' || $file === '..') {
+            if (str($file)->startsWith('.')) {
                 continue;
             }
 

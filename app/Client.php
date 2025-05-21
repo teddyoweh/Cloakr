@@ -256,7 +256,7 @@ class Client
 
     protected function exit(Deferred $deferred)
     {
-        // $deferred->reject(); TODO: reject now requires an Exception as parameter - how to handle?
+        $deferred->reject(new \Exception());
 
 
         $this->loop->futureTick(function () {

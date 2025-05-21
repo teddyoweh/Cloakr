@@ -39,9 +39,9 @@ class DashboardTest extends TestCase
 
     public function tearDown(): void
     {
-        parent::tearDown();
-
         $this->dashboardFactory->getApp()->close();
+
+        parent::tearDown();
     }
 
     /** @test */
@@ -79,6 +79,43 @@ class DashboardTest extends TestCase
 
         $this->assertSame(200,
             $this->await($this->browser->get('http://127.0.0.1:4040/api/replay/request-one'))
+                ->getStatusCode()
+        );
+    }
+
+    /** @test */
+    public function it_can_replay_modified_requests()
+    {
+        $request = new Request('GET', '/example', [
+            'X-Cloakr-Request-ID' => 'request-one',
+        ]);
+
+        $httpClient = m::mock(HttpClient::class);
+        $httpClient->shouldReceive('performRequest')
+            ->once()
+            ->withArgs(function ($arg) {
+                $sentRequest = Message::parseMessage($arg);
+
+                return Arr::get($sentRequest, 'start-line') === 'POST /modified HTTP/1.1';
+            });
+
+        app()->instance(HttpClient::class, $httpClient);
+
+        $this->startDashboard();
+
+        $this->logRequest($request);
+
+        $this->assertSame(200,
+            $this->await($this->browser->post('http://127.0.0.1:4040/api/replay-modified', [
+                'Content-Type' => 'application/json',
+            ], json_encode([
+                'method' => 'POST',
+                'uri' => '/modified',
+                'headers' => [
+                    'X-Cloakr-Request-ID' => 'request-one',
+                ],
+                'body' => '',
+            ])))
                 ->getStatusCode()
         );
     }

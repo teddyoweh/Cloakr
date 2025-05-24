@@ -50,16 +50,10 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
     protected function getHerdValetConfigFilePath(): ?string
     {
-        if (strpos(php_uname('s'), 'Windows') !== false) {
-            $isWindows = true;
-        } else {
-            $isWindows = false;
-        }
-
         $configPath = null;
 
         if (array_key_exists('HOME', $_SERVER)) {
-            if ($isWindows) {
+            if ($this->isWindows()) {
                 $configPath = $_SERVER['HOME'] . '\.config\herd\config\valet';
             } else {
                 $configPath = $_SERVER['HOME'] . '/Library/Application Support/Herd/config/valet';
@@ -77,7 +71,7 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
     protected function detectTld(): string
     {
-        if($this->valetConfig && array_key_exists('tld', $this->valetConfig)) {
+        if ($this->valetConfig && array_key_exists('tld', $this->valetConfig)) {
             return $this->valetConfig['tld'];
         }
 
@@ -130,15 +124,18 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
         return $this->detectProtocol($host) . $host;
     }
 
-    protected function configFilePath(): string {
+    protected function configFilePath(): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'config.json';
     }
 
-    protected function certificateFile(string $host): string {
+    protected function certificateFile(string $host): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'Certificates' . DIRECTORY_SEPARATOR . $host . '.crt';
     }
 
-    protected function sitesPath(): string {
+    protected function sitesPath(): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'Sites';
     }
 }

@@ -7,7 +7,7 @@ use React\Promise\PromiseInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 
-use function Clue\React\Block\await;
+use function React\Async\await;
 
 abstract class TestCase extends \Tests\TestCase
 {
@@ -28,8 +28,8 @@ abstract class TestCase extends \Tests\TestCase
         $this->loop = $this->app->make(LoopInterface::class);
     }
 
-    protected function await(PromiseInterface $promise, LoopInterface $loop = null, $timeout = null)
+    protected function await(PromiseInterface $promise)
     {
-        return await($promise, $loop ?? $this->loop, $timeout ?? static::AWAIT_TIMEOUT);
+        return await($promise);
     }
 }

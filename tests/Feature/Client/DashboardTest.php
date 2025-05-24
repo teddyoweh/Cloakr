@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use React\Http\Browser;
 use React\Http\Message\ResponseException;
 use Tests\Feature\TestCase;
-use function GuzzleHttp\Psr7\str;
+
 
 class DashboardTest extends TestCase
 {
@@ -148,7 +148,10 @@ class DashboardTest extends TestCase
 
     protected function logRequest(RequestInterface $request): LoggedRequest
     {
-        return $this->requestLogger->logRequest(str($request), \Laminas\Http\Request::fromString(str($request)));
+        return $this->requestLogger->logRequest(
+            Message::toString($request),
+            \Laminas\Http\Request::fromString(Message::toString($request))
+        );
     }
 
     protected function startDashboard()

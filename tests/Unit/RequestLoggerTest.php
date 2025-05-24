@@ -10,8 +10,7 @@ use Laminas\Http\Request as LaminasRequest;
 use Mockery as m;
 use React\Http\Browser;
 use Tests\TestCase;
-
-use function GuzzleHttp\Psr7\str;
+use GuzzleHttp\Psr7\Message;
 
 class RequestLoggerTest extends TestCase
 {
@@ -25,7 +24,7 @@ class RequestLoggerTest extends TestCase
         $cliLogger = m::mock(CliRequestLogger::class);
         $cliLogger->shouldReceive('logRequest')->once();
 
-        $requestString = str(new Request('GET', '/example'));
+        $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
         $logger = new RequestLogger($browser, $cliLogger);
@@ -43,7 +42,7 @@ class RequestLoggerTest extends TestCase
         $cliLogger = m::mock(CliRequestLogger::class);
         $cliLogger->shouldReceive('logRequest')->once();
 
-        $requestString = str(new Request('GET', '/example'));
+        $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
         $logger = new RequestLogger($browser, $cliLogger);
@@ -65,7 +64,7 @@ class RequestLoggerTest extends TestCase
         $cliLogger->shouldReceive('logRequest')
             ->twice();
 
-        $requestString = str(new Request('GET', '/example'));
+        $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
         $logger = new RequestLogger($browser, $cliLogger);
@@ -73,7 +72,7 @@ class RequestLoggerTest extends TestCase
 
         $this->assertNull($logger->findLoggedRequest($loggedRequest->id())->getResponse());
 
-        $responseString = str(new Response(200, [], 'Hello World!'));
+        $responseString = Message::toString(new Response(200, [], 'Hello World!'));
 
         $logger->logResponse($parsedRequest, $responseString);
 
@@ -90,7 +89,7 @@ class RequestLoggerTest extends TestCase
         $cliLogger = m::mock(CliRequestLogger::class);
         $cliLogger->shouldReceive('logRequest')->once();
 
-        $requestString = str(new Request('GET', '/example'));
+        $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
         $logger = new RequestLogger($browser, $cliLogger);
@@ -108,7 +107,7 @@ class RequestLoggerTest extends TestCase
         $cliLogger = m::mock(CliRequestLogger::class);
         $cliLogger->shouldReceive('logRequest');
 
-        $requestString = str(new Request('GET', '/example'));
+        $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
         $logger = new RequestLogger($browser, $cliLogger);

@@ -15,8 +15,6 @@ use Laminas\Http\Response;
 use Namshi\Cuzzle\Formatter\CurlFormatter;
 use Riverline\MultiPartParser\StreamedPart;
 
-use function GuzzleHttp\Psr7\parse_request;
-
 class LoggedRequest implements \JsonSerializable
 {
     /** @var string */
@@ -210,7 +208,7 @@ class LoggedRequest implements \JsonSerializable
         }
 
         try {
-            return (new CurlFormatter())->format(parse_request($this->rawRequest));
+            return (new CurlFormatter())->format(Message::parseRequest($this->rawRequest));
         } catch (\Throwable $e) {
             return '';
         }

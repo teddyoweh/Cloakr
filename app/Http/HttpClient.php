@@ -14,7 +14,6 @@ use Ratchet\RFC6455\Messaging\Frame;
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
 use React\Socket\Connector;
-use function GuzzleHttp\Psr7\parse_request;
 
 class HttpClient
 {
@@ -43,7 +42,7 @@ class HttpClient
         $this->configuration = $configuration;
     }
 
-    public function performRequest(string $requestData, WebSocket $proxyConnection = null, $connectionData = null)
+    public function performRequest(string $requestData, ?WebSocket $proxyConnection = null, $connectionData = null)
     {
         $this->connectionData = $connectionData;
 
@@ -51,7 +50,7 @@ class HttpClient
 
         $this->logger->logRequest($requestData, $this->request);
 
-        $request = $this->passRequestThroughModifiers(parse_request($requestData), $proxyConnection);
+        $request = $this->passRequestThroughModifiers(Message::parseRequest($requestData), $proxyConnection);
 
         transform($request, function ($request) use ($proxyConnection) {
             $this->sendRequestToApplication($request, $proxyConnection);

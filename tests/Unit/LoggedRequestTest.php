@@ -6,15 +6,14 @@ use Cloakr\Client\Logger\LoggedRequest;
 use GuzzleHttp\Psr7\Request;
 use Laminas\Http\Request as LaminasRequest;
 use Tests\TestCase;
-
-use function GuzzleHttp\Psr7\str;
+use GuzzleHttp\Psr7\Message;
 
 class LoggedRequestTest extends TestCase
 {
     /** @test */
     public function it_retrieves_the_request_id()
     {
-        $rawRequest = str(new Request('GET', '/cloakr', [
+        $rawRequest = Message::toString(new Request('GET', '/cloakr', [
             'X-Cloakr-Request-ID' => 'example-request',
         ]));
         $parsedRequest = LaminasRequest::fromString($rawRequest);
@@ -26,7 +25,7 @@ class LoggedRequestTest extends TestCase
     /** @test */
     public function it_retrieves_the_request_for_chrome_extensions()
     {
-        $rawRequest = str(new Request('GET', '/cloakr', [
+        $rawRequest = Message::toString(new Request('GET', '/cloakr', [
             'Origin' => 'chrome-extension://cloakr',
             'X-Cloakr-Request-ID' => 'example-request',
         ]));
@@ -44,7 +43,7 @@ class LoggedRequestTest extends TestCase
             'project' => 'cloakr',
         ];
 
-        $rawRequest = str(new Request('GET', '/cloakr', [
+        $rawRequest = Message::toString(new Request('GET', '/cloakr', [
             'Content-Type' => 'application/json',
         ], json_encode($postData)));
         $parsedRequest = LaminasRequest::fromString($rawRequest);
@@ -66,7 +65,7 @@ class LoggedRequestTest extends TestCase
     /** @test */
     public function it_returns_the_raw_request()
     {
-        $rawRequest = str(new Request('GET', '/cloakr', [
+        $rawRequest = Message::toString(new Request('GET', '/cloakr', [
             'X-Cloakr-Request-ID' => 'example-request',
         ]));
         $parsedRequest = LaminasRequest::fromString($rawRequest);
@@ -78,7 +77,7 @@ class LoggedRequestTest extends TestCase
     /** @test */
     public function it_returns_the_parsed_request()
     {
-        $rawRequest = str(new Request('GET', '/cloakr', [
+        $rawRequest = Message::toString(new Request('GET', '/cloakr', [
             'X-Cloakr-Request-ID' => 'example-request',
         ]));
         $parsedRequest = LaminasRequest::fromString($rawRequest);

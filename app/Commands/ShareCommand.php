@@ -136,14 +136,15 @@ class ShareCommand extends ServerAwareCommand
 
     protected function ensureEnvironmentSetup(): void
     {
-        if ($this->isWindows()) {
-            if (!$this->isWmicAvailable()) {
-                error('The "wmic" command is not available on this Windows machine.');
-                error(
-                    'Please refer to the documentation for more information: https://cloakr.dev/docs/troubleshooting',
-                    abort: true
-                );
-            }
+        if (!$this->isWindows()) {
+            return;
+        }
+        if (!$this->isWmicAvailable()) {
+            error('The "wmic" command is not available on this Windows machine.');
+            error(
+                'Please refer to the documentation for more information: https://cloakr.dev/docs/troubleshooting',
+                abort: true
+            );
         }
     }
 

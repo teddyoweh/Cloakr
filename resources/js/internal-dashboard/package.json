@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.1.5",
     "@vueuse/core": "^11.1.0",
     "class-variance-authority": "^0.7.0",
     "clipboard": "^2.0.11",
     "clsx": "^2.1.1",
-    "lucide-vue-next": "^0.441.0",
     "radix-vue": "^1.9.6",
     "reconnecting-websocket": "^4.4.0",
     "tailwind-merge": "^2.5.2",

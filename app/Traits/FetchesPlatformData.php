@@ -115,11 +115,11 @@ trait FetchesPlatformData
 
     protected function platformEndpoint(): string
     {
-        return config('cloakr.platform_url') . '/api/';
+        return config('cloakr.platform_url', 'https://cloakr.dev') . '/api/';
     }
 
     protected function cloakrPlatformSetup()
     {
-        return config('cloakr.platform_url') !== null && config('cloakr.platform_url') !== "";
+        return config('cloakr.platform_url', 'https://cloakr.dev') !== null && config('cloakr.platform_url') !== "";
     }
 }

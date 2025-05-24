@@ -123,6 +123,9 @@ class HttpClient
 
                     optional($proxyConnection)->close();
                 });
+            })
+            ->catch(function ($e) {
+                // Ignore possible errors
             });
     }
 

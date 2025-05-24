@@ -1,34 +1,37 @@
 <script setup lang="ts">
 import {
-    Table,
+    AccordionTable, AccordionTableRow,
     TableBody,
     TableCell,
-    TableRow,
 } from '@/components/ui/table'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion'
 import RowAccordionButton from '@/components/ui/RowAccordionButton.vue'
-import { Icon } from '@iconify/vue'
-import { JsonViewer } from "vue3-json-viewer"
+import {JsonViewer} from "vue3-json-viewer"
 import "vue3-json-viewer/dist/index.css";
-import { bodyIsJson, copyToClipboard, toPhpArray } from '@/lib/utils'
-import { useLocalStorage } from '@/lib/composables/useLocalStorage'
-import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useColorMode } from '@vueuse/core'
+import {bodyIsJson, copyToClipboard, bodyIsHtml, toPhpArray} from '@/lib/utils'
+import {useLocalStorage} from '@/lib/composables/useLocalStorage'
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {ArrowsRightLeftIcon, ClipboardIcon, DocumentTextIcon} from "@heroicons/vue/16/solid";
+import IconTextButton from "@/components/ui/IconTextButton.vue";
+import AccordionTableHeader from "@/components/ui/table/AccordionTableHeader.vue";
+import BodyViewButton from "@/components/ui/BodyViewButton.vue";
+import {useColorMode} from "@vueuse/core";
 
 
 const props = defineProps<{
     response: ResponseData
 }>()
 
-const mode = useColorMode()
 
 const responseHeadersVisible = useLocalStorage<boolean>('responseHeadersVisible', true)
 const accordionState = ref('responseHeaderOpen' as string);
-const responseView = useLocalStorage<string>('responseView', 'raw')
+const bodyAccordionState = ref('bodyOpen' as string);
+
+const bodyView = ref('raw' as 'json' | 'raw' | 'preview')
 
 const rowAccordion = reactive({} as Record<string, boolean>)
+
+const mode = useColorMode();
 
 
 onMounted(async () => {
@@ -38,21 +41,29 @@ onMounted(async () => {
         accordionState.value = ''
     }
 
-    checkTruncatedRows();
+    await checkTruncatedRows();
     window.addEventListener('resize', checkTruncatedRows);
 })
 
 watch(accordionState, (value) => {
     if (value === 'responseHeaderOpen') {
         responseHeadersVisible.value = true;
-    }
-    else {
+    } else {
         responseHeadersVisible.value = false;
     }
 });
 
 watch(() => props.response, async () => {
-    checkTruncatedRows();
+
+    if (bodyIsJson(props.response)) {
+        bodyView.value = 'json';
+    } else if (bodyIsHtml(props.response)) {
+        bodyView.value = 'preview';
+    } else {
+        bodyView.value = 'raw';
+    }
+
+    await checkTruncatedRows();
 });
 
 
@@ -66,8 +77,7 @@ const checkTruncatedRows = async () => {
 
             if (el.scrollWidth > el.clientWidth) {
                 rowAccordion[rowName] = false;
-            }
-            else {
+            } else {
                 delete rowAccordion[rowName];
             }
         }
@@ -75,92 +85,110 @@ const checkTruncatedRows = async () => {
     });
 }
 
+const responseEmpty = computed(() => {
+    return props.response.body === '';
+});
+
 onUnmounted(() => {
     window.removeEventListener('resize', checkTruncatedRows);
 })
 </script>
 
 <template>
-    <div class="max-w-full">
+    <div class="max-w-full px-6 pt-3">
         <Accordion type="single" collapsible v-model="accordionState">
             <AccordionItem value="responseHeaderOpen">
                 <AccordionTrigger>
-                    <button class="flex relative z-10 justify-between items-center w-full pr-4">
-                        Headers
-                    </button>
-                </AccordionTrigger>
-                <AccordionContent>
-                    <div class="flex justify-end">
-                        <Button @click="copyToClipboard(toPhpArray(response.headers, 'headers'))" variant="outline">
-                            <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
+                    <div>Headers</div>
+                    <template v-slot:action>
+                        <IconTextButton @click="copyToClipboard(toPhpArray(response.headers, 'headers'))"
+                                        :icon="ClipboardIcon">
                             Copy as PHP array
-                        </Button>
-                    </div>
-                    <Table class="max-w-full table-fixed">
-                        <TableBody>
-                            <TableRow v-for="[key, value] of Object.entries(response.headers)" :key="key">
-                                <TableCell class="w-2/5">
+                        </IconTextButton>
+                    </template>
+                    <template v-slot:icon>
+                        <ArrowsRightLeftIcon class="size-4"/>
+                    </template>
+                </AccordionTrigger>
+                <AccordionContent class="px-2">
+                    <AccordionTable>
+                        <AccordionTableHeader/>
+                        <TableBody class="font-mono">
+                            <AccordionTableRow v-for="[key, value] of Object.entries(response.headers)" :key="key">
+                                <TableCell class="text-gray-500 dark:text-gray-300">
                                     {{ key }}
                                 </TableCell>
 
-                                <TableCell class="pr-0">
+                                <TableCell class="pr-0 text-gray-800 dark:text-white">
                                     <div class="group w-[99%] relative flex items-center">
                                         <div class="pr-6 break-all" :data-truncate="'headers_' + key"
-                                            :class="{ 'truncate': !rowAccordion.hasOwnProperty('headers_' + key) || rowAccordion['headers_' + key] === false }">
+                                             :class="{ 'truncate': !rowAccordion.hasOwnProperty('headers_' + key) || rowAccordion['headers_' + key] === false }">
                                             {{ value }}
                                         </div>
                                         <div>
                                             <RowAccordionButton v-if="rowAccordion.hasOwnProperty('headers_' + key)"
-                                                @click="rowAccordion['headers_' + key] = !rowAccordion['headers_' + key]"
-                                                :rotate="rowAccordion['headers_' + key]" />
+                                                                @click="rowAccordion['headers_' + key] = !rowAccordion['headers_' + key]"
+                                                                :rotate="rowAccordion['headers_' + key]"/>
                                         </div>
                                     </div>
                                 </TableCell>
-                            </TableRow>
+                            </AccordionTableRow>
                         </TableBody>
-                    </Table>
+                    </AccordionTable>
 
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
 
-        <div class="mt-4">
-            <div class="pt-4 font-medium text-base">Body</div>
 
-            <div v-if="response.body === null || response.body === undefined || response.body === ''">
-                <span class="text-sm opacity-75 font-mono pt-2 inline-block">Response body is empty.</span>
-            </div>
+        <Accordion type="single" collapsible v-model="bodyAccordionState">
+            <AccordionItem value="bodyOpen">
+                <AccordionTrigger>
 
-            <div v-else>
-                <div class="flex flex-row-reverse w-full justify-between mt-2">
-                    <Button @click="copyToClipboard(response.body)" variant="outline">
-                        <Icon icon="radix-icons:copy" class="h-4 w-4 mr-2" />
-                        Copy
-                    </Button>
+                    <div>Body</div>
+                    <template v-slot:action>
+                        <IconTextButton v-if="!responseEmpty" @click="copyToClipboard(response.body)"
+                                        :icon="ClipboardIcon">
+                            Copy
+                        </IconTextButton>
+                    </template>
+                    <template v-slot:icon>
+                        <DocumentTextIcon class="size-4"/>
+                    </template>
+                </AccordionTrigger>
+                <AccordionContent class="px-2">
+                    <div v-if="responseEmpty">
+                        <span class="text-sm opacity-75 font-mono pt-2 inline-block px-2">Response body is empty.</span>
+                    </div>
+                    <div v-else
+                         class="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-white/10 dark:border-white/10">
 
-                    <ToggleGroup type="single" v-model="responseView">
-                        <ToggleGroupItem value="raw">
-                            Raw
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="json" v-if="bodyIsJson(response)">
-                            JSON
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="preview">
-                            Preview
-                        </ToggleGroupItem>
-                    </ToggleGroup>
+                        <div class="flex items-center space-x-2 px-4 pt-4 mb-4">
+                            <BodyViewButton @click="bodyView = $event" :active="bodyView === 'raw'" label="Raw"
+                                            value="raw"/>
+                            <BodyViewButton @click="bodyView = $event" :active="bodyView === 'json'" label="JSON"
+                                            value="json" v-if="bodyIsJson(response)"/>
+                            <BodyViewButton @click="bodyView = $event" :active="bodyView === 'preview'" label="Preview"
+                                            value="preview"/>
+                        </div>
 
-                </div>
+                        <JsonViewer v-if="bodyView === 'json'" :expand-depth="2"
+                                    :value="JSON.parse(response.body ?? '')"
+                                    :class="{ 'jv-light': mode === 'light', 'jv-dark': mode === 'dark' }"/>
+                        <pre v-if="bodyView === 'raw'"
+                             class="p-6 text-pretty break-all whitespace-pre-wrap">{{ response.body ?? '' }}
+</pre>
 
-                <pre v-if="responseView == 'raw'"
-                    class="overflow-x-auto p-6 break-all whitespace-pre-wrap break-words">{{ response.body ?? '' }}</pre>
+                        <div v-if="bodyView === 'preview'"
+                             class="border border-gray-200 dark:border-gray-700 rounded-md m-4 overflow-hidden">
+                            <iframe :srcdoc="response.body" style="height: 500px;"
+                                    class="w-full h-full"></iframe>
+                        </div>
+                    </div>
 
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
 
-                <JsonViewer v-if="responseView == 'json'" :expand-depth="2" :value="JSON.parse(response.body ?? '')"
-                    :class="{ 'jv-light': mode === 'light', 'jv-dark': mode === 'dark' }" />
-                <iframe v-if="responseView == 'preview'" :srcdoc="response.body" style="height: 500px;"
-                    class="border border-gray-200 dark:border-gray-700 rounded-md mt-4 w-full h-full"></iframe>
-            </div>
-        </div>
     </div>
 </template>

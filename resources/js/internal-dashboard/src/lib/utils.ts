@@ -26,7 +26,7 @@ export function toPhpArray(rows: Record<string, any>, variableName: string): str
 
         if (typeof value.name !== 'undefined') {
             key = value.name;
-        }        
+        }
         if (typeof value.value !== 'undefined') {
             value = value.value;
         }
@@ -54,4 +54,22 @@ export function bodyIsJson(payload: ResponseData | RequestData): boolean {
     } catch (e) {
         return false;
     }
+}
+
+export function bodyIsHtml(payload: ResponseData | RequestData): boolean {
+    if (!payload || !payload.headers || payload.headers['Content-Type'] === null) {
+        return false;
+    }
+
+    const contentType = payload.headers['Content-Type'];
+
+    return contentType ? /text\/html/g.test(contentType) : false;
+}
+
+export function openInNewTab(url: string): void {
+    window.open(url, '_blank');
+}
+
+export function isDarwin(): boolean {
+    return navigator.userAgent.indexOf('Mac OS X') !== -1;
 }

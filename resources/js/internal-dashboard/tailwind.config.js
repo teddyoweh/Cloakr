@@ -1,19 +1,26 @@
 const animate = require("tailwindcss-animate")
+const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
   safelist: ["dark"],
   prefix: "",
-  
+
   content: [
     './pages/**/*.{ts,tsx,vue}',
     './components/**/*.{ts,tsx,vue}',
     './app/**/*.{ts,tsx,vue}',
     './src/**/*.{ts,tsx,vue}',
 	],
-  
+
+
+
   theme: {
+    fontFamily: {
+        'sans': ['Inter', 'sans-serif'],
+        'mono': ['"Fira Code"', 'monospace'],
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -21,15 +28,17 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+
     extend: {
       colors: {
+        gray: colors.zinc,
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#DE4E78",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {

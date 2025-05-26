@@ -2,7 +2,10 @@
 
 namespace Cloakr\Client\Commands;
 
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
+
 use function Cloakr\Common\info;
 
 class ShareCurrentWorkingDirectoryCommand extends ShareCommand
@@ -17,17 +20,36 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
     {
         $this->loadConfigurationFiles();
 
+        $yaml = $this->loadCloakrYaml();
+
         $folderName = $this->detectName();
 
-        $host = $this->prepareSharedHost($folderName . '.' . $this->detectTld());
+        $host = Arr::get($yaml, 'local-url', $this->prepareSharedHost($folderName . '.' . $this->detectTld()));
 
         $this->input->setArgument('host', $host);
 
-        if (!$this->option('subdomain')) {
+        $subdomain = Arr::get($yaml, 'subdomain', $this->option('subdomain'));
+        
+        if (!$subdomain) {
             $this->input->setOption('subdomain', str_replace('.', '-', $folderName));
+        } else {
+            $this->input->setOption('subdomain', $subdomain);
         }
 
+        $this->input->setOption('domain', Arr::get($yaml, 'share-domain', $this->option('domain')));
+        $this->input->setOption('server', Arr::get($yaml, 'cloakr-server', $this->option('server')));
+        $this->input->setOption('basicAuth', Arr::get($yaml, 'auth', $this->option('basicAuth')));
+
         parent::handle();
+    }
+
+    protected function loadCloakrYaml(): array
+    {
+        try {
+            return Yaml::parseFile(getcwd() . DIRECTORY_SEPARATOR . 'cloakr.yml');
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     protected function loadConfigurationFiles(): void

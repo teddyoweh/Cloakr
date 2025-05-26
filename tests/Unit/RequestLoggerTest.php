@@ -17,6 +17,15 @@ use GuzzleHttp\Psr7\Message;
 class RequestLoggerTest extends TestCase
 {
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('database.default', 'sqlite');
+        config()->set('database.connections.sqlite.database', ':memory:');
+
+        $this->artisan('migrate')->run();
+    }
     /** @test */
     public function it_can_log_requests()
     {

@@ -40,7 +40,18 @@ const loadLogs = () => {
         .then((data) => {
             logs.value = data;
 
-            // emit('set-log', logs.value[0]); // TODO:
+            loadLog(logs.value[0].id);
+        });
+}
+
+const loadLog = (id: string) => {
+    fetch('/api/log/' + id)
+        .then((response) => {
+            console.debug(response);
+            return response.json();
+        })
+        .then((data) => {
+            emit('set-log', data);
         });
 }
 
@@ -73,7 +84,7 @@ const connect = () => {
         logs.value = logs.value.splice(0, props.maxLogs);
 
         if (highlightNextLog.value || followRequests.value) {
-            // emit('set-log', logs.value[0]); // TODO:
+            loadLog(logs.value[0].id);
 
             highlightNextLog.value = false;
         }
@@ -94,11 +105,12 @@ const nextLog = () => {
 
     const nextIndex = currentIndex + 1;
     if (nextIndex >= logs.value.length) {
-        emit('set-log', logs.value[0]);
+        loadLog(logs.value[0].id);
         return;
     }
 
-    emit('set-log', logs.value[nextIndex]);
+
+    loadLog(logs.value[nextIndex].id);
 }
 
 const previousLog = () => {
@@ -110,11 +122,11 @@ const previousLog = () => {
 
     const nextIndex = currentIndex - 1;
     if (nextIndex < 0) {
-        emit('set-log', logs.value[0]);
+        loadLog(logs.value[logs.value.length - 1].id);
         return;
     }
 
-    emit('set-log', logs.value[nextIndex]);
+    loadLog(logs.value[nextIndex].id);
 }
 
 const filteredLogs = computed(() => {
@@ -221,7 +233,7 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
         <Table>
             <TableBody>
 
-                <TableRow v-for="request in filteredLogs" :key="request.id" @click="emit('set-log', request)"
+                <TableRow v-for="request in filteredLogs" :key="request.id" @click="loadLog(request.id)"
                           class="border-l-4 border-l-transparent"
                           :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog?.id === request.id }">
                     <TableCell class="pr-0 align-top pl-2 lg:pl-4">

@@ -19,7 +19,6 @@ class DatabaseRequestLogger extends Logger
     {
         // TODO:
         // - max logs
-        // - fetch: order by updated_at, id
         $requestExists = DB::table('request_logs')->where('request_id', $loggedRequest->id())->exists();
 
         if ($requestExists) {
@@ -58,24 +57,26 @@ class DatabaseRequestLogger extends Logger
 
     public function getData(): array
     {
-        $logs = DB::table('request_logs')->get();
+        $start = microtime(true);
 
-        $logs = $logs->map(function (\stdClass $logData) {
+        $logs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
+        $responses = DB::table('response_logs')->get();
+
+        $logs = $logs->map(function (\stdClass $logData) use ($responses) {
             $loggedRequest = LoggedRequest::fromRecord($logData);
 
-            $response = DB::table('response_logs')->where('request_id', $loggedRequest->id())->first();
+            $response = $responses->first(function (\stdClass $response) use ($loggedRequest) {
+                return $response->request_id === $loggedRequest->id();
+            });
+
             if ($response) {
-                try {
-                    $parsedResponse = Response::fromString($response->raw_response);
-                }
-                catch (\Exception $e) {
-                    $parsedResponse = null;
-                }
-                $loggedRequest->setResponse($response->raw_response, $parsedResponse);
+                $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
             }
 
             return $loggedRequest;
         });
+
+        dump('DatabaseRequestLogger getData: ' . (microtime(true) - $start));
 
         return $logs->toArray();
     }

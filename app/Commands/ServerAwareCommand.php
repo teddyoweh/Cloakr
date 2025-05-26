@@ -3,7 +3,7 @@
 namespace Cloakr\Client\Commands;
 
 use Cloakr\Client\Exceptions\InvalidServerProvided;
-use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\CliLogger;
 use Illuminate\Console\Parser;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -29,8 +29,8 @@ abstract class ServerAwareCommand extends Command
 
     protected function configureConnectionLogger()
     {
-        app()->singleton(CliRequestLogger::class, function () {
-            return new CliRequestLogger(new ConsoleOutput());
+        app()->singleton(CliLogger::class, function () {
+            return new CliLogger(new ConsoleOutput());
         });
 
         return $this;

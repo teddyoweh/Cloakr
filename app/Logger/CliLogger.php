@@ -2,6 +2,7 @@
 
 namespace Cloakr\Client\Logger;
 
+use Cloakr\Client\Contracts\LoggerContract;
 use Cloakr\Client\Support\ConsoleSectionOutput;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -9,7 +10,7 @@ use Symfony\Component\Console\Terminal;
 use function Termwind\render;
 use function Termwind\terminal;
 
-class CliRequestLogger extends Logger
+class CliLogger extends Logger implements LoggerContract
 {
     /** @var Collection */
     protected $requests;
@@ -142,7 +143,7 @@ HTML;
         return $color;
     }
 
-    public function logRequest(LoggedRequest $loggedRequest)
+    public function synchronizeRequest(LoggedRequest $loggedRequest): void
     {
         $dashboardUrl = 'http://127.0.0.1:'.config('cloakr.dashboard_port');
 
@@ -207,5 +208,10 @@ HTML;
         });
 
         $this->section->overwrite($output);
+    }
+
+    public function synchronizeResponse(LoggedRequest $loggedRequest, string $rawResponse): void
+    {
+        $this->synchronizeRequest($loggedRequest);
     }
 }

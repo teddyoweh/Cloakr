@@ -3,7 +3,7 @@
 namespace Cloakr\Client;
 
 use Cloakr\Client\Connections\ControlConnection;
-use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\CliLogger;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Ratchet\Client\WebSocket;
@@ -22,7 +22,7 @@ class Client
     /** @var Configuration */
     protected $configuration;
 
-    /** @var CliRequestLogger */
+    /** @var CliLogger */
     protected $logger;
 
     /** @var int */
@@ -37,7 +37,7 @@ class Client
     public static $user = [];
     public static $subdomains = [];
 
-    public function __construct(LoopInterface $loop, Configuration $configuration, CliRequestLogger $logger)
+    public function __construct(LoopInterface $loop, Configuration $configuration, CliLogger $logger)
     {
         $this->loop = $loop;
         $this->configuration = $configuration;

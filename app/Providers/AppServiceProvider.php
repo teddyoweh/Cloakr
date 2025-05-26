@@ -2,8 +2,10 @@
 
 namespace Cloakr\Client\Providers;
 
-use Cloakr\Client\Logger\CliRequestLogger;
-use Cloakr\Client\Logger\DatabaseRequestLogger;
+use Cloakr\Client\Contracts\LogStorageContract;
+use Cloakr\Client\Logger\CliLogger;
+use Cloakr\Client\Logger\DatabaseLogger;
+use Cloakr\Client\Logger\FrontendLogger;
 use Cloakr\Client\Logger\Plugins\PluginManager;
 use Cloakr\Client\Logger\RequestLogger;
 use Illuminate\Support\ServiceProvider;
@@ -39,8 +41,12 @@ class AppServiceProvider extends ServiceProvider
             return new Browser($app->make(LoopInterface::class));
         });
 
+        $this->app->singleton(LogStorageContract::class, function ($app) {
+            return new DatabaseLogger();
+        });
+
         $this->app->singleton(RequestLogger::class, function ($app) {
-            return new RequestLogger($app->make(Browser::class), $app->make(CliRequestLogger::class), $app->make(DatabaseRequestLogger::class));
+            return new RequestLogger($app->make(CliLogger::class), $app->make(LogStorageContract::class), $app->make(FrontendLogger::class));
         });
     }
 

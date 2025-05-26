@@ -2,57 +2,39 @@
 
 namespace Cloakr\Client\Logger;
 
+use Cloakr\Client\Contracts\LogStorageContract;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
-use React\Http\Browser;
 
 class RequestLogger
 {
-    protected array $requests = [];
-
-    protected Browser $client;
-
-    protected CliRequestLogger $cliRequestLogger;
-    protected DatabaseRequestLogger $databaseRequestLogger;
-
-    public function __construct(Browser $browser, CliRequestLogger $cliRequestLogger, DatabaseRequestLogger $databaseRequestLogger)
+    public function __construct(protected CliLogger $cliLogger, protected LogStorageContract $logStorage, protected FrontendLogger $frontendLogger)
     {
-        $this->client = $browser;
-        $this->cliRequestLogger = $cliRequestLogger;
-        $this->databaseRequestLogger = $databaseRequestLogger;
     }
 
     public function findLoggedRequest(string $id): ?LoggedRequest
     {
-        return collect($this->requests)->first(function (LoggedRequest $loggedRequest) use ($id) {
-            return $loggedRequest->id() === $id;
-        });
+        return $this->logStorage->requests()->find($id);
     }
 
     public function logRequest(string $rawRequest, Request $request): LoggedRequest
     {
         $loggedRequest = new LoggedRequest($rawRequest, $request);
 
-        array_unshift($this->requests, $loggedRequest);
-
-        $this->requests = array_slice($this->requests, 0, config('cloakr.max_logged_requests', 10));
-
-        $this->cliRequestLogger->logRequest($loggedRequest);
-
-        $this->databaseRequestLogger->logRequest($loggedRequest);
-
-        $this->pushLoggedRequest($loggedRequest);
+        $this->cliLogger->synchronizeRequest($loggedRequest);
+        $this->logStorage->synchronizeRequest($loggedRequest);
+        $this->frontendLogger->synchronizeRequest($loggedRequest);
 
         return $loggedRequest;
     }
 
     public function logResponse(Request $request, string $rawResponse)
     {
-        $requests = $this->databaseRequestLogger->getData();
+        $requests = $this->logStorage->requests()->get();
 
         $cloakrRequestId = $request->getHeader("x-cloakr-request-id") ? $request->getHeader("x-cloakr-request-id")->getFieldValue() : null;
 
-        if(!$cloakrRequestId) {
+        if (!$cloakrRequestId) {
             return;
         }
 
@@ -63,31 +45,20 @@ class RequestLogger
         $loggedRequest->setResponse($rawResponse, Response::fromString($rawResponse));
         $loggedRequest->setStopTime();
 
-        $this->cliRequestLogger->logRequest($loggedRequest);
-        $this->databaseRequestLogger->logRequest($loggedRequest);
-        $this->databaseRequestLogger->saveResponse($loggedRequest, $rawResponse);
+        $this->logStorage->synchronizeResponse($loggedRequest, $rawResponse);
 
-        $this->pushLoggedRequest($loggedRequest);
+        $this->frontendLogger->synchronizeResponse($loggedRequest, $rawResponse);
+
+        $this->cliLogger->synchronizeResponse($loggedRequest, $rawResponse);
     }
 
     public function getData(): array
     {
-        return $this->requests;
+        return $this->logStorage->requests()->get();
     }
 
     public function clear()
     {
-        $this->requests = [];
-    }
-
-    public function pushLoggedRequest(LoggedRequest $request)
-    {
-        $this
-            ->client
-            ->post(
-                'http://127.0.0.1:4040/api/logs',
-                ['Content-Type' => 'application/json'],
-                json_encode($request, JSON_INVALID_UTF8_IGNORE)
-            );
+        $this->logStorage->requests()->delete();
     }
 }

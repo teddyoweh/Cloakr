@@ -92,8 +92,6 @@ class LoggedRequest implements \JsonSerializable
             'performed_at' => $this->startTime->toDateTimeString(),
             'duration' => $this->getDuration(),
             'plugin_data' => $this->pluginData ? json_encode($this->pluginData->toArray()) : null,
-            'created_at' => now()->toDateTimeString(),
-            'updated_at' => now()->toDateTimeString(),
         ];
     }
 

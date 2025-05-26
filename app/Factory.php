@@ -13,6 +13,8 @@ use Cloakr\Client\Http\Controllers\PushLogsToDashboardController;
 use Cloakr\Client\Http\Controllers\ReplayLogController;
 use Cloakr\Client\WebSockets\Socket;
 use Cloakr\Client\Http\Controllers\ReplayModifiedLogController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
@@ -110,6 +112,10 @@ class Factory
 
         $this->bindProxyManager();
 
+        $this
+            ->ensureDatabaseExists()
+            ->migrateDatabase();
+
         return $this;
     }
 
@@ -178,5 +184,23 @@ class Factory
     public function run()
     {
         $this->loop->run();
+    }
+
+    protected function ensureDatabaseExists()
+    {
+        $databasePath = config('database.connections.sqlite.database');
+
+        if (!file_exists($databasePath)) {
+            File::put($databasePath, '');
+        }
+
+        return $this;
+    }
+
+    protected function migrateDatabase()
+    {
+        Artisan::call('migrate', [], new \Symfony\Component\Console\Output\StreamOutput(fopen('php://stdout', 'w'))); // TODO:
+
+        return $this;
     }
 }

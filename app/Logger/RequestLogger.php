@@ -8,7 +8,7 @@ use Laminas\Http\Response;
 
 class RequestLogger
 {
-    public function __construct(protected CliLogger $cliLogger, protected LogStorageContract $logStorage, protected FrontendLogger $frontendLogger)
+    public function __construct(protected CliLogger $cliLogger, protected FrontendLogger $frontendLogger, protected LogStorageContract $logStorage, )
     {
     }
 
@@ -54,7 +54,9 @@ class RequestLogger
 
     public function getData(): array
     {
-        return $this->logStorage->requests()->get();
+        $requests = $this->logStorage->requests()->get();
+
+        return $requests ? $requests->toArray() : [];
     }
 
     public function clear()

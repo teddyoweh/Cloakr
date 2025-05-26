@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(RequestLogger::class, function ($app) {
-            return new RequestLogger($app->make(CliLogger::class), $app->make(LogStorageContract::class), $app->make(FrontendLogger::class));
+            return new RequestLogger($app->make(CliLogger::class), $app->make(FrontendLogger::class), $app->make(LogStorageContract::class));
         });
     }
 

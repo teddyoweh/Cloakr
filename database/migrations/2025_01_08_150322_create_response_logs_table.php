@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('response_logs', function (Blueprint $table) {
             $table->id();
             $table->string('request_id');
-            $table->string('raw_response');
+            $table->binary('raw_response')->nullable();
 
             $table->timestamps();
 

@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->string('subdomain')->nullable();
 
-            $table->string('raw_request');
+            $table->longText('raw_request');
 
             $table->dateTime('start_time', 3);
             $table->dateTime('stop_time', 3)->nullable();

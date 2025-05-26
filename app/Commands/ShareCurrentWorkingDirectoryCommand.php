@@ -36,9 +36,12 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
             $this->input->setOption('subdomain', $subdomain);
         }
 
-        $this->input->setOption('domain', Arr::get($yaml, 'share-domain', $this->option('domain')));
+        $this->input->setOption('domain', Arr::get($yaml, 'custom-domain', $this->option('domain')));
         $this->input->setOption('server', Arr::get($yaml, 'cloakr-server', $this->option('server')));
-        $this->input->setOption('basicAuth', Arr::get($yaml, 'auth', $this->option('basicAuth')));
+
+        $authString = Arr::get($yaml, 'auth.username') . ':' . Arr::get($yaml, 'auth.password');
+        $authString = empty($authString) ? $this->option('basicAuth') : $authString;
+        $this->input->setOption('basicAuth', $authString);
 
         parent::handle();
     }

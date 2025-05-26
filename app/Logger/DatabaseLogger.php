@@ -81,7 +81,6 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function withResponses(): LogStorageContract
     {
-        $this->responses = DB::table('response_logs')->get();
         $this->includeResponses = true;
         return $this;
     }
@@ -95,6 +94,10 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function get(): Collection
     {
+        if ($this->includeResponses) {
+            $this->requests();
+        }
+
         $hasResponses = $this->includeResponses && $this->responses->isNotEmpty();
 
         return $this->requests->map(function (\stdClass $logData) use ($hasResponses) {
@@ -126,6 +129,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function find(string $id): ?LoggedRequest
     {
+
         $requestLog = RequestLog::where('request_id', $id);
 
         if ($this->includeResponses) {
@@ -148,16 +152,40 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
         return $loggedRequest;
     }
 
+    public function search(string $search): Collection
+    {
+        return RequestLog::query()
+            ->select([
+                "request_id",
+                "duration",
+                "request_method",
+                "request_uri",
+                "plugin_data",
+                "status_code"
+            ])
+            ->with(["response:request_id,raw_response,status_code"])
+            ->where("request_uri", "like", "%$search%")
+            ->orWhere("plugin_data", "like", "%$search%")
+            ->orWhereHas("response", function ($query) use ($search) {
+                $query->whereRaw("CAST(raw_response AS TEXT) LIKE ?", ["%$search%"]);
+            })
+            ->orderBy('start_time', 'desc')
+            ->get()
+            ->map(function (RequestLog $requestLog) {
+                return LogListResource::fromRequestLog($requestLog)->toArray();
+            });
+    }
+
     public function getRequestList(): Collection
     {
-        $requestLogs = RequestLog::query()
+        return RequestLog::query()
             ->select(['request_id', 'duration', 'request_method', 'request_uri', 'plugin_data'])
             ->with(['response:request_id,status_code'])
-            ->get();
-
-        return $requestLogs->map(function (RequestLog $requestLog) {
-            return LogListResource::fromRequestLog($requestLog)->toArray();
-        });
+            ->orderBy('start_time', 'desc')
+            ->get()
+            ->map(function (RequestLog $requestLog) {
+                return LogListResource::fromRequestLog($requestLog)->toArray();
+            });
     }
 
 

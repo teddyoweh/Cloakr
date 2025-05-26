@@ -39,6 +39,10 @@ class RequestLogger
         try {
             $loggedRequest = $this->logStorage->requests()->find($cloakrRequestId);
 
+            if($loggedRequest === null) {
+                return;
+            }
+
             $response = Response::fromString($rawResponse);
             $loggedResponse = new LoggedResponse($rawResponse, $response, $request);
 

@@ -4,7 +4,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import ResponseBadge from "@/components/ui/ResponseBadge.vue";
 import Search from "@/components/ui/Search.vue";
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useLocalStorage} from "@/lib/composables/useLocalStorage.ts";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import IconButton from "@/components/ui/IconButton.vue";
@@ -21,6 +21,8 @@ const emit = defineEmits(['set-log'])
 
 
 const logs = ref([] as ListEntry[]);
+const filteredLogs = ref([] as ListEntry[]);
+
 const highlightNextLog = ref(false as boolean);
 const followRequests = useLocalStorage<boolean>('followLogs', true);
 const listenForRequests = ref(true as boolean);
@@ -38,7 +40,7 @@ const loadLogs = () => {
             return response.json();
         })
         .then((data) => {
-            logs.value = data;
+            logs.value = filteredLogs.value = data;
 
             loadLog(logs.value[0].id);
         });
@@ -47,7 +49,6 @@ const loadLogs = () => {
 const loadLog = (id: string) => {
     fetch('/api/log/' + id)
         .then((response) => {
-            console.debug(response);
             return response.json();
         })
         .then((data) => {
@@ -59,6 +60,19 @@ const clearLogs = () => {
     fetch('/api/logs/clear');
     logs.value = []
     emit('set-log', null);
+}
+
+const searchLogs = async (searchTerm: string) => {
+    return fetch('/api/logs/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"search_term": searchTerm})
+    })
+        .then((response) => {
+            return response.json();
+        });
 }
 
 const toggleListenForRequests = () => {
@@ -129,43 +143,35 @@ const previousLog = () => {
     loadLog(logs.value[nextIndex].id);
 }
 
-const filteredLogs = computed(() => {
-    const searchTerm = search.value ?? '';
-
-    if (searchTerm === '') {
-        return logs.value;
-    }
-
-    if (searchTerm.startsWith("/")) {
-        return logs.value.filter(log => {
-            return log.request_uri.indexOf(searchTerm) !== -1;
-        })
-    } else {
-        // TODO:
-        // return logs.value.filter((log) => {
-        //     if (isSearchableResponse(log.response)) {
-        //         return log.response.body.indexOf(searchTerm) !== -1;
-        //     } else {
-        //         return log.request.uri.indexOf(searchTerm) !== -1;
-        //     }
-        // })
-    }
-
-})
-
-// TODO:
-// const isSearchableResponse = (response: ResponseData): boolean => {
-//     if (response.headers && response.headers['Content-Type']) {
-//         const contentTypes = ["application/json", "application/ld-json", "text/plain"];
-//         return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
-//     }
-//
-//     return false;
-// }
 
 const focusSearch = () => {
     searchInput.value.focusSearch()
 }
+
+watch(search, async (searchTerm) => {
+        if (searchTerm === '' || searchTerm.length < 3) {
+            filteredLogs.value = logs.value;
+        } else if (searchTerm.startsWith("/")) {
+            filteredLogs.value = logs.value.filter(log =>
+                log.request_uri.indexOf(searchTerm) !== -1
+            );
+        } else {
+            try {
+                filteredLogs.value = await searchLogs(searchTerm)
+
+                if(filteredLogs.value.length > 0) {
+                    loadLog(filteredLogs.value[0].id);
+                }
+            } catch (error) {
+                console.error('Search API error:', error);
+                emit('set-log', null);
+            }
+        }
+    },
+    {
+        immediate: false,
+    }
+)
 
 defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollowRequests});
 </script>
@@ -245,7 +251,8 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <div class="max-w-[155px] lg:max-w-[180px] truncate pt-0.5 text-gray-800 dark:text-white">
+                                    <div
+                                        class="max-w-[155px] lg:max-w-[180px] truncate pt-0.5 text-gray-800 dark:text-white">
                                         <span class="text-gray-500 dark:text-gray-300">{{
                                                 request.request_method
                                             }}</span>

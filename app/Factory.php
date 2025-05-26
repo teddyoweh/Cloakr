@@ -12,6 +12,7 @@ use Cloakr\Client\Http\Controllers\GetLogController;
 use Cloakr\Client\Http\Controllers\GetLogsController;
 use Cloakr\Client\Http\Controllers\PushLogsToDashboardController;
 use Cloakr\Client\Http\Controllers\ReplayLogController;
+use Cloakr\Client\Http\Controllers\SearchLogsController;
 use Cloakr\Client\WebSockets\Socket;
 use Cloakr\Client\Http\Controllers\ReplayModifiedLogController;
 use Illuminate\Support\Facades\Artisan;
@@ -145,6 +146,7 @@ class Factory
         $this->router->post('/api/tunnel', CreateTunnelController::class);
         $this->router->get('/api/logs', GetLogsController::class);
         $this->router->get('/api/log/{log}', GetLogController::class);
+        $this->router->post('/api/logs/search', SearchLogsController::class);
         $this->router->post('/api/logs', PushLogsToDashboardController::class);
         $this->router->get('/api/replay/{log}', ReplayLogController::class);
         $this->router->post('/api/replay-modified', ReplayModifiedLogController::class);

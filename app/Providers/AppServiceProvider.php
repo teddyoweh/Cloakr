@@ -3,6 +3,7 @@
 namespace Cloakr\Client\Providers;
 
 use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\DatabaseRequestLogger;
 use Cloakr\Client\Logger\Plugins\PluginManager;
 use Cloakr\Client\Logger\RequestLogger;
 use Illuminate\Support\ServiceProvider;
@@ -39,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(RequestLogger::class, function ($app) {
-            return new RequestLogger($app->make(Browser::class), $app->make(CliRequestLogger::class));
+            return new RequestLogger($app->make(Browser::class), $app->make(CliRequestLogger::class), $app->make(DatabaseRequestLogger::class));
         });
     }
 

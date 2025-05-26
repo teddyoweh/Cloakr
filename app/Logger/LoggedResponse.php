@@ -147,6 +147,11 @@ class LoggedResponse
         return $this->reasonPhrase;
     }
 
+    public function getRawResponse()
+    {
+        return $this->rawResponse;
+    }
+
     public function toArray()
     {
         return [

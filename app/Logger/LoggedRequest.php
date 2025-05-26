@@ -21,7 +21,7 @@ class LoggedRequest implements \JsonSerializable
     protected $rawRequest;
 
     /** @var Request */
-    protected $parsedRequest;
+    public $parsedRequest;
 
     /** @var LoggedResponse */
     protected $response;
@@ -81,6 +81,37 @@ class LoggedRequest implements \JsonSerializable
         return $data;
     }
 
+    public function toDatabase(): array {
+
+        return [
+            'request_id' => $this->id,
+            'subdomain' => $this->detectSubdomain(),
+            'raw_request' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->rawRequest,
+            'start_time' => $this->startTime->toDateTimeString(), // TODO: milliseconds sqlite
+            'stop_time' => $this->stopTime ? $this->stopTime->toDateTimeString() : null, // TODO: milliseconds sqlite
+            'performed_at' => $this->startTime->toDateTimeString(),
+            'duration' => $this->getDuration(),
+            'plugin_data' => $this->pluginData ? json_encode($this->pluginData->toArray()) : null,
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
+        ];
+    }
+
+    public static function fromRecord(\stdClass $record): self {
+        $loggedRequest = new self($record->raw_request, Request::fromString($record->raw_request));
+        $loggedRequest->id = $record->request_id;
+        $loggedRequest->startTime = Carbon::parse($record->start_time);
+        $loggedRequest->stopTime = $record->stop_time ? Carbon::parse($record->stop_time) : null;
+        $loggedRequest->subdomain = $record->subdomain;
+        $loggedRequest->pluginData = $record->plugin_data ? PluginData::fromJson($record->plugin_data) : null;
+
+        return $loggedRequest;
+    }
+
+    public function toArray(): array {
+        return $this->jsonSerialize();
+    }
+
     protected function isBinary(string $string): bool
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $string) > 0;
@@ -94,7 +125,9 @@ class LoggedRequest implements \JsonSerializable
     public function setResponse(string $rawResponse, Response $response)
     {
         $this->response = new LoggedResponse($rawResponse, $response, $this->getRequest());
+    }
 
+    public function setStopTime() {
         if (is_null($this->stopTime)) {
             $this->stopTime = now();
         }
@@ -196,7 +229,7 @@ class LoggedRequest implements \JsonSerializable
 
     public function getDuration()
     {
-        return $this->startTime->diffInMilliseconds($this->stopTime, false);
+        return $this->startTime->diffInMilliseconds($this->stopTime, false);  // TODO: milliseconds sqlite
     }
 
     protected function getRequestAsCurl(): string
@@ -217,7 +250,7 @@ class LoggedRequest implements \JsonSerializable
     public function getUrl()
     {
         $request = Message::parseRequest($this->rawRequest);
-        dd($request->getUri()->withFragment(''));
+        dd($request->getUri()->withFragment('')); // TODO: ??
     }
 
     public function refreshId()

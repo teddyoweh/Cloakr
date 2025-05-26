@@ -9,3 +9,4 @@ database/cloakr.db
 .cloakr.php
 .env
 .box_dump
+/database/database.sqlite

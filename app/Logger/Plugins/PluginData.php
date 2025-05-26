@@ -76,4 +76,14 @@ class PluginData
             ]);
     }
 
+    public static function fromJson(string $data): self {
+        $pluginData = json_decode($data, true);
+
+        return (new PluginData)
+            ->setPlugin($pluginData['plugin'])
+            ->setUiLabel($pluginData['uiLabel'])
+            ->setCliLabel($pluginData['cliLabel'])
+            ->setDetails($pluginData['details']);
+    }
+
 }

@@ -8,19 +8,18 @@ use React\Http\Browser;
 
 class RequestLogger
 {
-    /** @var array */
-    protected $requests = [];
+    protected array $requests = [];
 
-    /** @var Browser */
-    protected $client;
+    protected Browser $client;
 
-    /** @var CliRequestLogger */
-    protected $cliRequestLogger;
+    protected CliRequestLogger $cliRequestLogger;
+    protected DatabaseRequestLogger $databaseRequestLogger;
 
-    public function __construct(Browser $browser, CliRequestLogger $cliRequestLogger)
+    public function __construct(Browser $browser, CliRequestLogger $cliRequestLogger, DatabaseRequestLogger $databaseRequestLogger)
     {
         $this->client = $browser;
         $this->cliRequestLogger = $cliRequestLogger;
+        $this->databaseRequestLogger = $databaseRequestLogger;
     }
 
     public function findLoggedRequest(string $id): ?LoggedRequest
@@ -40,6 +39,8 @@ class RequestLogger
 
         $this->cliRequestLogger->logRequest($loggedRequest);
 
+        $this->databaseRequestLogger->logRequest($loggedRequest);
+
         $this->pushLoggedRequest($loggedRequest);
 
         return $loggedRequest;
@@ -47,17 +48,25 @@ class RequestLogger
 
     public function logResponse(Request $request, string $rawResponse)
     {
-        $this->requests = collect($this->requests)->transform(function (LoggedRequest $loggedRequest) use ($request, $rawResponse) {
-            if ($loggedRequest->getRequest() !== $request) {
-                return $loggedRequest;
-            }
+        $requests = $this->databaseRequestLogger->getData();
 
-            $loggedRequest->setResponse($rawResponse, Response::fromString($rawResponse));
-            $this->cliRequestLogger->logRequest($loggedRequest);
-            $this->pushLoggedRequest($loggedRequest);
+        $cloakrRequestId = $request->getHeader("x-cloakr-request-id") ? $request->getHeader("x-cloakr-request-id")->getFieldValue() : null;
 
-            return $loggedRequest;
-        })->toArray();
+        if(!$cloakrRequestId) {
+            return;
+        }
+
+        $loggedRequest = collect($requests)->filter(function (LoggedRequest $loggedRequest) use ($cloakrRequestId) {
+            return $loggedRequest->id() === $cloakrRequestId;
+        })->first();
+
+        $loggedRequest->setResponse($rawResponse, Response::fromString($rawResponse));
+        $loggedRequest->setStopTime();
+
+        $this->cliRequestLogger->logRequest($loggedRequest);
+        $this->databaseRequestLogger->logRequest($loggedRequest);
+
+        $this->pushLoggedRequest($loggedRequest);
     }
 
     public function getData(): array

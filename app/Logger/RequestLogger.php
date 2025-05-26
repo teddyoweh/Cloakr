@@ -64,7 +64,7 @@ class RequestLogger
         $loggedRequest->setStopTime();
 
         $this->cliRequestLogger->logRequest($loggedRequest);
-        $this->databaseRequestLogger->logRequest($loggedRequest);
+        $this->databaseRequestLogger->saveResponse($loggedRequest, $rawResponse);
 
         $this->pushLoggedRequest($loggedRequest);
     }

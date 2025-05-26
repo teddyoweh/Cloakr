@@ -33,19 +33,15 @@ class DatabaseRequestLogger extends Logger
         } else {
             DB::table('request_logs')->insert($loggedRequest->toDatabase());
         }
-
-        if ($response = $loggedRequest->getResponse()) {
-            $this->saveResponse($loggedRequest, $response);
-        }
     }
 
-    public function saveResponse(LoggedRequest $loggedRequest, LoggedResponse $loggedResponse) // TODO: better method name / structure
+    public function saveResponse(LoggedRequest $loggedRequest, string $rawResponse) // TODO: better method name / structure
     {
         $responseExists = DB::table('response_logs')->where('request_id', $loggedRequest->id())->exists();
 
         if ($responseExists) {
             DB::table('response_logs')->where('request_id', $loggedRequest->id())->update([
-                'raw_response' => $loggedResponse->getRawResponse(),
+                'raw_response' => $rawResponse,
                 'updated_at' => now(),
             ]);
 
@@ -54,7 +50,7 @@ class DatabaseRequestLogger extends Logger
 
         DB::table('response_logs')->insert([
             'request_id' => $loggedRequest->id(),
-            'raw_response' => $loggedResponse->getRawResponse(),
+            'raw_response' => $rawResponse,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -69,7 +65,13 @@ class DatabaseRequestLogger extends Logger
 
             $response = DB::table('response_logs')->where('request_id', $loggedRequest->id())->first();
             if ($response) {
-                $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
+                try {
+                    $parsedResponse = Response::fromString($response->raw_response);
+                }
+                catch (\Exception $e) {
+                    $parsedResponse = null;
+                }
+                $loggedRequest->setResponse($response->raw_response, $parsedResponse);
             }
 
             return $loggedRequest;

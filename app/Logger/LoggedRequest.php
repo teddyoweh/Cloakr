@@ -230,7 +230,7 @@ class LoggedRequest implements \JsonSerializable
 
     public function getDuration(): int
     {
-        return (int) $this->startTime->diffInMilliseconds($this->stopTime, false);  // TODO: milliseconds sqlite
+        return (int) $this->startTime->diffInMilliseconds($this->stopTime, false);
     }
 
     protected function getRequestAsCurl(): string

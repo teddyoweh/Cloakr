@@ -97,6 +97,8 @@ const connect = () => {
 
         logs.value = logs.value.splice(0, props.maxLogs);
 
+        filteredLogs.value = logs.value;
+
         if (highlightNextLog.value || followRequests.value) {
             loadLog(logs.value[0].id);
 
@@ -159,7 +161,7 @@ watch(search, async (searchTerm) => {
             try {
                 filteredLogs.value = await searchLogs(searchTerm)
 
-                if(filteredLogs.value.length > 0) {
+                if (filteredLogs.value.length > 0) {
                     loadLog(filteredLogs.value[0].id);
                 }
             } catch (error) {

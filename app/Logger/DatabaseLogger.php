@@ -6,6 +6,7 @@ use Cloakr\Client\Contracts\LoggerContract;
 use Cloakr\Client\Contracts\LogStorageContract;
 use Cloakr\Client\Http\Resources\LogListResource;
 use Cloakr\Client\RequestLog;
+use Cloakr\Client\ResponseLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laminas\Http\Response;
@@ -28,19 +29,19 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function synchronizeRequest(LoggedRequest $loggedRequest): void
     {
-        $requestExists = DB::table('request_logs')->where('request_id', $loggedRequest->id())->exists();
+        $requestExists = RequestLog::where('request_id', $loggedRequest->id())->exists();
 
         if ($requestExists) {
-            DB::table('request_logs')->where('request_id', $loggedRequest->id())
+            RequestLog::where('request_id', $loggedRequest->id())
                 ->update($loggedRequest->toDatabase());
         } else {
 
             $maxLogs = config('cloakr.max_logged_requests', 100);
 
-            $requestLogs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
+            $requestLogsCount = RequestLog::count();
 
-            if ($requestLogs->count() >= $maxLogs) {
-                $oldestRequest = $requestLogs->last();
+            if ($requestLogsCount >= $maxLogs) {
+                $oldestRequest = RequestLog::orderBy('start_time', 'asc')->first();
                 $this->delete($oldestRequest->request_id);
             }
 
@@ -53,10 +54,10 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
     {
         $this->synchronizeRequest($loggedRequest);
 
-        $responseExists = DB::table('response_logs')->where('request_id', $loggedRequest->id())->exists();
+        $responseExists = ResponseLog::where('request_id', $loggedRequest->id())->exists();
 
         if ($responseExists) {
-            DB::table('response_logs')->where('request_id', $loggedRequest->id())->update([
+            ResponseLog::where('request_id', $loggedRequest->id())->update([
                 'status_code' => $loggedResponse->getStatusCode(),
                 'raw_response' => $loggedResponse->getRawResponse()
             ]);
@@ -64,7 +65,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
             return;
         }
 
-        DB::table('response_logs')->insert([
+        ResponseLog::insert([
             'request_id' => $loggedRequest->id(),
             'status_code' => $loggedResponse->getStatusCode(),
             'raw_response' => $loggedResponse->getRawResponse()
@@ -127,20 +128,21 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
     {
         $requestLog = RequestLog::where('request_id', $id);
 
-        if (!$requestLog) {
-            return null;
-        }
-
-        $response = null;
         if ($this->includeResponses) {
             $requestLog->with('response');
         }
 
         $requestLog = $requestLog->first();
 
+        if (!$requestLog) {
+            return null;
+        }
+
+
         $loggedRequest = LoggedRequest::fromRecord($requestLog);
-        if ($response) {
-            $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
+
+        if ($requestLog->response) {
+            $loggedRequest->setResponse($requestLog->response->raw_response, Response::fromString($requestLog->response->raw_response));
         }
 
         return $loggedRequest;

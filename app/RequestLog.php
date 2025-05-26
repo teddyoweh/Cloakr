@@ -12,6 +12,8 @@ class RequestLog extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    public $timestamps = false;
+
     public function response(): ?HasOne
     {
         return $this->hasOne(ResponseLog::class, 'request_id', 'request_id');

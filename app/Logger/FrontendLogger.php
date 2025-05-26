@@ -17,7 +17,7 @@ class FrontendLogger implements LoggerContract
         $this
             ->browser
             ->post(
-                'http://127.0.0.1:4040/api/logs',
+                'http://127.0.0.1:'.config()->get('cloakr.dashboard_port').'/api/logs',
                 ['Content-Type' => 'application/json'],
                 json_encode($loggedRequest, JSON_INVALID_UTF8_IGNORE)
             );

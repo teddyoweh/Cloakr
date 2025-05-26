@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 interface LogStorageContract
 {
 
-    public function get(): Collection;
+    public function get(): ?Collection;
 
     public function requests(): self;
 

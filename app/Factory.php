@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\File;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Termwind\Termwind;
 
 class Factory
 {
@@ -199,7 +201,9 @@ class Factory
 
     protected function migrateDatabase()
     {
-        Artisan::call('migrate', [], new \Symfony\Component\Console\Output\StreamOutput(fopen('php://stdout', 'w'))); // TODO:
+        Artisan::call('migrate');
+
+        Termwind::renderUsing(new ConsoleOutput());
 
         return $this;
     }

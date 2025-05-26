@@ -201,7 +201,9 @@ class Factory
 
     protected function migrateDatabase()
     {
-        Artisan::call('migrate');
+        Artisan::call('migrate', [
+            '--force' => true, // necessary flag to run in PHAR
+        ]);
 
         Termwind::renderUsing(new ConsoleOutput());
 

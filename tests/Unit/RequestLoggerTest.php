@@ -19,11 +19,6 @@ class RequestLoggerTest extends TestCase
     /** @test */
     public function it_can_log_requests()
     {
-        $this->assertEquals('sqlite', config('database.default'));
-        $this->assertEquals(':memory:', config('database.connections.sqlite.database'));
-
-
-        return;
         $cliLogger = m::mock(CliLogger::class);
         $cliLogger->shouldReceive('synchronizeRequest')->once();
 

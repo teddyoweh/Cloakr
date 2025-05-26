@@ -43,7 +43,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(LogStorageContract::class, function ($app) {
-            $this->createDatabase();
             return new DatabaseLogger();
         });
 
@@ -88,14 +87,5 @@ class AppServiceProvider extends ServiceProvider
     protected function setMemoryLimit()
     {
         ini_set('memory_limit', config()->get('cloakr.memory_limit', '128M'));
-    }
-
-    protected function createDatabase(): void {
-        $databasePath = tempnam(sys_get_temp_dir(), 'cloakr-client-');
-
-        File::put($databasePath, '');
-
-        config()->set('database.default', 'sqlite');
-        config()->set('database.connections.sqlite.database', $databasePath);
     }
 }

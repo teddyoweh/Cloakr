@@ -30,6 +30,18 @@ class DatabaseRequestLogger extends Logger
                     ]
                 ));
         } else {
+
+            $maxLogs = config('cloakr.max_logged_requests', 10);
+
+            $requestLogs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
+
+            if ($requestLogs->count() >= $maxLogs) {
+                $oldestRequest = $requestLogs->last();
+                DB::table('request_logs')->where('request_id', $oldestRequest->request_id)->delete();
+
+                // TODO: remove oldest request from frontend
+            }
+
             DB::table('request_logs')->insert($loggedRequest->toDatabase());
         }
     }
@@ -57,7 +69,7 @@ class DatabaseRequestLogger extends Logger
 
     public function getData(): array
     {
-        $start = microtime(true);
+//        $start = microtime(true);
 
         $logs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
         $responses = DB::table('response_logs')->get();
@@ -76,7 +88,7 @@ class DatabaseRequestLogger extends Logger
             return $loggedRequest;
         });
 
-        dump('DatabaseRequestLogger getData: ' . (microtime(true) - $start));
+//        dump('DatabaseRequestLogger getData: ' . (microtime(true) - $start));
 
         return $logs->toArray();
     }

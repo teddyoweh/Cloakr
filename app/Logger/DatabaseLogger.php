@@ -75,7 +75,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function requests(): LogStorageContract
     {
-        $this->requests = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
+        $this->requests = RequestLog::orderBy('start_time', 'desc')->get();
         return $this;
     }
 
@@ -100,11 +100,11 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
         $hasResponses = $this->includeResponses && $this->responses->isNotEmpty();
 
-        return $this->requests->map(function (\stdClass $logData) use ($hasResponses) {
+        return $this->requests->map(function (RequestLog $logData) use ($hasResponses) {
             $loggedRequest = LoggedRequest::fromRecord($logData);
 
             if ($hasResponses) {
-                $response = $this->responses->first(function (\stdClass $response) use ($loggedRequest) {
+                $response = $this->responses->first(function ($response) use ($loggedRequest) {
                     return $response->request_id === $loggedRequest->id();
                 });
 

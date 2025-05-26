@@ -3,6 +3,7 @@
 namespace Cloakr\Client\Logger;
 
 use Cloakr\Client\Contracts\LoggerContract;
+use Cloakr\Client\Http\Resources\LogListResource;
 use React\Http\Browser;
 
 class FrontendLogger implements LoggerContract
@@ -19,11 +20,11 @@ class FrontendLogger implements LoggerContract
             ->post(
                 'http://127.0.0.1:'.config()->get('cloakr.dashboard_port').'/api/logs',
                 ['Content-Type' => 'application/json'],
-                json_encode($loggedRequest, JSON_INVALID_UTF8_IGNORE)
+                json_encode(LogListResource::fromLoggedRequest($loggedRequest)->toArray(), JSON_INVALID_UTF8_IGNORE)
             );
     }
 
-    public function synchronizeResponse(LoggedRequest $loggedRequest, string $rawResponse): void
+    public function synchronizeResponse(LoggedRequest $loggedRequest, LoggedResponse $loggedResponse): void
     {
         $this->synchronizeRequest($loggedRequest);
     }

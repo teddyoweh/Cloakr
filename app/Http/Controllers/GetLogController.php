@@ -7,7 +7,7 @@ use Cloakr\Common\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;
 
-class LogController extends Controller
+class GetLogController extends Controller
 {
     public function __construct(protected LogStorageContract $logStorage)
     {
@@ -15,6 +15,6 @@ class LogController extends Controller
 
     public function handle(Request $request, ConnectionInterface $httpConnection)
     {
-        $httpConnection->send(respond_json($this->logStorage->requests()->withResponses()->get()));
+        // TODO:
     }
 }

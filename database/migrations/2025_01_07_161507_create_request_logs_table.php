@@ -18,11 +18,14 @@ return new class extends Migration
 
             $table->longText('raw_request');
 
+            $table->string('request_method');
+            $table->string('request_uri');
+
             $table->integer('start_time');
             $table->integer('stop_time')->nullable();
 
             $table->dateTime('performed_at');
-            $table->float('duration');
+            $table->integer('duration');
 
             $table->json('plugin_data')->nullable();
         });

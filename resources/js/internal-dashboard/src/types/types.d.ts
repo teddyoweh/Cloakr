@@ -26,14 +26,23 @@ declare interface RequestData {
     body: string;
   }
 
-  declare interface CloakrLog {
-    id: string;
-    performed_at: string;
-    duration: number;
-    subdomain: string;
-    request: RequestData;
-    response: ResponseData;
-  }
+    declare interface CloakrLog {
+        id: string;
+        performed_at: string;
+        duration: number;
+        subdomain: string;
+        request: RequestData;
+        response: ResponseData;
+    }
+
+    declare interface ListEntry {
+        id: string;
+        duration: number;
+        request_method: string;
+        request_uri: string;
+        plugin_data: PluginData;
+        status_code: number;
+    }
 
   interface InternalDashboardPageData {
     subdomains: string[];

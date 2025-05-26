@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('response_logs', function (Blueprint $table) {
             $table->id();
             $table->string('request_id');
+            $table->integer('status_code');
             $table->binary('raw_response')->nullable();
 
             $table->foreign('request_id')

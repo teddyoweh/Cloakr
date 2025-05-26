@@ -4,6 +4,8 @@ namespace Cloakr\Client\Logger;
 
 use Cloakr\Client\Contracts\LoggerContract;
 use Cloakr\Client\Contracts\LogStorageContract;
+use Cloakr\Client\Http\Resources\LogListResource;
+use Cloakr\Client\RequestLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laminas\Http\Response;
@@ -47,7 +49,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
     }
 
 
-    public function synchronizeResponse(LoggedRequest $loggedRequest, string $rawResponse): void
+    public function synchronizeResponse(LoggedRequest $loggedRequest, LoggedResponse $loggedResponse): void
     {
         $this->synchronizeRequest($loggedRequest);
 
@@ -55,7 +57,8 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
         if ($responseExists) {
             DB::table('response_logs')->where('request_id', $loggedRequest->id())->update([
-                'raw_response' => $rawResponse
+                'status_code' => $loggedResponse->getStatusCode(),
+                'raw_response' => $loggedResponse->getRawResponse()
             ]);
 
             return;
@@ -63,7 +66,8 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
         DB::table('response_logs')->insert([
             'request_id' => $loggedRequest->id(),
-            'raw_response' => $rawResponse
+            'status_code' => $loggedResponse->getStatusCode(),
+            'raw_response' => $loggedResponse->getRawResponse()
         ]);
     }
 
@@ -121,35 +125,37 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
     public function find(string $id): ?LoggedRequest
     {
-        if ($this->requests->isEmpty()) {
-            $this->requests();
-        }
+        $requestLog = RequestLog::where('request_id', $id);
 
-        $log = $this->requests->first(function (\stdClass $log) use ($id) {
-            return $log->request_id === $id;
-        });
-
-        if (!$log) {
+        if (!$requestLog) {
             return null;
         }
 
-        $loggedRequest = LoggedRequest::fromRecord($log);
-
+        $response = null;
         if ($this->includeResponses) {
-            if ($this->responses->isEmpty()) {
-                $this->withResponses();
-            }
+            $requestLog->with('response');
+        }
 
-            $response = $this->responses->first(function (\stdClass $response) use ($id) {
-                return $response->request_id === $id;
-            });
+        $requestLog = $requestLog->first();
 
-            if ($response) {
-                $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
-            }
+        $loggedRequest = LoggedRequest::fromRecord($requestLog);
+        if ($response) {
+            $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
         }
 
         return $loggedRequest;
+    }
+
+    public function getRequestList(): Collection
+    {
+        $requestLogs = RequestLog::query()
+            ->select(['request_id', 'duration', 'request_method', 'request_uri', 'plugin_data'])
+            ->with(['response:request_id,status_code'])
+            ->get();
+
+        return $requestLogs->map(function (RequestLog $requestLog) {
+            return LogListResource::fromRequestLog($requestLog)->toArray();
+        });
     }
 
 

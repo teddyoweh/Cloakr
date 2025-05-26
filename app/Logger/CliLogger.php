@@ -216,7 +216,7 @@ HTML;
         $this->section->overwrite($output);
     }
 
-    public function synchronizeResponse(LoggedRequest $loggedRequest, string $rawResponse): void
+    public function synchronizeResponse(LoggedRequest $loggedRequest, LoggedResponse $loggedResponse): void
     {
         $this->synchronizeRequest($loggedRequest);
     }

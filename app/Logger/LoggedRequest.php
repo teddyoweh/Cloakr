@@ -6,6 +6,7 @@ use Cloakr\Client\Logger\Plugins\PluginData;
 use Carbon\Carbon;
 use Exception;
 use Cloakr\Client\Logger\Plugins\PluginManager;
+use Cloakr\Client\RequestLog;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -70,7 +71,7 @@ class LoggedRequest implements \JsonSerializable
                 'query' => $this->parsedRequest->getQuery()->toArray(),
                 'post' => $this->getPostData(),
                 'curl' => $this->getRequestAsCurl(),
-                'plugin' => $this->pluginData ? $this->pluginData->toArray() : null
+                'plugin' => $this->getPluginData()
             ],
         ];
 
@@ -87,21 +88,23 @@ class LoggedRequest implements \JsonSerializable
             'request_id' => $this->id,
             'subdomain' => $this->detectSubdomain(),
             'raw_request' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->rawRequest,
+            'request_method' => $this->parsedRequest->getMethod(),
+            'request_uri' => $this->parsedRequest->getUriString(),
             'start_time' => $this->startTime->getTimestampMs(),
-            'stop_time' => $this->stopTime ? $this->stopTime->getTimestampMs() : null,
+            'stop_time' => $this->stopTime?->getTimestampMs(),
             'performed_at' => $this->startTime->toDateTimeString(),
             'duration' => $this->getDuration(),
             'plugin_data' => $this->pluginData ? json_encode($this->pluginData->toArray()) : null,
         ];
     }
 
-    public static function fromRecord(\stdClass $record): self {
-        $loggedRequest = new self($record->raw_request, Request::fromString($record->raw_request));
-        $loggedRequest->id = $record->request_id;
-        $loggedRequest->startTime = Carbon::createFromTimestampMs($record->start_time);
-        $loggedRequest->stopTime = $record->stop_time ? Carbon::createFromTimestampMs($record->stop_time) : null;
-        $loggedRequest->subdomain = $record->subdomain;
-        $loggedRequest->pluginData = $record->plugin_data ? PluginData::fromJson($record->plugin_data) : null;
+    public static function fromRecord(RequestLog $requestLog): self {
+        $loggedRequest = new self($requestLog->raw_request, Request::fromString($requestLog->raw_request));
+        $loggedRequest->id = $requestLog->request_id;
+        $loggedRequest->startTime = Carbon::createFromTimestampMs($requestLog->start_time);
+        $loggedRequest->stopTime = $requestLog->stop_time ? Carbon::createFromTimestampMs($requestLog->stop_time) : null;
+        $loggedRequest->subdomain = $requestLog->subdomain;
+        $loggedRequest->pluginData = $requestLog->plugin_data ? PluginData::fromJson($requestLog->plugin_data) : null;
 
         return $loggedRequest;
     }
@@ -225,9 +228,9 @@ class LoggedRequest implements \JsonSerializable
         return $this->startTime;
     }
 
-    public function getDuration()
+    public function getDuration(): int
     {
-        return $this->startTime->diffInMilliseconds($this->stopTime, false);  // TODO: milliseconds sqlite
+        return (int) $this->startTime->diffInMilliseconds($this->stopTime, false);  // TODO: milliseconds sqlite
     }
 
     protected function getRequestAsCurl(): string
@@ -266,5 +269,9 @@ class LoggedRequest implements \JsonSerializable
 
     public function getCliLabel(): string {
         return $this->pluginData ? $this->pluginData->getCliLabel() : '';
+    }
+
+    public function getPluginData(): ?array {
+        return $this->pluginData ? $this->pluginData->toArray() : null;
     }
 }

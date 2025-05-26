@@ -17,4 +17,6 @@ interface LogStorageContract
     public function delete(?string $id = null): void;
 
     public function find(string $id): ?LoggedRequest;
+
+    public function getRequestList(): ?Collection;
 }

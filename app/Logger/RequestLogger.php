@@ -30,26 +30,30 @@ class RequestLogger
 
     public function logResponse(Request $request, string $rawResponse)
     {
-        $requests = $this->logStorage->requests()->get();
-
         $cloakrRequestId = $request->getHeader("x-cloakr-request-id") ? $request->getHeader("x-cloakr-request-id")->getFieldValue() : null;
 
         if (!$cloakrRequestId) {
             return;
         }
 
-        $loggedRequest = collect($requests)->filter(function (LoggedRequest $loggedRequest) use ($cloakrRequestId) {
-            return $loggedRequest->id() === $cloakrRequestId;
-        })->first();
+        try {
+            $loggedRequest = $this->logStorage->requests()->find($cloakrRequestId);
 
-        $loggedRequest->setResponse($rawResponse, Response::fromString($rawResponse));
-        $loggedRequest->setStopTime();
+            $response = Response::fromString($rawResponse);
+            $loggedResponse = new LoggedResponse($rawResponse, $response, $request);
 
-        $this->logStorage->synchronizeResponse($loggedRequest, $rawResponse);
+            $loggedRequest->setResponse($rawResponse, $response);
+            $loggedRequest->setStopTime();
 
-        $this->frontendLogger->synchronizeResponse($loggedRequest, $rawResponse);
+            $this->logStorage->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
 
-        $this->cliLogger->synchronizeResponse($loggedRequest, $rawResponse);
+            $this->frontendLogger->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
+
+            $this->cliLogger->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
+        }
+        catch (\Throwable $e) {
+            dd($e->getMessage());
+        }
     }
 
     public function getData(): array

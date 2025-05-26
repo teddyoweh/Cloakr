@@ -20,7 +20,7 @@ const props = defineProps<{
 const emit = defineEmits(['set-log'])
 
 
-const logs = ref([] as CloakrLog[]);
+const logs = ref([] as ListEntry[]);
 const highlightNextLog = ref(false as boolean);
 const followRequests = useLocalStorage<boolean>('followLogs', true);
 const listenForRequests = ref(true as boolean);
@@ -40,7 +40,7 @@ const loadLogs = () => {
         .then((data) => {
             logs.value = data;
 
-            emit('set-log', logs.value[0]);
+            // emit('set-log', logs.value[0]); // TODO:
         });
 }
 
@@ -73,7 +73,7 @@ const connect = () => {
         logs.value = logs.value.splice(0, props.maxLogs);
 
         if (highlightNextLog.value || followRequests.value) {
-            emit('set-log', logs.value[0]);
+            // emit('set-log', logs.value[0]); // TODO:
 
             highlightNextLog.value = false;
         }
@@ -126,28 +126,30 @@ const filteredLogs = computed(() => {
 
     if (searchTerm.startsWith("/")) {
         return logs.value.filter(log => {
-            return log.request.uri.indexOf(searchTerm) !== -1;
+            return log.request_uri.indexOf(searchTerm) !== -1;
         })
     } else {
-        return logs.value.filter((log) => {
-            if (isSearchableResponse(log.response)) {
-                return log.response.body.indexOf(searchTerm) !== -1;
-            } else {
-                return log.request.uri.indexOf(searchTerm) !== -1;
-            }
-        })
+        // TODO:
+        // return logs.value.filter((log) => {
+        //     if (isSearchableResponse(log.response)) {
+        //         return log.response.body.indexOf(searchTerm) !== -1;
+        //     } else {
+        //         return log.request.uri.indexOf(searchTerm) !== -1;
+        //     }
+        // })
     }
 
 })
 
-const isSearchableResponse = (response: ResponseData): boolean => {
-    if (response.headers && response.headers['Content-Type']) {
-        const contentTypes = ["application/json", "application/ld-json", "text/plain"];
-        return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
-    }
-
-    return false;
-}
+// TODO:
+// const isSearchableResponse = (response: ResponseData): boolean => {
+//     if (response.headers && response.headers['Content-Type']) {
+//         const contentTypes = ["application/json", "application/ld-json", "text/plain"];
+//         return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
+//     }
+//
+//     return false;
+// }
 
 const focusSearch = () => {
     searchInput.value.focusSearch()
@@ -221,10 +223,10 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
 
                 <TableRow v-for="request in filteredLogs" :key="request.id" @click="emit('set-log', request)"
                           class="border-l-4 border-l-transparent"
-                          :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog === request }">
+                          :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog?.id === request.id }">
                     <TableCell class="pr-0 align-top pl-2 lg:pl-4">
                         <ResponseBadge
-                            :statusCode="request.response && request.response.status ? request.response.status : null"/>
+                            :statusCode="request.status_code"/>
                     </TableCell>
 
                     <TableCell class="align-top text-left pr-0 pl-2 lg:pl-4 flex flex-col items-start font-medium">
@@ -233,23 +235,23 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
                                 <TooltipTrigger>
                                     <div class="max-w-[155px] lg:max-w-[180px] truncate pt-0.5 text-gray-800 dark:text-white">
                                         <span class="text-gray-500 dark:text-gray-300">{{
-                                                request.request.method
+                                                request.request_method
                                             }}</span>
-                                        {{ request.request.uri }}
+                                        {{ request.request_uri }}
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    {{ request.request.uri }}
+                                    {{ request.request_uri }}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="request.request.plugin">
+                        <TooltipProvider v-if="request.plugin_data">
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <span class="text-xs">{{ request.request.plugin?.uiLabel }}</span>
+                                    <span class="text-xs">{{ request.plugin_data?.uiLabel }}</span>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    {{ request.request.plugin?.uiLabel }} - {{ request.request.plugin?.plugin }}
+                                    {{ request.plugin_data?.uiLabel }} - {{ request.plugin_data?.plugin }}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>

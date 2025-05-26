@@ -17,10 +17,9 @@ abstract class TestCase extends BaseTestCase
         config()->set('database.connections.sqlite.database', ':memory:');
 
         $this->artisan('migrate')->run();
-        dump("set up");
-        dump(config('database.default'), config('database.connections.sqlite.database'));
 
+        // Rebind the log storage contract to use the correct database connection for testing in the
+        // DatabaseLogger class
         app(LogStorageContract::class);
-
     }
 }

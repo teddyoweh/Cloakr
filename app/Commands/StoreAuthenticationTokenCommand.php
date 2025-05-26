@@ -3,6 +3,7 @@
 namespace Cloakr\Client\Commands;
 
 
+use Cloakr\Client\Commands\Support\ValidateCloakrToken;
 use Cloakr\Client\Support\TokenNodeVisitor;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
@@ -29,6 +30,12 @@ class StoreAuthenticationTokenCommand extends Command
             return $this->call('token:get', ['--no-interaction' => $this->option('no-interaction')]);
         }
 
+        if (!$this->option('no-interaction')) {
+            banner();
+        }
+
+        (new ValidateCloakrToken)($token);
+
         $this->rememberPreviousSetup();
 
         $configFile = implode(DIRECTORY_SEPARATOR, [
@@ -48,7 +55,6 @@ class StoreAuthenticationTokenCommand extends Command
 
         if (!$this->option('no-interaction')) {
 
-            banner();
             info("Setting up new Cloakr token <span class='font-bold'>$token</span>...");
 
             (new SetupCloakrProToken)($token);

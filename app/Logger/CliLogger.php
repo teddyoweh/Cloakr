@@ -4,14 +4,20 @@ namespace Cloakr\Client\Logger;
 
 use Cloakr\Client\Contracts\LoggerContract;
 use Cloakr\Client\Support\ConsoleSectionOutput;
+use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Terminal;
 use function Termwind\render;
 use function Termwind\terminal;
 
-class CliLogger extends Logger implements LoggerContract
+class CliLogger implements LoggerContract
 {
+    use InteractsWithIO;
+
+    /** @var ConsoleOutputInterface */
+    protected $output;
+
     /** @var Collection */
     protected $requests;
 
@@ -36,6 +42,14 @@ class CliLogger extends Logger implements LoggerContract
      */
     protected $terminalWidth;
 
+    public function __construct(ConsoleOutputInterface $consoleOutput)
+    {
+        $this->output = $consoleOutput;
+
+        $this->section = $this->getSection();
+        $this->requests = new Collection();
+    }
+
     /**
      * Computes the terminal width.
      *
@@ -52,14 +66,6 @@ class CliLogger extends Logger implements LoggerContract
         }
 
         return $this->terminalWidth;
-    }
-
-    public function __construct(ConsoleOutputInterface $consoleOutput)
-    {
-        parent::__construct($consoleOutput);
-
-        $this->section = $this->getSection();
-        $this->requests = new Collection();
     }
 
     public function getSection() {

@@ -8,11 +8,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laminas\Http\Response;
 
-class DatabaseLogger extends Logger implements LoggerContract, LogStorageContract
+class DatabaseLogger implements LoggerContract, LogStorageContract
 {
-
     protected Collection $requests;
     protected Collection $responses;
+
+    protected bool $includeResponses = false;
 
     public function __construct()
     {
@@ -76,13 +77,20 @@ class DatabaseLogger extends Logger implements LoggerContract, LogStorageContrac
     public function withResponses(): LogStorageContract
     {
         $this->responses = DB::table('response_logs')->get();
+        $this->includeResponses = true;
+        return $this;
+    }
+
+    public function withoutResponses(): LogStorageContract
+    {
+        $this->includeResponses = false;
         return $this;
     }
 
 
     public function get(): Collection
     {
-        $hasResponses = $this->responses->isNotEmpty();
+        $hasResponses = $this->includeResponses && $this->responses->isNotEmpty();
 
         return $this->requests->map(function (\stdClass $logData) use ($hasResponses) {
             $loggedRequest = LoggedRequest::fromRecord($logData);
@@ -113,7 +121,7 @@ class DatabaseLogger extends Logger implements LoggerContract, LogStorageContrac
 
     public function find(string $id): ?LoggedRequest
     {
-        if($this->requests->isEmpty()) {
+        if ($this->requests->isEmpty()) {
             $this->requests();
         }
 
@@ -125,7 +133,23 @@ class DatabaseLogger extends Logger implements LoggerContract, LogStorageContrac
             return null;
         }
 
-        return LoggedRequest::fromRecord($log);
+        $loggedRequest = LoggedRequest::fromRecord($log);
+
+        if ($this->includeResponses) {
+            if ($this->responses->isEmpty()) {
+                $this->withResponses();
+            }
+
+            $response = $this->responses->first(function (\stdClass $response) use ($id) {
+                return $response->request_id === $id;
+            });
+
+            if ($response) {
+                $loggedRequest->setResponse($response->raw_response, Response::fromString($response->raw_response));
+            }
+        }
+
+        return $loggedRequest;
     }
 
 

@@ -5,7 +5,7 @@ namespace Cloakr\Client\Logger;
 use Cloakr\Client\Contracts\LoggerContract;
 use React\Http\Browser;
 
-class FrontendLogger extends Logger implements LoggerContract
+class FrontendLogger implements LoggerContract
 {
 
     public function __construct(protected Browser $browser)

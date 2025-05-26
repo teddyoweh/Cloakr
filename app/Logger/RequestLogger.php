@@ -14,7 +14,7 @@ class RequestLogger
 
     public function findLoggedRequest(string $id): ?LoggedRequest
     {
-        return $this->logStorage->requests()->find($id);
+        return $this->logStorage->requests()->withResponses()->find($id);
     }
 
     public function logRequest(string $rawRequest, Request $request): LoggedRequest

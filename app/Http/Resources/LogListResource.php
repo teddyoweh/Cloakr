@@ -13,7 +13,7 @@ class LogListResource
         protected int    $duration,
         protected string $request_method,
         protected string $request_uri,
-        protected array  $plugin_data,
+        protected ?array  $plugin_data = null,
         protected ?int   $status_code = null
     )
     {
@@ -27,7 +27,7 @@ class LogListResource
             $requestLog->duration,
             $requestLog->request_method,
             $requestLog->request_uri,
-            json_decode($requestLog->plugin_data, true),
+            $requestLog->plugin_data ? json_decode($requestLog->plugin_data, true) : null,
             $requestLog->response->status_code ?? null
         );
     }

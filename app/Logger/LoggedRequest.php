@@ -136,7 +136,7 @@ class LoggedRequest implements \JsonSerializable
 
     public function id(): string
     {
-        return $this->id;
+        return (string)$this->id;
     }
 
     public function getRequestData(): ?string

@@ -3,6 +3,7 @@
 namespace Cloakr\Client\Logger;
 
 use Cloakr\Client\Contracts\LoggerContract;
+use Cloakr\Client\Http\Resources\CliLogResource;
 use Cloakr\Client\Support\ConsoleSectionOutput;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Collection;
@@ -131,62 +132,37 @@ HTML;
         }
     }
 
-    protected function getRequestColor(?LoggedRequest $request)
-    {
-        $statusCode = optional($request->getResponse())->getStatusCode();
-        $color = 'white';
-
-        if ($statusCode >= 200 && $statusCode < 300) {
-            $color = 'green';
-        } elseif ($statusCode >= 300 && $statusCode < 400) {
-            $color = 'blue';
-        } elseif ($statusCode >= 400 && $statusCode < 500) {
-            $color = 'yellow';
-        } elseif ($statusCode >= 500) {
-            $color = 'red';
-        }
-
-        return $color;
-    }
 
     public function synchronizeRequest(LoggedRequest $loggedRequest): void
     {
-        $dashboardUrl = 'http://127.0.0.1:'.config('cloakr.dashboard_port');
+        $cliLog = CliLogResource::fromLoggedRequest($loggedRequest);
 
         if ($this->requests->has($loggedRequest->id())) {
-            $this->requests[$loggedRequest->id()] = $loggedRequest;
+            $this->requests[$loggedRequest->id()] = $cliLog;
         } else {
-            $this->requests->prepend($loggedRequest, $loggedRequest->id());
+            $this->requests->prepend($cliLog, $loggedRequest->id());
         }
         $this->requests = $this->requests->slice(0, config('cloakr.max_logged_requests', 100));
 
         $terminalWidth = $this->getTerminalWidth();
 
-        $requests = $this->requests->map(function (LoggedRequest $loggedRequest) {
-            return [
-                'method' => $loggedRequest->getRequest()->getMethod(),
-                'url' => $loggedRequest->getRequest()->getUri(),
-                'duration' => $loggedRequest->getDuration(),
-                'time' => $loggedRequest->getStartTime()->isToday() ? $loggedRequest->getStartTime()->toTimeString() : $loggedRequest->getStartTime()->toDateTimeString(),
-                'color' => $this->getRequestColor($loggedRequest),
-                'status' => optional($loggedRequest->getResponse())->getStatusCode(),
-                'cliLabel' => $loggedRequest->getCliLabel()
-            ];
+        $requests = $this->requests->map(function (CliLogResource $cliLog) {
+            return $cliLog->toArray();
         });
 
-        $maxMethod = mb_strlen($requests->max('method'));
+        $maxMethod = mb_strlen($requests->max('request_method'));
         $maxDuration = mb_strlen($requests->max('duration'));
 
         $output = $requests->map(function ($loggedRequest) use ($terminalWidth, $maxMethod, $maxDuration) {
-            $method = $loggedRequest['method'];
+            $method = $loggedRequest['request_method'];
             $spaces = str_repeat(' ', max($maxMethod + 2 - mb_strlen($method), 0));
-            $url = $loggedRequest['url'];
+            $url = $loggedRequest['request_uri'];
             $duration = $loggedRequest['duration'];
             $time = $loggedRequest['time'];
             $durationSpaces = str_repeat(' ', max($maxDuration + 2 - mb_strlen($duration), 0));
             $color = $loggedRequest['color'];
-            $status = $loggedRequest['status'];
-            $cliLabel = $loggedRequest['cliLabel'];
+            $status = $loggedRequest['status_code'];
+            $cliLabel = $loggedRequest['cli_label'];
 
 
             $dots = str_repeat('.', max($terminalWidth - strlen($method.$spaces.$cliLabel.$url.$time.$durationSpaces.$duration) - 20, 0));

@@ -23,12 +23,7 @@ class DatabaseRequestLogger extends Logger
 
         if ($requestExists) {
             DB::table('request_logs')->where('request_id', $loggedRequest->id())
-                ->update(array_merge(
-                    $loggedRequest->toDatabase(),
-                    [
-                        'updated_at' => now(),
-                    ]
-                ));
+                ->update($loggedRequest->toDatabase());
         } else {
 
             $maxLogs = config('cloakr.max_logged_requests', 10);
@@ -52,8 +47,7 @@ class DatabaseRequestLogger extends Logger
 
         if ($responseExists) {
             DB::table('response_logs')->where('request_id', $loggedRequest->id())->update([
-                'raw_response' => $rawResponse,
-                'updated_at' => now(),
+                'raw_response' => $rawResponse
             ]);
 
             return;
@@ -61,16 +55,12 @@ class DatabaseRequestLogger extends Logger
 
         DB::table('response_logs')->insert([
             'request_id' => $loggedRequest->id(),
-            'raw_response' => $rawResponse,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'raw_response' => $rawResponse
         ]);
     }
 
     public function getData(): array
     {
-//        $start = microtime(true);
-
         $logs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
         $responses = DB::table('response_logs')->get();
 
@@ -87,8 +77,6 @@ class DatabaseRequestLogger extends Logger
 
             return $loggedRequest;
         });
-
-//        dump('DatabaseRequestLogger getData: ' . (microtime(true) - $start));
 
         return $logs->toArray();
     }

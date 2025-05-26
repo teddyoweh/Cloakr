@@ -25,8 +25,6 @@ return new class extends Migration
             $table->float('duration');
 
             $table->json('plugin_data')->nullable();
-
-            $table->timestamps();
         });
     }
 

@@ -15,10 +15,10 @@ return new class extends Migration {
             $table->string('request_id');
             $table->binary('raw_response')->nullable();
 
-            $table->timestamps();
-
-            $table->foreign('request_id')->references('request_id')->on('request_logs');
-
+            $table->foreign('request_id')
+                ->references('request_id')
+                ->on('request_logs')
+                ->onDelete('cascade');
         });
     }
 

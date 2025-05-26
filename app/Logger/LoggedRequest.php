@@ -87,8 +87,8 @@ class LoggedRequest implements \JsonSerializable
             'request_id' => $this->id,
             'subdomain' => $this->detectSubdomain(),
             'raw_request' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->rawRequest,
-            'start_time' => $this->startTime->toDateTimeString(), // TODO: milliseconds sqlite
-            'stop_time' => $this->stopTime ? $this->stopTime->toDateTimeString() : null, // TODO: milliseconds sqlite
+            'start_time' => $this->startTime->getTimestampMs(),
+            'stop_time' => $this->stopTime ? $this->stopTime->getTimestampMs() : null,
             'performed_at' => $this->startTime->toDateTimeString(),
             'duration' => $this->getDuration(),
             'plugin_data' => $this->pluginData ? json_encode($this->pluginData->toArray()) : null,
@@ -100,8 +100,8 @@ class LoggedRequest implements \JsonSerializable
     public static function fromRecord(\stdClass $record): self {
         $loggedRequest = new self($record->raw_request, Request::fromString($record->raw_request));
         $loggedRequest->id = $record->request_id;
-        $loggedRequest->startTime = Carbon::parse($record->start_time);
-        $loggedRequest->stopTime = $record->stop_time ? Carbon::parse($record->stop_time) : null;
+        $loggedRequest->startTime = Carbon::createFromTimestampMs($record->start_time);
+        $loggedRequest->stopTime = $record->stop_time ? Carbon::createFromTimestampMs($record->stop_time) : null;
         $loggedRequest->subdomain = $record->subdomain;
         $loggedRequest->pluginData = $record->plugin_data ? PluginData::fromJson($record->plugin_data) : null;
 

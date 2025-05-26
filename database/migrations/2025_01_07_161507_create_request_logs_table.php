@@ -18,8 +18,8 @@ return new class extends Migration
 
             $table->longText('raw_request');
 
-            $table->dateTime('start_time', 3);
-            $table->dateTime('stop_time', 3)->nullable();
+            $table->integer('start_time');
+            $table->integer('stop_time')->nullable();
 
             $table->dateTime('performed_at');
             $table->float('duration');

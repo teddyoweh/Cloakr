@@ -33,7 +33,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
                 ->update($loggedRequest->toDatabase());
         } else {
 
-            $maxLogs = config('cloakr.max_logged_requests', 10);
+            $maxLogs = config('cloakr.max_logged_requests', 100);
 
             $requestLogs = DB::table('request_logs')->orderBy('start_time', 'desc')->get();
 

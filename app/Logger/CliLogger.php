@@ -158,7 +158,7 @@ HTML;
         } else {
             $this->requests->prepend($loggedRequest, $loggedRequest->id());
         }
-        $this->requests = $this->requests->slice(0, config('cloakr.max_logged_requests', 10));
+        $this->requests = $this->requests->slice(0, config('cloakr.max_logged_requests', 100));
 
         $terminalWidth = $this->getTerminalWidth();
 

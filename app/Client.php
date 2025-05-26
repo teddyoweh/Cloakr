@@ -240,6 +240,12 @@ class Client
             $this->exit($deferred);
         });
 
+        $connection->on('closeWithoutReconnect', function ($data) use ($deferred) {
+            $this->logger->renderError($data->message);
+
+            $this->exit($deferred);
+        });
+
         $connection->on('setMaximumConnectionLength', function ($data) {
             $timeoutSection = $this->logger->getSection();
 

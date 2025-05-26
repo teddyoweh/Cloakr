@@ -158,6 +158,7 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
             ->select([
                 "request_id",
                 "duration",
+                "raw_request",
                 "request_method",
                 "request_uri",
                 "plugin_data",
@@ -167,9 +168,21 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
             ->where("request_uri", "like", "%$search%")
             ->orWhere("plugin_data", "like", "%$search%")
             ->orWhereHas("response", function ($query) use ($search) {
-                $query->whereRaw("CAST(raw_response AS TEXT) LIKE ?", ["%$search%"]);
+                // Search response only if request contains a searchable content type
+                // ["application/json", "application/ld-json", "text/html", "text/plain"]
+                $query
+                    ->whereHas("request", function ($query) {
+                        $query->where(function ($query) {
+                            $query
+                                ->where("raw_request", "like", "%application/json%")
+                                ->orWhere("raw_request", "like", "%application/ld-json%")
+                                ->orWhere("raw_request", "like", "%text/html%")
+                                ->orWhere("raw_request", "like", "%text/plain%");
+                        });
+                    })
+                    ->whereRaw("CAST(raw_response AS TEXT) LIKE ?", ["%$search%"]);
             })
-            ->orderBy('start_time', 'desc')
+            ->orderBy("start_time", "desc")
             ->get()
             ->map(function (RequestLog $requestLog) {
                 return LogListResource::fromRequestLog($requestLog)->toArray();

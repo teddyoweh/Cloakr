@@ -4,6 +4,10 @@ namespace Cloakr\Client\Commands\Support;
 
 class CloakrToken
 {
+
+    protected bool $hasError = false;
+    protected string $errorMessage = '';
+
     public function __construct(protected ?string $token, protected bool $isValid = false, protected bool $isPro = false)
     {
     }
@@ -36,5 +40,22 @@ class CloakrToken
     public static function pro(string $token): self
     {
         return new self($token, true, true);
+    }
+
+    public function hasError(): bool
+    {
+        return $this->hasError;
+    }
+
+    public function getError(): string
+    {
+        return $this->errorMessage;
+    }
+
+    public function setError(string $errorMessage): self
+    {
+        $this->hasError = true;
+        $this->errorMessage = $errorMessage;
+        return $this;
     }
 }

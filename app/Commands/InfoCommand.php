@@ -78,7 +78,7 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
         return 'v'.config('app.version');
     }
 
-    public function getToken()
+    public function getToken(): string
     {
         return config('cloakr.auth_token');
     }

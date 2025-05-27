@@ -4,7 +4,9 @@ namespace Cloakr\Client\Commands;
 
 
 use Cloakr\Client\Commands\Support\ValidateCloakrToken;
+use Cloakr\Client\Contracts\FetchesPlatformDataContract;
 use Cloakr\Client\Support\TokenNodeVisitor;
+use Cloakr\Client\Traits\FetchesPlatformData;
 use Illuminate\Console\Command;
 use PhpParser\Lexer\Emulative;
 use PhpParser\NodeTraverser;
@@ -13,20 +15,24 @@ use PhpParser\Parser\Php7;
 use PhpParser\PrettyPrinter\Standard;
 
 use function Cloakr\Common\banner;
+use function Cloakr\Common\error;
 use function Cloakr\Common\info;
 
-class StoreAuthenticationTokenCommand extends Command
+class StoreAuthenticationTokenCommand extends Command implements FetchesPlatformDataContract
 {
+    use FetchesPlatformData;
 
     protected $signature = 'token {token?} {--clean}';
 
     protected $description = 'Set the authentication token to use with Cloakr.';
 
+    protected string $token = '';
+
     public function handle()
     {
-        $token = $this->argument('token');
+        $this->token = $this->argument('token');
 
-        if (is_null($token) && config('cloakr.auth_token') !== null) {
+        if (is_null($this->token) && config('cloakr.auth_token') !== null) {
             return $this->call('token:get', ['--no-interaction' => $this->option('no-interaction')]);
         }
 
@@ -34,7 +40,16 @@ class StoreAuthenticationTokenCommand extends Command
             banner();
         }
 
-        (new ValidateCloakrToken)($token);
+        if ($this->cloakrToken()->isInvalid()) {
+            error("Token $this->token is invalid. Please check your token and try again. If you don't have a token, visit <a href='https://cloakr.dev'>cloakr.dev</a> to create your free account.");
+
+            if ($this->cloakrToken()->hasError() && $this->getOutput()->isVerbose()) {
+                info();
+                info($this->cloakrToken()->getError());
+            }
+
+            exit;
+        }
 
         $this->rememberPreviousSetup();
 
@@ -44,7 +59,7 @@ class StoreAuthenticationTokenCommand extends Command
             'config.php',
         ]);
 
-        if (! file_exists($configFile)) {
+        if (!file_exists($configFile)) {
             @mkdir(dirname($configFile), 0777, true);
             $updatedConfigFile = $this->modifyConfigurationFile(base_path('config/cloakr.php'), $this->argument('token'));
         } else {
@@ -55,17 +70,17 @@ class StoreAuthenticationTokenCommand extends Command
 
         if (!$this->option('no-interaction')) {
 
-            info("Setting up new Cloakr token <span class='font-bold'>$token</span>...");
+            info("Setting up new Cloakr token <span class='font-bold'>$this->token</span>...");
 
-            (new SetupCloakrProToken)($token);
-        }
-        else {
-            info("Token set to $token.");
+            (new SetupCloakrProToken)($this->token);
+        } else {
+            info("Token set to $this->token.");
         }
 
     }
 
-    protected function rememberPreviousSetup() {
+    protected function rememberPreviousSetup(): void
+    {
 
         $previousSetup = [
             'token' => config('cloakr.auth_token'),
@@ -110,5 +125,10 @@ class StoreAuthenticationTokenCommand extends Command
         $prettyPrinter = new Standard();
 
         return $prettyPrinter->printFormatPreserving($newStmts, $oldStmts, $oldTokens);
+    }
+
+    public function getToken(): string
+    {
+        return $this->token;
     }
 }

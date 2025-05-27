@@ -20,9 +20,9 @@ class SetUpCloakrProToken implements FetchesPlatformDataContract
         $this->token = $token;
 
         if ($this->isProToken() && $this->hasTeamDomains()) {
-            return (new SetUpCloakrDefaultDomain)($token);
+             (new SetUpCloakrDefaultDomain)($token);
         } else {
-            return (new SetUpCloakrDefaultServer)($token);
+             (new SetUpCloakrDefaultServer)($token);
         }
     }
 

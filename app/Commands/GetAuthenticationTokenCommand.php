@@ -26,7 +26,7 @@ class GetAuthenticationTokenCommand extends Command
 
         banner();
 
-        if (is_null($token)) {
+        if (empty($token)) {
             warning('There is no authentication token specified.');
         } else {
             info("Current authentication token: <span class='font-bold'>$token</span>");

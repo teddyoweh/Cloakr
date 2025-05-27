@@ -39,6 +39,7 @@ class SetUpCloakrDefaultServer implements FetchesPlatformDataContract
             To access our high-performance, global server network, upgrade to <a href="https://cloakr.dev/go-pro">Cloakr Pro</a>.');
 
             Artisan::call("default-server free");
+            Artisan::call("default-domain:clear", ['--no-interaction' => true]);
             render(Artisan::output());
         }
 
@@ -57,6 +58,7 @@ class SetUpCloakrDefaultServer implements FetchesPlatformDataContract
 
             if ($server) {
                 Artisan::call("default-server $server");
+                Artisan::call("default-domain:clear", ['--no-interaction' => true]);
                 render(Artisan::output());
             }
         }

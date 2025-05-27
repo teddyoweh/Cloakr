@@ -32,6 +32,7 @@ class ShareCommand extends ServerAwareCommand
     {
         banner();
         $this->ensureEnvironmentSetup();
+        $this->ensureCloakrSetup();
 
         info("Cloakr version v" . config('app.version'), options: OutputInterface::VERBOSITY_VERBOSE);
 
@@ -146,6 +147,18 @@ class ShareCommand extends ServerAwareCommand
                 'Please refer to the documentation for more information: https://cloakr.dev/docs/troubleshooting',
                 abort: true
             );
+        }
+    }
+
+    protected function ensureCloakrSetup(): void
+    {
+        if (empty(config('cloakr.auth_token'))) {
+            info();
+            error('No authentication token set.');
+            info();
+
+            info("If you don't have an Cloakr account yet, you can start for free at <a href='https://cloakr.dev'>cloakr.dev</a>.");
+            exit;
         }
     }
 

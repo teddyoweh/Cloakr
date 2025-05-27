@@ -11,6 +11,7 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use function Ratchet\Client\connect;
+use function Termwind\parse;
 
 class Client
 {
@@ -130,15 +131,12 @@ class Client
                 $connection->on('authenticated', function ($data) use ($deferred, $sharedUrl) {
                     $httpProtocol = $this->configuration->port() === 443 ? 'https' : 'http';
 
-                    $httpPort = $httpProtocol === 'https' ? '' : ":{$this->configuration->port()}";
-
                     $host = $data->server_host ?? $this->configuration->host();
 
                     $this->configuration->setServerHost($host);
 
                     if($data->message) {
-                        $this->logger->line("");
-                        $this->logger->line($data->message);
+                        $this->logger->renderMessage($data->message);
                     }
 
                     $this->logger->renderConnectionTable([

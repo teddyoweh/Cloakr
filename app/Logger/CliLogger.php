@@ -8,7 +8,7 @@ use Cloakr\Client\Support\ConsoleSectionOutput;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Terminal;
+use function Termwind\parse;
 use function Termwind\render;
 use function Termwind\terminal;
 
@@ -41,7 +41,18 @@ class CliLogger implements LoggerContract
      *
      * @var int|null
      */
-    protected $terminalWidth;
+    protected ?int $terminalWidth = null;
+
+    /**
+     * The current terminal height.
+     *
+     * @var int|null
+     */
+    protected ?int $terminalHeight = null;
+
+    protected int $headerLineCount = 10;
+
+    protected int $maximumRequests = 50;
 
     public function __construct(ConsoleOutputInterface $consoleOutput)
     {
@@ -56,10 +67,10 @@ class CliLogger implements LoggerContract
      *
      * @return int
      */
-    protected function getTerminalWidth()
+    protected function getTerminalWidth(): int
     {
         if ($this->terminalWidth == null) {
-            $this->terminalWidth = (new Terminal)->getWidth();
+            $this->terminalWidth = terminal()->width();
 
             $this->terminalWidth = $this->terminalWidth >= 30
                 ? $this->terminalWidth
@@ -69,48 +80,49 @@ class CliLogger implements LoggerContract
         return $this->terminalWidth;
     }
 
-    public function getSection() {
+    /**
+     * Computes the terminal height.
+     *
+     * @return int
+     */
+    protected function getTerminalHeight(): int
+    {
+        if ($this->terminalHeight == null) {
+            $this->terminalHeight = terminal()->height();
+
+            $this->terminalHeight = $this->terminalHeight >= 50
+                ? $this->terminalHeight
+                : 50;
+        }
+
+        return $this->terminalHeight;
+    }
+
+    public function getSection(): ConsoleSectionOutput {
         return new ConsoleSectionOutput($this->output->getStream(), $this->consoleSectionOutputs, $this->output->getVerbosity(), $this->output->isDecorated(), $this->output->getFormatter());
     }
 
     /**
      * @return ConsoleOutputInterface
      */
-    public function getOutput()
+    public function getOutput(): ConsoleOutputInterface
     {
         return $this->output;
     }
 
-    public function renderMessageBox(string $text, string $bgColor = "bg-pink-100", $textColor = "text-pink-600", $additionalClasses = "") {
+    public function renderMessage(string $message): void {
         render("");
 
-        $terminalWidth = terminal()->width();
+        $this->headerLineCount += $this->countOutputLines($message) + 1;
 
-        if (strlen($text) > $terminalWidth) {
-            $lines = collect(explode("\n", wordwrap($text, $terminalWidth, "\n")))
-                ->map(function ($line) {
-                    return trim($line);
-                })
-                ->filter();
-        }
-        else {
-            $lines = [$text];
-        }
-
-        foreach ($lines as $line) {
-            render("<div class='mx-2 w-full px-3 $bgColor $textColor $additionalClasses'> $line </div>");
-        }
+        $this->line($message);
     }
 
-    public function renderInfo($string) {
-        render("<div class='px-2 w-full text-center'> $string </div>");
+    public function renderError($text): void {
+        render("<div class='mx-2 w-full px-3 bg-red-100 text-red-600'> $text </div>");
     }
 
-    public function renderError($text) {
-        $this->renderMessageBox($text, "bg-red-100", "text-red-600");
-    }
-
-    public function renderConnectionTable($data) {
+    public function renderConnectionTable($data): void {
         render("");
 
         $template = <<<HTML
@@ -121,6 +133,7 @@ class CliLogger implements LoggerContract
     </div>
 HTML;
 
+        $tableOutput = '';
         foreach ($data as $key => $value) {
             $output = str_replace(
                 ['key', 'value'],
@@ -128,13 +141,19 @@ HTML;
                 $template
             );
 
-            render($output);
+            $tableOutput = $tableOutput . PHP_EOL . (parse($output));
         }
+
+        $this->headerLineCount += $this->countOutputLines($tableOutput);
+
+        $this->line($tableOutput);
     }
 
 
     public function synchronizeRequest(LoggedRequest $loggedRequest): void
     {
+        $this->getMaximumRequests();
+
         $cliLog = CliLogResource::fromLoggedRequest($loggedRequest);
 
         if ($this->requests->has($loggedRequest->id())) {
@@ -142,7 +161,8 @@ HTML;
         } else {
             $this->requests->prepend($cliLog, $loggedRequest->id());
         }
-        $this->requests = $this->requests->slice(0, config('cloakr.max_logged_requests', 100));
+
+        $this->requests = $this->requests->slice(0, $this->maximumRequests);
 
         $terminalWidth = $this->getTerminalWidth();
 
@@ -195,5 +215,13 @@ HTML;
     public function synchronizeResponse(LoggedRequest $loggedRequest, LoggedResponse $loggedResponse): void
     {
         $this->synchronizeRequest($loggedRequest);
+    }
+
+    protected function countOutputLines($output): int {
+        return count(explode(PHP_EOL, $output));
+    }
+
+    protected function getMaximumRequests(): void {
+        $this->maximumRequests = $this->getTerminalHeight() - $this->headerLineCount - 1;
     }
 }

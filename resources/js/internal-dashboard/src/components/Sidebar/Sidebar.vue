@@ -161,7 +161,7 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
         class="w-[400px] h-[calc(100vh-81px)] border-r border-gray-200 dark:border-gray-700 overflow-y-auto bg-white dark:bg-gray-900">
 
         <div class="pt-4 text-sm sticky bg-white dark:bg-gray-900 top-0 z-20">
-            <h3 class="inline px-4 font-medium mr-2">Requests</h3> <span class="text-gray-400">{{ logs.length }}</span>
+            <h3 class="inline px-4 font-medium mr-2">Requests</h3>
 
             <div class="flex flex-col lg:flex-row items-center px-4 items-center justify-between space-x-2 mt-4">
 
@@ -178,9 +178,9 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
 
                     <IconButton @click="toggleFollowRequests"
                                 :icon="!followRequests ? Bars3Icon : BarsArrowUpIcon"
-                                tooltip-text="Follow requests" shortcut="F"/>
+                                :tooltip-text="followRequests ? 'Stop following requests' : 'Follow Requests'" shortcut="F"/>
 
-                    <IconButton @click="clearLogs" :icon="TrashIcon" tooltip-text="Clear logs" shortcut="R"/>
+                    <IconButton @click="clearLogs" :icon="TrashIcon" tooltip-text="Clear logs" shortcut="CTRL + L"/>
                 </div>
 
             </div>

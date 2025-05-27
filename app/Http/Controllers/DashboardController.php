@@ -17,6 +17,7 @@ class DashboardController extends Controller
                     'user' => Client::$user,
                     'subdomains' => Client::$subdomains,
                     'max_logs' => config()->get('cloakr.max_logged_requests', 10),
+                    'local_url' => Client::$localUrl
                 ],
 
                 'jsFile' => $this->getJsFilePath(),

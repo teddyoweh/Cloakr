@@ -39,6 +39,7 @@ declare interface RequestData {
     subdomains: string[];
     user: CloakrUser;
     max_logs: number;
+    local_url: string;
   }
 
   interface CloakrUser {

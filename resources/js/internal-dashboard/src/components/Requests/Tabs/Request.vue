@@ -15,14 +15,13 @@ import {useLocalStorage} from '@/lib/composables/useLocalStorage'
 import {
     ArrowsRightLeftIcon,
     CircleStackIcon,
-    ClipboardIcon,
     CodeBracketIcon,
     DocumentTextIcon
 } from "@heroicons/vue/16/solid";
-import IconTextButton from "@/components/ui/IconTextButton.vue";
 import AccordionTableHeader from "@/components/ui/table/AccordionTableHeader.vue";
 import BodyViewButton from "@/components/ui/BodyViewButton.vue";
 import {useColorMode} from "@vueuse/core";
+import IconCopyButton from "@/components/ui/IconCopyButton.vue";
 
 
 const props = defineProps<{
@@ -143,10 +142,9 @@ onUnmounted(() => {
                 <AccordionTrigger>
                     <div>{{ request.plugin.plugin }}: <span class="font-mono">{{ request.plugin.uiLabel }}</span></div>
                     <template v-slot:action>
-                        <IconTextButton @click="copyToClipboard(toPhpArray(request.plugin.details, 'pluginDetails'))"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton @click="copyToClipboard(toPhpArray(request.plugin.details, 'pluginDetails'))">
                             Copy as PHP array
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <CircleStackIcon class="size-4"/>
@@ -187,10 +185,9 @@ onUnmounted(() => {
                     <div>Query parameters</div>
                 </div>
                 <div>
-                    <IconTextButton @click="copyToClipboard(toPhpArray(request.query, 'queryParameters'))"
-                                    :icon="ClipboardIcon">
+                    <IconCopyButton @click="copyToClipboard(toPhpArray(request.query, 'queryParameters'))">
                         Copy as PHP array
-                    </IconTextButton>
+                    </IconCopyButton>
                 </div>
             </div>
 
@@ -218,10 +215,9 @@ onUnmounted(() => {
 
                     <div>Post Parameters</div>
                     <template v-slot:action>
-                        <IconTextButton @click="copyToClipboard(toPhpArray(request.post, 'postData'))"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton @click="copyToClipboard(toPhpArray(request.post, 'postData'))">
                             Copy as PHP array
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <ArrowsRightLeftIcon class="size-4"/>
@@ -263,10 +259,9 @@ onUnmounted(() => {
                 <AccordionTrigger>
                     <div>Headers</div>
                     <template v-slot:action>
-                        <IconTextButton @click="copyToClipboard(toPhpArray(request.headers, 'headers'))"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton @click="copyToClipboard(toPhpArray(request.headers, 'headers'))">
                             Copy as PHP array
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <ArrowsRightLeftIcon class="size-4"/>
@@ -310,10 +305,9 @@ onUnmounted(() => {
 
                     <div>Body</div>
                     <template v-slot:action>
-                        <IconTextButton v-if="request.body" @click="copyToClipboard(request.body)"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton v-if="request.body" @click="copyToClipboard(request.body)">
                             Copy
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <DocumentTextIcon class="size-4"/>

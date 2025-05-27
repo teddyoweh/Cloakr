@@ -65,8 +65,6 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
             exit;
         }
 
-        $this->rememberPreviousSetup();
-
         $configFile = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
             '.cloakr',
@@ -77,6 +75,7 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
             @mkdir(dirname($configFile), 0777, true);
             $updatedConfigFile = $this->modifyConfigurationFile(base_path('config/cloakr.php'), $this->token);
         } else {
+            $this->rememberPreviousSetup();
             $updatedConfigFile = $this->modifyConfigurationFile($configFile, $this->token);
         }
 
@@ -114,6 +113,10 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
             '.cloakr',
             'previous_setup.json',
         ]);
+
+        if(!file_exists($previousSetupPath)) {
+            fopen($previousSetupPath, 'w');
+        }
 
         file_put_contents($previousSetupPath, json_encode($previousSetup));
     }

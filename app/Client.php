@@ -262,7 +262,7 @@ class Client
 
     protected function exit(Deferred $deferred)
     {
-        $deferred->reject(new \Exception());
+//        $deferred->reject(new \Exception());
 
 
         $this->loop->futureTick(function () {

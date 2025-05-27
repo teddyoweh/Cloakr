@@ -31,8 +31,6 @@ class ShareCatchAllCommand extends ShareCommand
 
     protected $description = 'Share a catch-all site';
 
-    protected ?bool $isWindows = null;
-
     public function handle()
     {
         $this->input->setArgument('host', $this->startCatchAllServer());

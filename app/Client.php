@@ -54,7 +54,10 @@ class Client
         $sharedUrl = $this->prepareSharedUrl($sharedUrl);
 
         foreach ($subdomains as $subdomain) {
-            $this->connectToServer($sharedUrl, $subdomain, $serverHost, $this->configuration->auth());
+            $this->connectToServer($sharedUrl, $subdomain, $serverHost, $this->configuration->auth())
+                ->catch(function ($exception) {
+                    // No-op as this gets handled internally.
+                });
         }
     }
 
@@ -262,7 +265,7 @@ class Client
 
     protected function exit(Deferred $deferred)
     {
-//        $deferred->reject(new \Exception());
+        $deferred->reject(new \Exception());
 
 
         $this->loop->futureTick(function () {

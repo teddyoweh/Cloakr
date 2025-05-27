@@ -59,8 +59,7 @@ defineCloakr({
             <div class="flex   space-x-4 lg:w-3/5 justify-between">
                 <UrlBar
                     :subdomain="currentSubdomain"
-                    @open-in-new-tab="openSubdomainInNewTab"
-                    @copy-to-clipboard="copySubdomainToClipboard"
+                    @copy="copySubdomainToClipboard"
                 />
 
                 <div class="flex items-center">

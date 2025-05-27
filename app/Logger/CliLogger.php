@@ -174,7 +174,7 @@ HTML;
             }
 
             return sprintf(
-                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</><options=bold>%s</> %s<fg=#6C7280>%s %s%s%s ms</>',
+                '  <fg=%s;options=bold>%s </>   <fg=%s;options=bold>%s%s</><options=bold>%s</> <fg=#6C7280>%s</> %s <fg=#6C7280>%s%s%s ms</>',
                 $color,
                 $status,
                 $this->verbColors[$method] ?? 'default',

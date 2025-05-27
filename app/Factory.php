@@ -204,7 +204,7 @@ class Factory
         DB::purge('sqlite'); // Purges the current connection, forcing it to re-bind
         DB::reconnect('sqlite');
 
-        info("Using SQLite database: {$databasePath}", OutputInterface::VERBOSITY_VERBOSE);
+        info("Using SQLite database: {$databasePath}", options: OutputInterface::VERBOSITY_VERBOSE);
     }
 
     protected function migrateDatabase()

@@ -17,6 +17,8 @@ use PhpParser\PrettyPrinter\Standard;
 use function Cloakr\Common\banner;
 use function Cloakr\Common\error;
 use function Cloakr\Common\info;
+use function Cloakr\Common\success;
+use function Laravel\Prompts\text;
 
 class StoreAuthenticationTokenCommand extends Command implements FetchesPlatformDataContract
 {
@@ -26,18 +28,30 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
 
     protected $description = 'Set the authentication token to use with Cloakr.';
 
-    protected string $token = '';
+    protected ?string $token = '';
+
+    protected bool $newSetup = false;
 
     public function handle()
     {
         $this->token = $this->argument('token');
+        $this->newSetup = empty(config('cloakr.auth_token'));
 
-        if (is_null($this->token) && config('cloakr.auth_token') !== null) {
+        if (empty($this->token) && !$this->newSetup) {
             return $this->call('token:get', ['--no-interaction' => $this->option('no-interaction')]);
         }
 
         if (!$this->option('no-interaction')) {
             banner();
+        }
+
+        if (empty($this->token)) {
+            info("There is no authentication token specified yet.", newLine: true);
+            info("If you don't have a token, visit <a href='https://cloakr.dev'>cloakr.dev</a> to create your free account.");
+            $this->token = text(
+                label: 'Cloakr token',
+                required: true,
+            );
         }
 
         if ($this->cloakrToken()->isInvalid()) {
@@ -61,9 +75,9 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
 
         if (!file_exists($configFile)) {
             @mkdir(dirname($configFile), 0777, true);
-            $updatedConfigFile = $this->modifyConfigurationFile(base_path('config/cloakr.php'), $this->argument('token'));
+            $updatedConfigFile = $this->modifyConfigurationFile(base_path('config/cloakr.php'), $this->token);
         } else {
-            $updatedConfigFile = $this->modifyConfigurationFile($configFile, $this->argument('token'));
+            $updatedConfigFile = $this->modifyConfigurationFile($configFile, $this->token);
         }
 
         file_put_contents($configFile, $updatedConfigFile);
@@ -75,6 +89,13 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
             (new SetupCloakrProToken)($this->token);
         } else {
             info("Token set to $this->token.");
+        }
+
+        if ($this->newSetup) {
+            info();
+            success("🎉 You're all set! Share your first site by running `cloakr` in your site's directory.");
+            info();
+            info("If you want to learn more about how to use Cloakr, checkout the <a href='https://cloakr.dev/docs/getting-started/sharing-your-first-site'>documentation</a>.");
         }
 
     }

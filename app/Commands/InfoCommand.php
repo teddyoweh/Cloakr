@@ -5,7 +5,6 @@ namespace Cloakr\Client\Commands;
 use Cloakr\Client\Contracts\FetchesPlatformDataContract;
 use Cloakr\Client\Traits\FetchesPlatformData;
 use Exception;
-use Cloakr\Client\Traits\ReadsCloakrConfig;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -17,7 +16,6 @@ use function Cloakr\Common\lineTableLabel;
 class InfoCommand extends Command implements FetchesPlatformDataContract
 {
     use FetchesPlatformData;
-    use ReadsCloakrConfig;
 
     protected $signature = 'info {--json}';
 
@@ -74,6 +72,10 @@ class InfoCommand extends Command implements FetchesPlatformDataContract
 
             return 999;
         }
+    }
+
+    protected function getVersion(): string {
+        return 'v'.config('app.version');
     }
 
     public function getToken(): string

@@ -2,6 +2,7 @@
 
 namespace Cloakr\Client\Traits;
 
+use Cloakr\Client\Commands\Support\CloakrToken;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -10,28 +11,41 @@ trait FetchesPlatformData
 {
     protected function isProToken(): bool
     {
+        return $this->cloakrToken()->isPro();
+    }
+
+    protected function isValidToken(): bool
+    {
+        return $this->cloakrToken()->isValid();
+    }
+
+    protected function cloakrToken(): CloakrToken
+    {
         /* With the array driver, Laravel Zero holds the cache for one whole CLI execution,
          * which is very handy. */
-        return Cache::rememberForever('is_pro_token', function () {
-            $response = Http::post($this->platformEndpoint() . 'client/is-pro-token', [
-                'token' => $this->getToken()
-            ]);
+        return Cache::rememberForever('cloakr_token_' . $this->getToken(), function () {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+            ])
+                ->post("{$this->platformEndpoint()}client/token", [
+                    'token' => $this->getToken(),
+                ]);
 
             if (!$response->ok()) {
-                return false;
+                return CloakrToken::invalid($this->getToken());
             }
 
-            $result = $response->json();
+            $data = $response->json('data');
 
-            if (!$result) {
-                return false;
+            if (!isset($data['is_valid'], $data['is_pro'])) {
+                return CloakrToken::invalid($this->getToken());
             }
 
-            if (array_key_exists("is_pro", $result) && $result["is_pro"] === true) {
-                return true;
-            }
-
-            return false;
+            return match ([$data['is_valid'], $data['is_pro']]) {
+                [true, true] => CloakrToken::pro($this->getToken()),
+                [true, false] => CloakrToken::valid($this->getToken()),
+                default => CloakrToken::invalid($this->getToken()),
+            };
         });
     }
 

@@ -2,7 +2,10 @@
 
 namespace Cloakr\Client\Commands;
 
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
+
 use function Cloakr\Common\info;
 
 class ShareCurrentWorkingDirectoryCommand extends ShareCommand
@@ -17,17 +20,39 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
     {
         $this->loadConfigurationFiles();
 
+        $yaml = $this->loadCloakrYaml();
+
         $folderName = $this->detectName();
 
-        $host = $this->prepareSharedHost($folderName . '.' . $this->detectTld());
+        $host = Arr::get($yaml, 'local-url', $this->prepareSharedHost($folderName . '.' . $this->detectTld()));
 
         $this->input->setArgument('host', $host);
 
-        if (!$this->option('subdomain')) {
+        $subdomain = Arr::get($yaml, 'subdomain', $this->option('subdomain'));
+        
+        if (!$subdomain) {
             $this->input->setOption('subdomain', str_replace('.', '-', $folderName));
+        } else {
+            $this->input->setOption('subdomain', $subdomain);
         }
 
+        $this->input->setOption('domain', Arr::get($yaml, 'custom-domain', $this->option('domain')));
+        $this->input->setOption('server', Arr::get($yaml, 'cloakr-server', $this->option('server')));
+
+        $authString = Arr::get($yaml, 'auth.username') . ':' . Arr::get($yaml, 'auth.password');
+        $authString = empty($authString) ? $this->option('basicAuth') : $authString;
+        $this->input->setOption('basicAuth', $authString);
+
         parent::handle();
+    }
+
+    protected function loadCloakrYaml(): array
+    {
+        try {
+            return Yaml::parseFile(getcwd() . DIRECTORY_SEPARATOR . 'cloakr.yml');
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     protected function loadConfigurationFiles(): void
@@ -50,16 +75,10 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
     protected function getHerdValetConfigFilePath(): ?string
     {
-        if (strpos(php_uname('s'), 'Windows') !== false) {
-            $isWindows = true;
-        } else {
-            $isWindows = false;
-        }
-
         $configPath = null;
 
         if (array_key_exists('HOME', $_SERVER)) {
-            if ($isWindows) {
+            if ($this->isWindows()) {
                 $configPath = $_SERVER['HOME'] . '\.config\herd\config\valet';
             } else {
                 $configPath = $_SERVER['HOME'] . '/Library/Application Support/Herd/config/valet';
@@ -77,7 +96,7 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
     protected function detectTld(): string
     {
-        if($this->valetConfig && array_key_exists('tld', $this->valetConfig)) {
+        if ($this->valetConfig && array_key_exists('tld', $this->valetConfig)) {
             return $this->valetConfig['tld'];
         }
 
@@ -130,15 +149,18 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
         return $this->detectProtocol($host) . $host;
     }
 
-    protected function configFilePath(): string {
+    protected function configFilePath(): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'config.json';
     }
 
-    protected function certificateFile(string $host): string {
+    protected function certificateFile(string $host): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'Certificates' . DIRECTORY_SEPARATOR . $host . '.crt';
     }
 
-    protected function sitesPath(): string {
+    protected function sitesPath(): string
+    {
         return $this->configPath . DIRECTORY_SEPARATOR . 'Sites';
     }
 }

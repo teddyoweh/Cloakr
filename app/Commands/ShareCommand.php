@@ -33,6 +33,7 @@ class ShareCommand extends ServerAwareCommand
         banner();
         $this->ensureEnvironmentSetup();
 
+        info("Cloakr version v" . config('app.version'), OutputInterface::VERBOSITY_VERBOSE);
 
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
         info("Using auth token: $auth", OutputInterface::VERBOSITY_VERBOSE);
@@ -47,15 +48,15 @@ class ShareCommand extends ServerAwareCommand
 
         $domain = config('cloakr.default_domain');
 
-        if (! is_null($this->option('server'))) {
+        if (!is_null($this->option('server'))) {
             $domain = null;
         }
 
-        if (! is_null($this->option('domain'))) {
+        if (!is_null($this->option('domain'))) {
             $domain = $this->option('domain');
         }
 
-        if (! is_null($this->option('subdomain'))) {
+        if (!is_null($this->option('subdomain'))) {
             $subdomains = explode(',', $this->option('subdomain'));
             info("Trying to use custom subdomain $subdomains[0]", OutputInterface::VERBOSITY_VERBOSE);
         } else {
@@ -101,21 +102,21 @@ class ShareCommand extends ServerAwareCommand
     {
         $options = new QROptions;
 
-        $options->outputType     = QROutputInterface::STRING_TEXT;
+        $options->outputType = QROutputInterface::STRING_TEXT;
         $options->version = Version::AUTO;
         $options->quietzoneSize = 1;
-        $options->eol            = "\n";
-        $options->textLineStart  = str_repeat(' ', 2);
-        $options->textDark  = $this->ansi8('▌', 0);
+        $options->eol = "\n";
+        $options->textLineStart = str_repeat(' ', 2);
+        $options->textDark = $this->ansi8('▌', 0);
         $options->textLight = $this->ansi8(' ', 255);
         $options->moduleValues = [
-            QRMatrix::M_FINDER_DARK    => $this->ansi8('██', 0),
-            QRMatrix::M_FINDER         => $this->ansi8('░░', 0),
-            QRMatrix::M_FINDER_DOT     => $this->ansi8('██', 0),
+            QRMatrix::M_FINDER_DARK => $this->ansi8('██', 0),
+            QRMatrix::M_FINDER => $this->ansi8('░░', 0),
+            QRMatrix::M_FINDER_DOT => $this->ansi8('██', 0),
             QRMatrix::M_ALIGNMENT_DARK => $this->ansi8('██', 0),
-            QRMatrix::M_ALIGNMENT      => $this->ansi8('░░', 0),
-            QRMatrix::M_VERSION_DARK   => $this->ansi8('██', 0),
-            QRMatrix::M_VERSION        => $this->ansi8('░░', 0),
+            QRMatrix::M_ALIGNMENT => $this->ansi8('░░', 0),
+            QRMatrix::M_VERSION_DARK => $this->ansi8('██', 0),
+            QRMatrix::M_VERSION => $this->ansi8('░░', 0),
         ];
 
         return (new QRCode($options))->render($link);
@@ -123,7 +124,7 @@ class ShareCommand extends ServerAwareCommand
 
     protected function ansi8(string $str, int $color, bool $background = false): string
     {
-        $color      = max(0, min($color, 255));
+        $color = max(0, min($color, 255));
         $background = ($background ? 0 : 255);
 
         return sprintf("\x1b[%s;5;%sm%s\x1b[0m", $background, $color, $str);
@@ -158,8 +159,9 @@ class ShareCommand extends ServerAwareCommand
         return $exitCode === 0;
     }
 
-    protected function isWindows(): bool {
-        if($this->isWindows === null) {
+    protected function isWindows(): bool
+    {
+        if ($this->isWindows === null) {
             $this->detectOperatingSystem();
         }
 

@@ -17,6 +17,7 @@ use function Cloakr\Common\banner;
 use function Cloakr\Common\error;
 use function Cloakr\Common\info;
 use function Termwind\render;
+use function Termwind\terminal;
 
 class ShareCommand extends ServerAwareCommand
 {
@@ -30,6 +31,8 @@ class ShareCommand extends ServerAwareCommand
 
     public function handle()
     {
+        terminal()->clear();
+
         banner();
         $this->ensureEnvironmentSetup();
         $this->ensureCloakrSetup();

@@ -29,7 +29,7 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
         $this->input->setArgument('host', $host);
 
         $subdomain = Arr::get($yaml, 'subdomain', $this->option('subdomain'));
-        
+
         if (!$subdomain) {
             $this->input->setOption('subdomain', str_replace('.', '-', $folderName));
         } else {
@@ -63,13 +63,13 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
             $this->configPath = ($_SERVER['HOME'] ?? $_SERVER['USERPROFILE']) . DIRECTORY_SEPARATOR . '.config' . DIRECTORY_SEPARATOR . 'valet';
         }
 
-        info("Detected Valet config path: " . $this->configPath, OutputInterface::VERBOSITY_VERBOSE);
+        info("Detected Valet config path: " . $this->configPath, options: OutputInterface::VERBOSITY_VERBOSE);
 
         if (file_exists($this->configFilePath())) {
             $this->valetConfig = json_decode(file_get_contents($this->configFilePath()), true);
 
-            info("Trying to read Valet config file...", OutputInterface::VERBOSITY_VERBOSE);
-            info("JSON errors: " . json_last_error_msg(), OutputInterface::VERBOSITY_VERBOSE);
+            info("Trying to read Valet config file...", options: OutputInterface::VERBOSITY_VERBOSE);
+            info("JSON errors: " . json_last_error_msg(), options: OutputInterface::VERBOSITY_VERBOSE);
         }
     }
 
@@ -107,8 +107,8 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
     {
         $projectPath = getcwd();
 
-        info("Detecting name for $projectPath...", OutputInterface::VERBOSITY_VERBOSE);
-        info("Checking sites at " . $this->sitesPath(), OutputInterface::VERBOSITY_VERBOSE);
+        info("Detecting name for $projectPath...", options: OutputInterface::VERBOSITY_VERBOSE);
+        info("Checking sites at " . $this->sitesPath(), options: OutputInterface::VERBOSITY_VERBOSE);
 
         if (is_dir($this->sitesPath())) {
             $site = collect(scandir($this->sitesPath()))
@@ -127,7 +127,7 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
             if ($site) {
                 $projectPath = $site;
-                info("Found linked site $site", OutputInterface::VERBOSITY_VERBOSE);
+                info("Found linked site $site", options: OutputInterface::VERBOSITY_VERBOSE);
 
             }
         }

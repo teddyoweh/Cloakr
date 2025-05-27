@@ -33,10 +33,10 @@ class ShareCommand extends ServerAwareCommand
         banner();
         $this->ensureEnvironmentSetup();
 
-        info("Cloakr version v" . config('app.version'), OutputInterface::VERBOSITY_VERBOSE);
+        info("Cloakr version v" . config('app.version'), options: OutputInterface::VERBOSITY_VERBOSE);
 
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
-        info("Using auth token: $auth", OutputInterface::VERBOSITY_VERBOSE);
+        info("Using auth token: $auth", options: OutputInterface::VERBOSITY_VERBOSE);
 
         if (strstr($this->argument('host'), 'host.docker.internal')) {
             config(['cloakr.dns' => true]);
@@ -58,18 +58,18 @@ class ShareCommand extends ServerAwareCommand
 
         if (!is_null($this->option('subdomain'))) {
             $subdomains = explode(',', $this->option('subdomain'));
-            info("Trying to use custom subdomain $subdomains[0]", OutputInterface::VERBOSITY_VERBOSE);
+            info("Trying to use custom subdomain $subdomains[0]", options: OutputInterface::VERBOSITY_VERBOSE);
         } else {
             $host = Str::beforeLast($this->argument('host'), '.');
             $host = str_replace('https://', '', $host);
             $host = str_replace('http://', '', $host);
             $host = Str::beforeLast($host, ':');
             $subdomains = [Str::slug($host)];
-            info("Trying to use custom subdomain: $subdomains[0]", OutputInterface::VERBOSITY_VERBOSE);
+            info("Trying to use custom subdomain: $subdomains[0]", options: OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if ($domain) {
-            info("Using custom domain $domain", OutputInterface::VERBOSITY_VERBOSE);
+            info("Using custom domain $domain", options: OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if ($this->option('qr-code') || $this->option('qr')) {

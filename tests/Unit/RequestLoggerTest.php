@@ -2,13 +2,15 @@
 
 namespace Tests\Unit;
 
-use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\CliLogger;
+use Cloakr\Client\Logger\DatabaseLogger;
+use Cloakr\Client\Logger\FrontendLogger;
 use Cloakr\Client\Logger\RequestLogger;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Str;
 use Laminas\Http\Request as LaminasRequest;
 use Mockery as m;
-use React\Http\Browser;
 use Tests\TestCase;
 use GuzzleHttp\Psr7\Message;
 
@@ -17,17 +19,18 @@ class RequestLoggerTest extends TestCase
     /** @test */
     public function it_can_log_requests()
     {
-        $browser = m::mock(Browser::class);
-        $browser->shouldReceive('post')
-            ->once();
+        $cliLogger = m::mock(CliLogger::class);
+        $cliLogger->shouldReceive('synchronizeRequest')->once();
 
-        $cliLogger = m::mock(CliRequestLogger::class);
-        $cliLogger->shouldReceive('logRequest')->once();
+        $frontendLogger = m::mock(FrontendLogger::class);
+        $frontendLogger->shouldReceive('synchronizeRequest')->once();
+
+        $logStorage = new DatabaseLogger();
 
         $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
-        $logger = new RequestLogger($browser, $cliLogger);
+        $logger = new RequestLogger($cliLogger, $frontendLogger, $logStorage);
         $logger->logRequest($requestString, $parsedRequest);
 
         $this->assertCount(1, $logger->getData());
@@ -36,16 +39,18 @@ class RequestLoggerTest extends TestCase
     /** @test */
     public function it_can_clear_the_requests()
     {
-        $browser = m::mock(Browser::class);
-        $browser->shouldReceive('post')->once();
+        $cliLogger = m::mock(CliLogger::class);
+        $cliLogger->shouldReceive('synchronizeRequest')->once();
 
-        $cliLogger = m::mock(CliRequestLogger::class);
-        $cliLogger->shouldReceive('logRequest')->once();
+        $frontendLogger = m::mock(FrontendLogger::class);
+        $frontendLogger->shouldReceive('synchronizeRequest')->once();
+
+        $logStorage = new DatabaseLogger();
 
         $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
-        $logger = new RequestLogger($browser, $cliLogger);
+        $logger = new RequestLogger($cliLogger, $frontendLogger, $logStorage);
         $logger->logRequest($requestString, $parsedRequest);
 
         $logger->clear();
@@ -56,18 +61,20 @@ class RequestLoggerTest extends TestCase
     /** @test */
     public function it_can_associate_a_response_with_a_request()
     {
-        $browser = m::mock(Browser::class);
-        $browser->shouldReceive('post')
-            ->twice();
+        $cliLogger = m::mock(CliLogger::class);
+        $cliLogger->shouldReceive('synchronizeRequest')->once();
+        $cliLogger->shouldReceive('synchronizeResponse')->once();
 
-        $cliLogger = m::mock(CliRequestLogger::class);
-        $cliLogger->shouldReceive('logRequest')
-            ->twice();
+        $frontendLogger = m::mock(FrontendLogger::class);
+        $frontendLogger->shouldReceive('synchronizeRequest')->once();
+        $frontendLogger->shouldReceive('synchronizeResponse')->once();
 
-        $requestString = Message::toString(new Request('GET', '/example'));
+        $logStorage = new DatabaseLogger();
+
+        $requestString = Message::toString(new Request('GET', '/example', ["x-cloakr-request-id" => Str::uuid()->toString()]));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
-        $logger = new RequestLogger($browser, $cliLogger);
+        $logger = new RequestLogger($cliLogger, $frontendLogger, $logStorage);
         $loggedRequest = $logger->logRequest($requestString, $parsedRequest);
 
         $this->assertNull($logger->findLoggedRequest($loggedRequest->id())->getResponse());
@@ -82,37 +89,44 @@ class RequestLoggerTest extends TestCase
     /** @test */
     public function it_can_find_a_request_by_id()
     {
-        $browser = m::mock(Browser::class);
-        $browser->shouldReceive('post')
-            ->once();
+        $cliLogger = m::mock(CliLogger::class);
+        $cliLogger->shouldReceive('synchronizeRequest')->once();
 
-        $cliLogger = m::mock(CliRequestLogger::class);
-        $cliLogger->shouldReceive('logRequest')->once();
+        $frontendLogger = m::mock(FrontendLogger::class);
+        $frontendLogger->shouldReceive('synchronizeRequest')->once();
+
+        $logStorage = new DatabaseLogger();
 
         $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
-        $logger = new RequestLogger($browser, $cliLogger);
+        $logger = new RequestLogger($cliLogger, $frontendLogger, $logStorage);
+
         $loggedRequest = $logger->logRequest($requestString, $parsedRequest);
 
-        $this->assertSame($loggedRequest, $logger->findLoggedRequest($loggedRequest->id()));
+        $this->assertEquals($loggedRequest->id(), $logger->findLoggedRequest($loggedRequest->id())->id());
+        $this->assertEquals($loggedRequest->getRequest()->getUri(), $logger->findLoggedRequest($loggedRequest->id())->getRequest()->getUri());
     }
 
     /** @test */
     public function it_only_stores_a_limited_amount_of_requests()
     {
-        $browser = m::mock(Browser::class);
-        $browser->shouldReceive('post');
+        $numberOfRequests = config('cloakr.max_logged_requests') + 1;
 
-        $cliLogger = m::mock(CliRequestLogger::class);
-        $cliLogger->shouldReceive('logRequest');
+        $cliLogger = m::mock(CliLogger::class);
+        $cliLogger->shouldReceive('synchronizeRequest')->times($numberOfRequests);
+
+        $frontendLogger = m::mock(FrontendLogger::class);
+        $frontendLogger->shouldReceive('synchronizeRequest')->times($numberOfRequests);
+
+        $logStorage = new DatabaseLogger();
 
         $requestString = Message::toString(new Request('GET', '/example'));
         $parsedRequest = LaminasRequest::fromString($requestString);
 
-        $logger = new RequestLogger($browser, $cliLogger);
+        $logger = new RequestLogger($cliLogger, $frontendLogger, $logStorage);
 
-        foreach (range(1, 50) as $i) {
+        foreach (range(1, $numberOfRequests) as $i) {
             $logger->logRequest($requestString, $parsedRequest);
         }
 

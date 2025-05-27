@@ -118,7 +118,7 @@ return [
     | requests and responses in the local dashboard.
     |
     */
-    'max_logged_requests' => 25,
+    'max_logged_requests' => 100,
 
     /*
     |--------------------------------------------------------------------------

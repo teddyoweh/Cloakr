@@ -4,7 +4,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import ResponseBadge from "@/components/ui/ResponseBadge.vue";
 import Search from "@/components/ui/Search.vue";
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useLocalStorage} from "@/lib/composables/useLocalStorage.ts";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import IconButton from "@/components/ui/IconButton.vue";
@@ -20,7 +20,9 @@ const props = defineProps<{
 const emit = defineEmits(['set-log'])
 
 
-const logs = ref([] as CloakrLog[]);
+const logs = ref([] as ListEntry[]);
+const filteredLogs = ref([] as ListEntry[]);
+
 const highlightNextLog = ref(false as boolean);
 const followRequests = useLocalStorage<boolean>('followLogs', true);
 const listenForRequests = ref(true as boolean);
@@ -38,9 +40,19 @@ const loadLogs = () => {
             return response.json();
         })
         .then((data) => {
-            logs.value = data;
+            logs.value = filteredLogs.value = data;
 
-            emit('set-log', logs.value[0]);
+            loadLog(logs.value[0].id);
+        });
+}
+
+const loadLog = (id: string) => {
+    fetch('/api/log/' + id)
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            emit('set-log', data);
         });
 }
 
@@ -48,6 +60,19 @@ const clearLogs = () => {
     fetch('/api/logs/clear');
     logs.value = []
     emit('set-log', null);
+}
+
+const searchLogs = async (searchTerm: string) => {
+    return fetch('/api/logs/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"search_term": searchTerm})
+    })
+        .then((response) => {
+            return response.json();
+        });
 }
 
 const toggleListenForRequests = () => {
@@ -72,8 +97,10 @@ const connect = () => {
 
         logs.value = logs.value.splice(0, props.maxLogs);
 
+        filteredLogs.value = logs.value;
+
         if (highlightNextLog.value || followRequests.value) {
-            emit('set-log', logs.value[0]);
+            loadLog(logs.value[0].id);
 
             highlightNextLog.value = false;
         }
@@ -94,11 +121,12 @@ const nextLog = () => {
 
     const nextIndex = currentIndex + 1;
     if (nextIndex >= logs.value.length) {
-        emit('set-log', logs.value[0]);
+        loadLog(logs.value[0].id);
         return;
     }
 
-    emit('set-log', logs.value[nextIndex]);
+
+    loadLog(logs.value[nextIndex].id);
 }
 
 const previousLog = () => {
@@ -110,48 +138,42 @@ const previousLog = () => {
 
     const nextIndex = currentIndex - 1;
     if (nextIndex < 0) {
-        emit('set-log', logs.value[0]);
+        loadLog(logs.value[logs.value.length - 1].id);
         return;
     }
 
-    emit('set-log', logs.value[nextIndex]);
+    loadLog(logs.value[nextIndex].id);
 }
 
-const filteredLogs = computed(() => {
-    const searchTerm = search.value ?? '';
-
-    if (searchTerm === '') {
-        return logs.value;
-    }
-
-    if (searchTerm.startsWith("/")) {
-        return logs.value.filter(log => {
-            return log.request.uri.indexOf(searchTerm) !== -1;
-        })
-    } else {
-        return logs.value.filter((log) => {
-            if (isSearchableResponse(log.response)) {
-                return log.response.body.indexOf(searchTerm) !== -1;
-            } else {
-                return log.request.uri.indexOf(searchTerm) !== -1;
-            }
-        })
-    }
-
-})
-
-const isSearchableResponse = (response: ResponseData): boolean => {
-    if (response.headers && response.headers['Content-Type']) {
-        const contentTypes = ["application/json", "application/ld-json", "text/plain"];
-        return contentTypes.some(substring => response.headers['Content-Type'].includes(substring));
-    }
-
-    return false;
-}
 
 const focusSearch = () => {
     searchInput.value.focusSearch()
 }
+
+watch(search, async (searchTerm) => {
+        if (searchTerm === '' || searchTerm.length < 3) {
+            filteredLogs.value = logs.value;
+        } else if (searchTerm.startsWith("/")) {
+            filteredLogs.value = logs.value.filter(log =>
+                log.request_uri.indexOf(searchTerm) !== -1
+            );
+        } else {
+            try {
+                filteredLogs.value = await searchLogs(searchTerm)
+
+                if (filteredLogs.value.length > 0) {
+                    loadLog(filteredLogs.value[0].id);
+                }
+            } catch (error) {
+                console.error('Search API error:', error);
+                emit('set-log', null);
+            }
+        }
+    },
+    {
+        immediate: false,
+    }
+)
 
 defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollowRequests});
 </script>
@@ -219,37 +241,38 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
         <Table>
             <TableBody>
 
-                <TableRow v-for="request in filteredLogs" :key="request.id" @click="emit('set-log', request)"
+                <TableRow v-for="request in filteredLogs" :key="request.id" @click="loadLog(request.id)"
                           class="border-l-4 border-l-transparent"
-                          :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog === request }">
+                          :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog?.id === request.id }">
                     <TableCell class="pr-0 align-top pl-2 lg:pl-4">
                         <ResponseBadge
-                            :statusCode="request.response && request.response.status ? request.response.status : null"/>
+                            :statusCode="request.status_code"/>
                     </TableCell>
 
                     <TableCell class="align-top text-left pr-0 pl-2 lg:pl-4 flex flex-col items-start font-medium">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <div class="max-w-[155px] lg:max-w-[180px] truncate pt-0.5 text-gray-800 dark:text-white">
+                                    <div
+                                        class="max-w-[155px] lg:max-w-[180px] truncate pt-0.5 text-gray-800 dark:text-white">
                                         <span class="text-gray-500 dark:text-gray-300">{{
-                                                request.request.method
+                                                request.request_method
                                             }}</span>
-                                        {{ request.request.uri }}
+                                        {{ request.request_uri }}
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    {{ request.request.uri }}
+                                    {{ request.request_uri }}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="request.request.plugin">
+                        <TooltipProvider v-if="request.plugin_data">
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <span class="text-xs">{{ request.request.plugin?.uiLabel }}</span>
+                                    <span class="text-xs">{{ request.plugin_data?.uiLabel }}</span>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    {{ request.request.plugin?.uiLabel }} - {{ request.request.plugin?.plugin }}
+                                    {{ request.plugin_data?.uiLabel }} - {{ request.plugin_data?.plugin }}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>

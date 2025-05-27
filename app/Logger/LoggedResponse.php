@@ -29,7 +29,8 @@ class LoggedResponse
         $this->request = $request;
 
         if (! $this->shouldReturnBody()) {
-            $this->rawResponse = 'SKIPPED BY CONFIG OR BINARY RESPONSE';
+            $response->setContent('SKIPPED BY CONFIG OR BINARY RESPONSE');
+            $this->rawResponse = $response->toString();
             $this->body = 'SKIPPED BY CONFIG OR BINARY RESPONSE';
         } else {
             try {
@@ -145,6 +146,11 @@ class LoggedResponse
     public function getReasonPhrase()
     {
         return $this->reasonPhrase;
+    }
+
+    public function getRawResponse()
+    {
+        return $this->rawResponse;
     }
 
     public function toArray()

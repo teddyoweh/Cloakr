@@ -26,7 +26,7 @@ class SetUpCloakrProToken implements FetchesPlatformDataContract
         }
     }
 
-    public function getToken()
+    public function getToken(): string
     {
         return $this->token;
     }

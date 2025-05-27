@@ -32,7 +32,8 @@ trait FetchesPlatformData
                 ]);
 
             if (!$response->ok()) {
-                return CloakrToken::invalid($this->getToken());
+                return CloakrToken::invalid($this->getToken())
+                    ->setError('Could not validate token. HTTP ' . $response->status());
             }
 
             $data = $response->json('data');

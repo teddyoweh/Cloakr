@@ -3,7 +3,7 @@
 namespace Cloakr\Client;
 
 use Cloakr\Client\Connections\ControlConnection;
-use Cloakr\Client\Logger\CliRequestLogger;
+use Cloakr\Client\Logger\CliLogger;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Ratchet\Client\WebSocket;
@@ -22,7 +22,7 @@ class Client
     /** @var Configuration */
     protected $configuration;
 
-    /** @var CliRequestLogger */
+    /** @var CliLogger */
     protected $logger;
 
     /** @var int */
@@ -38,7 +38,7 @@ class Client
     public static $subdomains = [];
     public static $localUrl = '';
 
-    public function __construct(LoopInterface $loop, Configuration $configuration, CliRequestLogger $logger)
+    public function __construct(LoopInterface $loop, Configuration $configuration, CliLogger $logger)
     {
         $this->loop = $loop;
         $this->configuration = $configuration;
@@ -57,7 +57,10 @@ class Client
         $sharedUrl = $this->prepareSharedUrl($sharedUrl);
 
         foreach ($subdomains as $subdomain) {
-            $this->connectToServer($sharedUrl, $subdomain, $serverHost, $this->configuration->auth());
+            $this->connectToServer($sharedUrl, $subdomain, $serverHost, $this->configuration->auth())
+                ->catch(function ($exception) {
+                    // No-op as this gets handled internally.
+                });
         }
     }
 

@@ -9,6 +9,7 @@ use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use Cloakr\Client\Traits\ReadsCloakrConfig;
 use Illuminate\Support\Str;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +21,7 @@ use function Termwind\render;
 
 class ShareCommand extends ServerAwareCommand
 {
-
+    use ReadsCloakrConfig;
 
     protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--qr} {--qr-code}';
 
@@ -33,7 +34,7 @@ class ShareCommand extends ServerAwareCommand
         banner();
         $this->ensureEnvironmentSetup();
 
-        info("Cloakr version v" . config('app.version'), OutputInterface::VERBOSITY_VERBOSE);
+        info("Cloakr version v" . $this->getVersion(), OutputInterface::VERBOSITY_VERBOSE);
 
         $auth = $this->option('auth') ?? config('cloakr.auth_token', '');
         info("Using auth token: $auth", OutputInterface::VERBOSITY_VERBOSE);

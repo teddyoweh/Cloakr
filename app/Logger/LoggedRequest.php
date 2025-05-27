@@ -248,12 +248,6 @@ class LoggedRequest implements \JsonSerializable
         }
     }
 
-    public function getUrl()
-    {
-        $request = Message::parseRequest($this->rawRequest);
-        dd($request->getUri()->withFragment('')); // TODO: ??
-    }
-
     public function refreshId()
     {
         $requestId = (string) Str::uuid();

@@ -212,6 +212,7 @@ class Factory
             '--force' => true, // necessary flag to run in PHAR
         ]);
 
+        // After running artisan commands, we need to reset Termwinds output interface.
         Termwind::renderUsing(new ConsoleOutput());
 
         return $this;

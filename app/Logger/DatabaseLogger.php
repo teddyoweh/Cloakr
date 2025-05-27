@@ -34,19 +34,12 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
         if ($requestExists) {
             RequestLog::where('request_id', $loggedRequest->id())
                 ->update($loggedRequest->toDatabase());
-        } else {
-
-            $maxLogs = config('cloakr.max_logged_requests', 100);
-
-            $requestLogsCount = RequestLog::count();
-
-            if ($requestLogsCount >= $maxLogs) {
-                $oldestRequest = RequestLog::orderBy('start_time', 'asc')->first();
-                $this->delete($oldestRequest->request_id);
-            }
-
-            DB::table('request_logs')->insert($loggedRequest->toDatabase());
+            return;
         }
+
+        $this->deleteLoggedRequestsIfNecessary();
+
+        DB::table('request_logs')->insert($loggedRequest->toDatabase());
     }
 
 
@@ -76,18 +69,21 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
     public function requests(): LogStorageContract
     {
         $this->requests = RequestLog::orderBy('start_time', 'desc')->get();
+
         return $this;
     }
 
     public function withResponses(): LogStorageContract
     {
         $this->includeResponses = true;
+
         return $this;
     }
 
     public function withoutResponses(): LogStorageContract
     {
         $this->includeResponses = false;
+
         return $this;
     }
 
@@ -100,7 +96,8 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
 
         $hasResponses = $this->includeResponses && $this->responses->isNotEmpty();
 
-        return $this->requests->map(function (RequestLog $logData) use ($hasResponses) {
+        return $this->requests
+            ->map(function (RequestLog $logData) use ($hasResponses) {
             $loggedRequest = LoggedRequest::fromRecord($logData);
 
             if ($hasResponses) {
@@ -199,6 +196,18 @@ class DatabaseLogger implements LoggerContract, LogStorageContract
             ->map(function (RequestLog $requestLog) {
                 return LogListResource::fromRequestLog($requestLog)->toArray();
             });
+    }
+
+    public function deleteLoggedRequestsIfNecessary(): void
+    {
+        $maxLogs = config('cloakr.max_logged_requests', 100);
+
+        $requestLogsCount = RequestLog::count();
+
+        if ($requestLogsCount >= $maxLogs) {
+            $oldestRequest = RequestLog::orderBy('start_time', 'asc')->first();
+            $this->delete($oldestRequest->request_id);
+        }
     }
 
 

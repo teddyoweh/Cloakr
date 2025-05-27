@@ -137,7 +137,8 @@ class Client
                     $this->configuration->setServerHost($host);
 
                     if($data->message) {
-                        $this->logger->renderMessageBox($data->message);
+                        $this->logger->line("");
+                        $this->logger->line($data->message);
                     }
 
                     $this->logger->renderConnectionTable([

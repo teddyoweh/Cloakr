@@ -22,7 +22,9 @@ use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Termwind\Termwind;
+use function Cloakr\Common\info;
 
 class Factory
 {
@@ -201,6 +203,8 @@ class Factory
 
         DB::purge('sqlite'); // Purges the current connection, forcing it to re-bind
         DB::reconnect('sqlite');
+
+        info("Using SQLite database: {$databasePath}", OutputInterface::VERBOSITY_VERBOSE);
     }
 
     protected function migrateDatabase()

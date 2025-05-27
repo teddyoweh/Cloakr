@@ -29,7 +29,8 @@ class LoggedResponse
         $this->request = $request;
 
         if (! $this->shouldReturnBody()) {
-//            $this->rawResponse = 'SKIPPED BY CONFIG OR BINARY RESPONSE';
+            $response->setContent('SKIPPED BY CONFIG OR BINARY RESPONSE');
+            $this->rawResponse = $response->toString();
             $this->body = 'SKIPPED BY CONFIG OR BINARY RESPONSE';
         } else {
             try {

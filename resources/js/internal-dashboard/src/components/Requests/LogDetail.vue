@@ -13,8 +13,8 @@ import {copyToClipboard} from '@/lib/utils';
 import IconTextButton from "@/components/ui/IconTextButton.vue";
 import {ArrowPathIcon} from "@heroicons/vue/16/solid";
 import {EllipsisVerticalIcon} from "@heroicons/vue/16/solid";
-import {ClipboardIcon} from "@heroicons/vue/16/solid";
 import {ref} from "vue";
+import IconCopyButton from "@/components/ui/IconCopyButton.vue";
 
 defineProps<{
     log: CloakrLog | null
@@ -71,9 +71,9 @@ const activeTab = ref('request' as 'request' | 'response')
                                 </IconTextButton>
                             </div>
 
-                            <IconTextButton @click="copyToClipboard(log.request.curl)" :icon="ClipboardIcon">
+                            <IconCopyButton @click="copyToClipboard(log.request.curl)">
                                 Copy as cURL
-                            </IconTextButton>
+                            </IconCopyButton>
                         </div>
                     </div>
                 </div>

@@ -36,6 +36,7 @@ class Client
 
     public static $user = [];
     public static $subdomains = [];
+    public static $localUrl = '';
 
     public function __construct(LoopInterface $loop, Configuration $configuration, CliLogger $logger)
     {
@@ -51,6 +52,8 @@ class Client
 
     public function share(string $sharedUrl, array $subdomains = [], $serverHost = null)
     {
+        static::$localUrl = $sharedUrl;
+
         $sharedUrl = $this->prepareSharedUrl($sharedUrl);
 
         foreach ($subdomains as $subdomain) {
@@ -135,10 +138,9 @@ class Client
                     }
 
                     $this->logger->renderConnectionTable([
-                        "Shared URL" => $sharedUrl,
+                        "Shared site" => $sharedUrl,
                         "Dashboard" => "http://127.0.0.1:".config()->get('cloakr.dashboard_port'),
-                        "Public HTTP" => "http://{$data->subdomain}.{$host}{$httpPort}",
-                        "Public HTTPS" => "https://{$data->subdomain}.{$host}",
+                        "Public URL" => "https://{$data->subdomain}.{$host}",
                     ]);
                     $this->logger->line('');
 

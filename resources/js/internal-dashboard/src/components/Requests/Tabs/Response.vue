@@ -11,8 +11,8 @@ import "vue3-json-viewer/dist/index.css";
 import {bodyIsJson, copyToClipboard, bodyIsHtml, toPhpArray} from '@/lib/utils'
 import {useLocalStorage} from '@/lib/composables/useLocalStorage'
 import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {ArrowsRightLeftIcon, ClipboardIcon, DocumentTextIcon} from "@heroicons/vue/16/solid";
-import IconTextButton from "@/components/ui/IconTextButton.vue";
+import {ArrowsRightLeftIcon, DocumentTextIcon} from "@heroicons/vue/16/solid";
+import IconCopyButton from "@/components/ui/IconCopyButton.vue";
 import AccordionTableHeader from "@/components/ui/table/AccordionTableHeader.vue";
 import BodyViewButton from "@/components/ui/BodyViewButton.vue";
 import {useColorMode} from "@vueuse/core";
@@ -101,10 +101,9 @@ onUnmounted(() => {
                 <AccordionTrigger>
                     <div>Headers</div>
                     <template v-slot:action>
-                        <IconTextButton @click="copyToClipboard(toPhpArray(response.headers, 'headers'))"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton @click="copyToClipboard(toPhpArray(response.headers, 'headers'))">
                             Copy as PHP array
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <ArrowsRightLeftIcon class="size-4"/>
@@ -147,10 +146,9 @@ onUnmounted(() => {
 
                     <div>Body</div>
                     <template v-slot:action>
-                        <IconTextButton v-if="!responseEmpty" @click="copyToClipboard(response.body)"
-                                        :icon="ClipboardIcon">
+                        <IconCopyButton v-if="!responseEmpty" @click="copyToClipboard(response.body)">
                             Copy
-                        </IconTextButton>
+                        </IconCopyButton>
                     </template>
                     <template v-slot:icon>
                         <DocumentTextIcon class="size-4"/>

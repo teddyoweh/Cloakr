@@ -11,7 +11,7 @@ use function Cloakr\Common\banner;
 use function Cloakr\Common\info;
 use function Laravel\Prompts\table;
 
-class ServerListCommand extends Command
+class ServerListCommand extends ServerAwareCommand
 {
 
     const DEFAULT_SERVER_ENDPOINT = 'https://cloakr.dev/api/servers';
@@ -41,16 +41,5 @@ class ServerListCommand extends Command
         info('You can connect to a specific server with the <span class="font-bold">--server=key</span> option or set this server as default with the <span class="font-bold">default-server</span> command.');
 
         table(['Key', 'Region', 'Type'], $servers);
-    }
-
-    protected function lookupRemoteServers()
-    {
-        try {
-            return Http::withOptions([
-                'verify' => false,
-            ])->get(config('cloakr.server_endpoint', static::DEFAULT_SERVER_ENDPOINT))->json();
-        } catch (\Throwable $e) {
-            return [];
-        }
     }
 }

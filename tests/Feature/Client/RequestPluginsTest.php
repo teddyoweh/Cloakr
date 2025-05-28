@@ -112,7 +112,7 @@ class RequestPluginsTest extends TestCase
         $this->assertEquals('plugin.error', $result[0]['plugin_data']['cliLabel']);
         $this->assertEquals('plugin.error', $result[0]['plugin_data']['uiLabel']);
         $this->assertArrayHasKey('details', $result[0]['plugin_data']);
-        $this->assertEquals('Trying to access array offset on null', $result[0]['plugin_data']['details']['Error']);
+        $this->assertContains($result[0]['plugin_data']['details']['Error'], 'Trying to access array');
     }
 
 

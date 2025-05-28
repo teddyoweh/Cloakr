@@ -22,8 +22,9 @@ class GitHubPlugin extends BasePlugin
         $headers = $request->getHeaders();
 
         return
-            str($request->getHeader('User-Agent')->getFieldValue())->contains("GitHub-Hook") &&
-            $headers->has('x-github-event');
+            $headers->has('User-Agent') &&
+            $headers->has('x-github-event') &&
+            str($request->getHeader('User-Agent')->getFieldValue())->contains("GitHub-Hook");
     }
 
     public function getPluginData(): PluginData

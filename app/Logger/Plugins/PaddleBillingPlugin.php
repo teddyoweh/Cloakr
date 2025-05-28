@@ -18,10 +18,11 @@ class PaddleBillingPlugin extends BasePlugin
         $headers = $request->getHeaders();
 
         return
-            $request->getHeader('User-Agent') &&
-            $request->getHeader('User-Agent')->getFieldValue() === "Paddle" &&
+            $headers->has('User-Agent') &&
             $headers->has('paddle-signature') &&
-            $headers->has('paddle-version');
+            $headers->has('paddle-version') &&
+            $request->getHeader('User-Agent') &&
+            $request->getHeader('User-Agent')->getFieldValue() === "Paddle";
     }
 
     public function getPluginData(): PluginData

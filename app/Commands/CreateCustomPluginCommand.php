@@ -25,7 +25,7 @@ class CreateCustomPluginCommand extends Command
 
         banner();
 
-        info('Check out the documentation at ... to learn how to create your custom request plugin.'); // TODO:
+        info('Check out the documentation at ... to learn how to create your custom request plugin.'); // TODO: add link
 
         $pluginName = text(
             label: 'What is the name of the plugin?',

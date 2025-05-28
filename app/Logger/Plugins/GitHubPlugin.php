@@ -5,7 +5,7 @@ namespace Cloakr\Client\Logger\Plugins;
 class GitHubPlugin extends BasePlugin
 {
 
-    protected array $content = [];
+    protected ?array $content = [];
 
     protected string $event;
 
@@ -22,8 +22,9 @@ class GitHubPlugin extends BasePlugin
         $headers = $request->getHeaders();
 
         return
-            str($request->getHeader('User-Agent')->getFieldValue())->contains("GitHub-Hook") &&
-            $headers->has('x-github-event');
+            $headers->has('User-Agent') &&
+            $headers->has('x-github-event') &&
+            str($request->getHeader('User-Agent')->getFieldValue())->contains("GitHub-Hook");
     }
 
     public function getPluginData(): PluginData
@@ -31,6 +32,10 @@ class GitHubPlugin extends BasePlugin
         try {
             $this->content = json_decode($this->loggedRequest->getRequest()->getContent(), true);
             $this->detectEventType();
+
+            if(empty($this->content)) {
+                return PluginData::error($this->getTitle(), new \Exception("No content found in the request"));
+            }
 
             return PluginData::make()
                 ->setPlugin($this->getTitle())

@@ -187,6 +187,8 @@ return [
     */
     'request_plugins' => [
         \Cloakr\Client\Logger\Plugins\PaddleBillingPlugin::class,
-        \Cloakr\ClientLogger\Plugins\GitHubPlugin::class
+        \Cloakr\Client\Logger\Plugins\GitHubPlugin::class
     ]
+
+
 ];

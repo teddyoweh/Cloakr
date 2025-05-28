@@ -22,7 +22,8 @@ class ListPluginsCommand extends Command
 
         banner();
 
-        info('Explanation text about request plugins goes here.'); // TODO:
+        info('Request plugins allow you to highlight important parts about incoming requests in the CLI and client dashboard.');
+        info("You can learn more about them in the <a href='https://cloakr.dev/docs'>documentation</a>."); // TODO: add proper link
 
         $defaultPlugins = $pluginManager->getDefaultPlugins();
         $customPlugins = $pluginManager->getCustomPlugins();

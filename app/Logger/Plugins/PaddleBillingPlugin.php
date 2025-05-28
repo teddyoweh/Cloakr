@@ -18,10 +18,11 @@ class PaddleBillingPlugin extends BasePlugin
         $headers = $request->getHeaders();
 
         return
-            $request->getHeader('User-Agent') &&
-            $request->getHeader('User-Agent')->getFieldValue() === "Paddle" &&
+            $headers->has('User-Agent') &&
             $headers->has('paddle-signature') &&
-            $headers->has('paddle-version');
+            $headers->has('paddle-version') &&
+            $request->getHeader('User-Agent') &&
+            $request->getHeader('User-Agent')->getFieldValue() === "Paddle";
     }
 
     public function getPluginData(): PluginData
@@ -29,11 +30,7 @@ class PaddleBillingPlugin extends BasePlugin
         try {
             $content = json_decode($this->loggedRequest->getRequest()->getContent(), true);
             $eventType = $content['event_type'];
-            $details = [
-                'event_id' => $content['event_id'],
-                'notification_id' => $content['notification_id'],
-                // TODO
-            ];
+            $details = collect($content)->except(['event_type'])->toArray();
         } catch (\Throwable $e) {
             return PluginData::error($this->getTitle(), $e);
         }

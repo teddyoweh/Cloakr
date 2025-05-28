@@ -1,9 +1,9 @@
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-import { useClipboard } from '@vueuse/core'
+import {type ClassValue, clsx} from 'clsx'
+import {twMerge} from 'tailwind-merge'
+import {useClipboard} from '@vueuse/core'
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs))
 }
 
 export function isEmptyObject(obj: any): boolean {
@@ -14,27 +14,59 @@ export function isEmptyObject(obj: any): boolean {
 }
 
 export function copyToClipboard(source: string): void {
-    const { copy } = useClipboard({ source })
+    const {copy} = useClipboard({source})
     copy()
 }
 
-export function toPhpArray(rows: Record<string, any>, variableName: string): string {
-    let output = `$${variableName} = [\n`;
+export function toPhpArray(rows: Record<string, any>, variableName: string | null): string {
+    let output = "";
+
+    if (variableName) {
+        output = `$${variableName} = [\n`;
+    } else {
+        output = "[\n";
+    }
 
     for (let key in rows) {
         let value = rows[key];
+        let arrayKey: string | number = key;
 
-        if (typeof value.name !== 'undefined') {
-            key = value.name;
-        }
-        if (typeof value.value !== 'undefined') {
-            value = value.value;
+        if (value === null) {
+            arrayKey = key;
+            value = 'null';
+        } else {
+            if (typeof value.name !== 'undefined' && variableName !== null) {
+                arrayKey = value.name;
+            }
+            if (typeof value.value !== 'undefined') {
+                value = value.value;
+            }
         }
 
-        output += `    '${key}' => '${value}',\n`;
+
+        if (isNaN(<number>(arrayKey))) {
+            arrayKey = `'${arrayKey}'`;
+        }
+
+        if (typeof value === 'object') {
+            value = toPhpArray(value, null);
+            output += `    ${arrayKey} => ${value},\n`;
+        } else {
+            if (isNaN((value))) {
+                value = `'${value}'`;
+            }
+
+            output += `    ${arrayKey} => ${value},\n`;
+        }
+
     }
 
-    output += `];`;
+
+    if (variableName) {
+        output += `];`;
+    } else {
+        output += "    ]";
+    }
 
     return output;
 }
@@ -72,4 +104,8 @@ export function openInNewTab(url: string): void {
 
 export function isDarwin(): boolean {
     return navigator.userAgent.indexOf('Mac OS X') !== -1;
+}
+
+export function isNestedStructure(obj: Record<string, any>): boolean {
+    return Object.keys(obj).some(key => typeof obj[key] === 'object');
 }

@@ -64,7 +64,7 @@ class PluginData
         return $this->cliLabel;
     }
 
-    public static function error($plugin, \Exception $e): self {
+    public static function error($plugin, \Throwable $e): self {
         return (new PluginData)
             ->setPlugin($plugin)
             ->setUiLabel('plugin.error')

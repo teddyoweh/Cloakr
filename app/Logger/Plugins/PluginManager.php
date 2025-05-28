@@ -84,11 +84,11 @@ class PluginManager
     {
         $pluginDirectory = $this->getCustomPluginDirectory();
 
+        $this->customPlugins = [];
+
         if (!is_dir($pluginDirectory)) {
             return [];
         }
-
-        $this->customPlugins = [];
 
         foreach (scandir($pluginDirectory) as $file) {
             if (str($file)->startsWith('.')) {

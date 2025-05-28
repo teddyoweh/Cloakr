@@ -30,11 +30,7 @@ class PaddleBillingPlugin extends BasePlugin
         try {
             $content = json_decode($this->loggedRequest->getRequest()->getContent(), true);
             $eventType = $content['event_type'];
-            $details = [
-                'event_id' => $content['event_id'],
-                'notification_id' => $content['notification_id'],
-                // TODO
-            ];
+            $details = collect($content)->except(['event_type'])->toArray();
         } catch (\Throwable $e) {
             return PluginData::error($this->getTitle(), $e);
         }

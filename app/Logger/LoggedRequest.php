@@ -11,6 +11,7 @@ use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Laminas\Http\Header\GenericHeader;
+use Laminas\Http\Header\MultipleHeaderInterface;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
 use Namshi\Cuzzle\Formatter\CurlFormatter;
@@ -66,7 +67,7 @@ class LoggedRequest implements \JsonSerializable
                 'raw' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->rawRequest,
                 'method' => $this->parsedRequest->getMethod(),
                 'uri' => $this->parsedRequest->getUriString(),
-                'headers' => $this->parsedRequest->getHeaders()->toArray(),
+                'headers' => $this->getRequestHeaders(),
                 'body' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->parsedRequest->getContent(),
                 'query' => $this->parsedRequest->getQuery()->toArray(),
                 'post' => $this->getPostData(),
@@ -80,6 +81,42 @@ class LoggedRequest implements \JsonSerializable
         }
 
         return $data;
+    }
+
+    /**
+     * Laminas HTTP might throw an "InvalidUriException" when
+     * parsing headers.
+     *
+     * We simply ignore those invalid headers instead of
+     * crashing.
+     *
+     * @return array
+     */
+    protected function getRequestHeaders(): array
+    {
+        $headers = [];
+
+        foreach ($this->parsedRequest->getHeaders() as $header) {
+            if ($header instanceof MultipleHeaderInterface) {
+                $name = $header->getFieldName();
+                if (! isset($headers[$name])) {
+                    $headers[$name] = [];
+                }
+                try {
+                    $headers[$name][] = $header->getFieldValue();
+                } catch (\Throwable $e) {
+                    $headers[$name] = 'invalid';
+                }
+            } else {
+                try {
+                    $headers[$header->getFieldName()] = $header->getFieldValue();
+                } catch (\Throwable $e) {
+                    $headers[$header->getFieldName()] = 'invalid';
+                }
+            }
+        }
+
+        return $headers;
     }
 
     public function toDatabase(): array {
@@ -153,7 +190,7 @@ class LoggedRequest implements \JsonSerializable
     {
         $postData = [];
 
-        $contentType = Arr::get($this->parsedRequest->getHeaders()->toArray(), 'Content-Type');
+        $contentType = Arr::get($this->getRequestHeaders(), 'Content-Type');
         if ($contentType && Str::contains($contentType, ";")) {
             $contentType = explode(';', $contentType, 2);
             if (is_array($contentType) && count($contentType) > 1) {
@@ -209,7 +246,7 @@ class LoggedRequest implements \JsonSerializable
 
     public function detectSubdomain()
     {
-        return collect($this->parsedRequest->getHeaders()->toArray())
+        return collect($this->getRequestHeaders())
             ->mapWithKeys(function ($value, $key) {
                 return [strtolower($key) => $value];
             })->get('x-original-host');
@@ -217,7 +254,7 @@ class LoggedRequest implements \JsonSerializable
 
     protected function getRequestId()
     {
-        return collect($this->parsedRequest->getHeaders()->toArray())
+        return collect($this->getRequestHeaders())
             ->mapWithKeys(function ($value, $key) {
                 return [strtolower($key) => $value];
             })->get('x-cloakr-request-id', (string) Str::uuid());

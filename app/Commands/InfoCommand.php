@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
+use Symfony\Component\Console\Input\InputDefinition;
 use function Cloakr\Common\banner;
 use function Cloakr\Common\headline;
 use function Cloakr\Common\lineTable;
@@ -30,7 +31,6 @@ class InfoCommand extends ServerAwareCommand implements FetchesPlatformDataContr
 
     public function handle()
     {
-
         if ($this->option('servers')) {
             $this->getAvailableServers();
         }
@@ -165,5 +165,28 @@ class InfoCommand extends ServerAwareCommand implements FetchesPlatformDataContr
     public function getToken(): string
     {
         return config('cloakr.auth_token');
+    }
+
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Remove inherited signature from ServerAwareCommand since it's not necessary here and
+        // might be confusing in the help command list.
+        $definition = $this->getDefinition();
+        $newDefinition = new InputDefinition();
+
+        foreach ($definition->getOptions() as $name => $option) {
+            if (!in_array($name, ['server', 'server-host', 'server-port'])) {
+                $newDefinition->addOption($option);
+            }
+        }
+
+        foreach ($definition->getArguments() as $argument) {
+            $newDefinition->addArgument($argument);
+        }
+
+        $this->setDefinition($newDefinition);
     }
 }

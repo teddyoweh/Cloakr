@@ -39,7 +39,7 @@ class ShareCatchAllCommand extends ShareCommand
 
         $url = str_replace('tcp:', 'http:', $socket->getAddress());
 
-        info("Catch-All Server is listening on http://{$url}", options: OutputInterface::VERBOSITY_VERBOSE);
+        info("Catch-All Server is listening on $url", options: OutputInterface::VERBOSITY_VERBOSE);
 
         return $url;
     }

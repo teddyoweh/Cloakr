@@ -9,7 +9,7 @@ import RowAccordionButton from '@/components/ui/RowAccordionButton.vue'
 import {Icon} from '@iconify/vue'
 import {JsonViewer} from "vue3-json-viewer"
 import "vue3-json-viewer/dist/index.css";
-import {bodyIsJson, copyToClipboard, isEmptyObject, toPhpArray} from '@/lib/utils'
+import {bodyIsJson, copyToClipboard, isEmptyObject, isNestedStructure, toPhpArray} from '@/lib/utils'
 import {nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useLocalStorage} from '@/lib/composables/useLocalStorage'
 import {
@@ -151,7 +151,10 @@ onUnmounted(() => {
                     </template>
                 </AccordionTrigger>
                 <AccordionContent class="px-2">
-                    <AccordionTable class="table-fixed max-w-full ">
+                    <JsonViewer v-if="isNestedStructure(request.plugin.details)" :expand-depth="2" :value="request.plugin.details"
+                                :class="{ 'jv-light': mode === 'light', 'jv-dark': mode === 'dark' }"/>
+
+                    <AccordionTable v-else class="table-fixed max-w-full ">
                         <TableBody class="font-mono">
                             <AccordionTableRow v-for="[key, value] of Object.entries(request.plugin.details)"
                                                :key="key">

@@ -136,11 +136,17 @@ class PluginManager
 
     public function getCustomPluginDirectory(): string
     {
-        return implode(DIRECTORY_SEPARATOR, [
+        $path = implode(DIRECTORY_SEPARATOR, [
             $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? __DIR__,
             '.cloakr',
             'plugins'
         ]);
+
+        if (!file_exists($path)) {
+            @mkdir($path, 0755, true);
+        }
+
+        return $path;
     }
 
     public function modifyPluginConfiguration(array $pluginsToEnable): void

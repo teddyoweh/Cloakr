@@ -40,23 +40,26 @@ class ProxyManager
                         return;
                     }
 
-                    $this->performRequest($proxyConnection, (string) $message, $connectionData)->then(function (ResponseInterface $response) use ($proxyConnection, &$localRequestConnection) {
-                        /** @var $body \React\Stream\DuplexStreamInterface */
-                        $body = $response->getBody();
-                        if ($body) {
-                            $localRequestConnection = $body;
-                        }
+                    $this->performRequest($proxyConnection, (string) $message, $connectionData)
+                        ->then(function ($response) use ($proxyConnection, &$localRequestConnection) {
+                                if (is_null($response)) {
+                                    return;
+                                }
 
-                        if ($body->isWritable()) {
-                            $body->on('data', function ($chunk) use ($proxyConnection) {
-                                $binaryMsg = new Frame($chunk, true, Frame::OP_BINARY);
-                                $proxyConnection->send($binaryMsg);
+                                /** @var $body \React\Stream\DuplexStreamInterface */
+                                $body = $response->getBody();
+                                if ($body) {
+                                    $localRequestConnection = $body;
+                                }
+
+                                if ($body->isWritable()) {
+                                    $body->on('data', function ($chunk) use ($proxyConnection) {
+                                        $binaryMsg = new Frame($chunk, true, Frame::OP_BINARY);
+                                        $proxyConnection->send($binaryMsg);
+                                    });
+                                }
                             });
-                        }
-                    });
-                }, function ($e) {
-                    // Ignore potential timeouts
-                });
+                        });
 
                 $proxyConnection->send(json_encode([
                     'event' => 'registerProxy',

@@ -4,7 +4,9 @@
         "app",
         "bootstrap",
         "database",
-        "resources",
+        "resources/fonts",
+        "resources/stubs",
+        "resources/views",
         "public",
         "config",
         "vendor"

@@ -214,6 +214,8 @@ class Factory
         Artisan::call('migrate', [
             '--database' => 'sqlite',
             '--force' => true, // necessary flag to run in PHAR
+            '--path' => realpath(__DIR__ . '/../database/migrations/'),
+            '--realpath' => true,
         ]);
 
         // After running artisan commands, we need to reset Termwinds output interface.

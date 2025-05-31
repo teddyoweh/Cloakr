@@ -8,6 +8,7 @@ use Cloakr\Client\Contracts\FetchesPlatformDataContract;
 use Cloakr\Client\Support\TokenNodeVisitor;
 use Cloakr\Client\Traits\FetchesPlatformData;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use PhpParser\Lexer\Emulative;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
@@ -92,6 +93,10 @@ class StoreAuthenticationTokenCommand extends Command implements FetchesPlatform
 
             (new SetupCloakrProToken)($this->token);
         } else {
+            if(!$this->isProToken()) {
+                Artisan::call("default-server free");
+                Artisan::call("default-domain:clear", ['--no-interaction' => true]);
+            }
             info("Token set to $this->token.");
         }
 

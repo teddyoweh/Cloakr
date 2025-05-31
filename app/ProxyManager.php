@@ -54,6 +54,8 @@ class ProxyManager
                             });
                         }
                     });
+                }, function ($e) {
+                    // Ignore potential timeouts
                 });
 
                 $proxyConnection->send(json_encode([

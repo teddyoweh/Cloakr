@@ -104,6 +104,7 @@ class HttpClient
                 $response = $response->withoutHeader('Transfer-Encoding');
 
                 if ($this->configuration->preventCORS()) {
+                    $response = $response->withoutHeader('Access-Control-Allow-Origin');
                     $response = $response->withAddedHeader('Access-Control-Allow-Origin', '*');
                 }
 

@@ -43,7 +43,7 @@ trait SharesViteServer
 
         $arguments = [
             '"' . $phpBinary . '"',
-            $self,
+            '"' . $self  . '"',
             'share',
             $hmrServer,
             '--prevent-cors',
@@ -104,7 +104,7 @@ trait SharesViteServer
                 });
             }
 
-            if (!$this->shouldShareVite() && $this->isSharingVite) {
+            if (!$this->shouldShareVite() && $this->isSharingVite && $this->viteProcess) {
                 $this->isSharingVite = false;
                 $this->info('Stopping Vite server…', OutputInterface::VERBOSITY_VERBOSE);
                 $this->viteProcess->terminate();

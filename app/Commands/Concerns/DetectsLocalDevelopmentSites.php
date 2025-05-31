@@ -148,7 +148,7 @@ trait DetectsLocalDevelopmentSites
                         return !in_array($site, ['.', '..', '.DS_Store']);
                     })
                     ->map(function ($site) use ($sitePath) {
-                        return realpath($sitePath . DIRECTORY_SEPARATOR . $site);
+                        return $sitePath . DIRECTORY_SEPARATOR . $site;
                     })
                     ->mapWithKeys(function ($site) {
                         return [$site => basename($site)];
@@ -160,8 +160,8 @@ trait DetectsLocalDevelopmentSites
                     ->first();
 
                 if ($site) {
-                    $projectPath = $site;
-                    info("Found site path $site", options: OutputInterface::VERBOSITY_VERBOSE);
+                    $projectPath = realpath($site);
+                    info("Found site path $projectPath", options: OutputInterface::VERBOSITY_VERBOSE);
                     break;
                 }
             }

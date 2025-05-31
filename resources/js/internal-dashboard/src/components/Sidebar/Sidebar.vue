@@ -58,7 +58,7 @@ const loadLog = (id: string) => {
 
 const clearLogs = () => {
     fetch('/api/logs/clear');
-    logs.value = []
+    filteredLogs.value = logs.value = []
     emit('set-log', null);
 }
 

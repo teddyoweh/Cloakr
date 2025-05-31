@@ -47,6 +47,7 @@ trait SharesViteServer
             'share',
             $hmrServer,
             '--prevent-cors',
+            '--no-vite-detection',
             '--server=' . $this->option('server'),
             '--server-host=' . $this->option('server-host'),
             '--server-port=' . $this->option('server-port'),
@@ -99,6 +100,8 @@ trait SharesViteServer
 
                     if (file_get_contents($this->getViteHotFile()) !== $this->sharedViteURL) {
                         $this->info('Change detected in Vite server URL…', OutputInterface::VERBOSITY_VERBOSE);
+                        $this->info('Shared Vite URL: '.$this->sharedViteURL, OutputInterface::VERBOSITY_VERBOSE);
+                        $this->info('Vite Hot Content: '.file_get_contents($this->getViteHotFile()), OutputInterface::VERBOSITY_VERBOSE);
                         $this->replaceViteServer();
                     }
                 });

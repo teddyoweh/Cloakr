@@ -23,7 +23,7 @@ class ShareCommand extends ServerAwareCommand
 {
 
 
-    protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--qr} {--qr-code}';
+    protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--qr} {--qr-code}';
 
     protected $description = 'Share a local url with a remote cloakr server';
 
@@ -96,6 +96,7 @@ class ShareCommand extends ServerAwareCommand
             ->setPort($this->getServerPort())
             ->setAuth($auth)
             ->setBasicAuth($this->option('basicAuth'))
+            ->setPreventCORS($this->option('prevent-cors'))
             ->createClient()
             ->share(
                 $this->argument('host'),

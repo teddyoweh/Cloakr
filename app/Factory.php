@@ -40,6 +40,9 @@ class Factory
     /** @var string */
     protected $basicAuth;
 
+    /** @var bool */
+    protected $preventCORS = false;
+
     /** @var \React\EventLoop\LoopInterface */
     protected $loop;
 
@@ -83,6 +86,13 @@ class Factory
         return $this;
     }
 
+    public function setPreventCORS(bool $preventCORS)
+    {
+        $this->preventCORS = $preventCORS;
+
+        return $this;
+    }
+
     public function setLoop(LoopInterface $loop)
     {
         $this->loop = $loop;
@@ -93,7 +103,7 @@ class Factory
     protected function bindConfiguration()
     {
         app()->singleton(Configuration::class, function ($app) {
-            return new Configuration($this->host, $this->port, $this->auth, $this->basicAuth);
+            return new Configuration($this->host, $this->port, $this->auth, $this->basicAuth, $this->preventCORS);
         });
     }
 

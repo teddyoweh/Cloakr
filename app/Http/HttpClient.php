@@ -103,6 +103,10 @@ class HttpClient
 
                 $response = $response->withoutHeader('Transfer-Encoding');
 
+                if ($this->configuration->preventCORS()) {
+                    $response = $response->withAddedHeader('Access-Control-Allow-Origin', '*');
+                }
+
                 $responseBuffer = Message::toString($response);
 
                 $this->sendChunkToServer($responseBuffer, $proxyConnection);

@@ -22,7 +22,10 @@ class Configuration
     /** @var bool */
     protected $isSecureSharedUrl = false;
 
-    public function __construct(string $host, int $port, ?string $auth = null, ?string $basicAuth = null)
+    /** @var bool */
+    protected $preventCORS = false;
+
+    public function __construct(string $host, int $port, ?string $auth = null, ?string $basicAuth = null, bool $preventCORS = false)
     {
         $this->serverHost = $this->host = $host;
 
@@ -31,6 +34,8 @@ class Configuration
         $this->auth = $auth;
 
         $this->basicAuth = $basicAuth;
+
+        $this->preventCORS = $preventCORS;
     }
 
     public function host(): string
@@ -56,6 +61,11 @@ class Configuration
     public function basicAuth(): ?string
     {
         return $this->basicAuth;
+    }
+
+    public function preventCORS(): bool
+    {
+        return $this->preventCORS;
     }
 
     public function port(): int

@@ -5,12 +5,15 @@ namespace Cloakr\Client\Commands;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use Cloakr\Client\Commands\Concerns\SharesViteServer;
 
 use function Cloakr\Common\info;
 
 class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 {
-    protected $signature = 'share-cwd {host?} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--qr} {--qr-code}';
+    use SharesViteServer;
+
+    protected $signature = 'share-cwd {host?} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--qr} {--qr-code}';
 
     protected ?string $configPath = null;
 
@@ -50,6 +53,8 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
         $authString = empty($authString) ? $this->option('basicAuth') : $authString;
 
         $this->input->setOption('basicAuth', $authString);
+
+        $this->checkForVite();
 
         parent::handle();
     }

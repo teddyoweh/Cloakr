@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
-        "beyondcode/cloakr-common": "dev-main",
+        "cloakrdev/common": "dev-main",
         "cboden/ratchet": "dev-master",
         "chillerlan/php-qrcode": "^5.0",
         "illuminate/database": "^11.5",
@@ -88,7 +88,7 @@
         },
         {
             "type": "git",
-            "url": "https://github.com/beyondcode/cloakr-common"
+            "url": "https://github.com/cloakrdev/common"
         }
     ],
     "minimum-stability": "dev",

@@ -123,7 +123,7 @@ class CliLogger implements LoggerContract
     }
 
     public function renderConnectionTable($data): void {
-        render("");
+
 
         $template = <<<HTML
     <div class="flex ml-2 mr-6">

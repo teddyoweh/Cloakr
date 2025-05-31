@@ -147,7 +147,8 @@ class InfoCommand extends ServerAwareCommand implements FetchesPlatformDataContr
                 'plan' => ucfirst($server['plan']),
                 'available' => $this->isProToken() || $server['plan'] === 'free',
             ];
-        });
+        })
+        ->values();
 
         $this->availableServers = ['servers' => $servers->toArray()];
     }

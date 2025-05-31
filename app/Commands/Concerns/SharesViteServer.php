@@ -27,6 +27,12 @@ trait SharesViteServer
 
     protected function shareViteServer($hmrServer)
     {
+        $isWindows = strpos(php_uname('s'), 'Windows') !== false;
+        if ($isWindows) {
+            // Windows does not support non-blocking child processes from within ReactPHP.
+            return;
+        }
+
         $this->info("Vite HMR server detected…", OutputInterface::VERBOSITY_VERBOSE);
 
         $phpBinary = (new PhpExecutableFinder())->find();

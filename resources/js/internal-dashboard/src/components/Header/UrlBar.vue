@@ -26,7 +26,7 @@ const copyUrl = () => {
 
 <template>
     <div
-        class="w-full max-w-[380px] lg:max-w-[580px] flex items-stretch border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden duration-150">
+        class="w-full max-w-[380px] lg:max-w-[580px] flex items-stretch border border-gray-200  dark:border-[#606062] rounded-xl overflow-hidden duration-150">
 
         <TooltipProvider>
             <Tooltip>
@@ -34,7 +34,7 @@ const copyUrl = () => {
                     class="w-full">
 
                     <a :href="subdomain"
-                       class="flex flex-grow space-x-2 text-sm bg-gray-50 dark:bg-white/10 dark:hover:bg-white/15 hover:bg-gray-100 duration-150 px-4 py-2.5 border-r border-gray-200 dark:border-white/10 group">
+                       class="flex flex-grow space-x-2 text-sm bg-gray-50 dark:bg-white/10 dark:hover:bg-white/15 hover:bg-gray-100 duration-150 px-4 py-2.5 border-r border-gray-200  dark:border-[#606062] group">
 
                         <LinkIcon
                             class="size-5 text-gray-400 dark:text-white/50 group-hover:text-gray-800 dark:group-hover:text-white duration-150"/>

@@ -208,7 +208,7 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
             </div>
             <Table class="mt-4">
                 <TableHeader>
-                    <TableRow>
+                    <TableRow class="dark:border-[#606062]">
                         <TableHead class="pr-0 w-[45px]">Status</TableHead>
                         <TableHead class="pr-0">
                             URL
@@ -219,7 +219,7 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-if="!listenForRequests" class="border-0 font-medium">
+                    <TableRow v-if="!listenForRequests" class="border-0 font-medium dark:border-[#606062]">
                         <TableCell class="p-0" colspan="3">
                             <div
                                 class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-100 px-4 py-5 border-b border-dashed border-gray-200 dark:border-gray-700">
@@ -242,8 +242,8 @@ defineCloakr({replay, nextLog, previousLog, focusSearch, clearLogs, toggleFollow
             <TableBody>
 
                 <TableRow v-for="request in filteredLogs" :key="request.id" @click="loadLog(request.id)"
-                          class="border-l-4 border-l-transparent"
-                          :class="{ 'bg-gray-50 border-l-primary dark:bg-gray-700': currentLog?.id === request.id }">
+                          class="border-l-4 !border-l-transparent dark:!border-b-[#3f3f40]"
+                          :class="{ 'bg-gray-50 !border-l-primary dark:bg-gray-700': currentLog?.id === request.id }">
                     <TableCell class="pr-0 align-top pl-2 lg:pl-4">
                         <ResponseBadge
                             :statusCode="request.status_code"/>

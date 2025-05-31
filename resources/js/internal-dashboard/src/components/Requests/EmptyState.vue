@@ -11,7 +11,7 @@ defineProps<{
     <div class="text-sm flex flex-1 items-center justify-center flex-col text-center  bg-gray-50 dark:bg-gray-800 h-full">
 
 
-        <div class="border border-black/5 dark:border-white/10 bg-[#F5F5F580] dark:bg-white/30 rounded-3xl p-2 shadow-xl">
+        <div class="border border-black/5  dark:border-[#606062] bg-[#F5F5F580] dark:bg-white/30 rounded-3xl p-2 shadow-xl">
             <QrCode :subdomains="subdomains" class="max-w-[500px]"/>
         </div>
 

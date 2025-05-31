@@ -244,7 +244,7 @@ defineCloakr({show})
                             <AccordionContent class="p-2">
                                 <AccordionTable>
                                     <TableRow
-                                        class="text-[13px] text-gray-500 dark:text-gray-300 dark:border-white/10 dark:hover:bg-transparent">
+                                        class="text-[13px] text-gray-500 dark:text-gray-300  dark:border-[#606062] dark:hover:bg-transparent">
                                         <NarrowTableCell class="w-[32px] py-2.5">
                                             <MasterCheckbox :state="headersSelected" @apply-state="applyHeaderSelection"/>
                                         </NarrowTableCell>

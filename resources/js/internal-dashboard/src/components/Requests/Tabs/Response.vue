@@ -159,7 +159,7 @@ onUnmounted(() => {
                         <span class="text-sm opacity-75 font-mono pt-2 inline-block px-2">Response body is empty.</span>
                     </div>
                     <div v-else
-                         class="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-white/10 dark:border-white/10">
+                         class="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-white/10  dark:border-[#606062]">
 
                         <div class="flex items-center space-x-2 px-4 pt-4 mb-4">
                             <BodyViewButton @click="bodyView = $event" :active="bodyView === 'raw'" label="Raw"

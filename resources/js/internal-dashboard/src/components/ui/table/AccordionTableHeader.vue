@@ -9,8 +9,8 @@ const props = defineProps<{
 </script>
 
 <template>
-    <thead :class="cn('[&_tr]:border-b dark:border-white/10', props.class)">
-    <TableRow class="text-gray-500 dark:text-gray-300 dark:border-white/10 dark:hover:bg-transparent">
+    <thead :class="cn('[&_tr]:border-b  dark:border-[#606062]', props.class)">
+    <TableRow class="text-gray-500 dark:text-gray-300  dark:border-[#727274] dark:hover:bg-transparent">
         <TableCell class="w-1/5">Key</TableCell>
         <TableCell class="pr-0">Value</TableCell>
     </TableRow>

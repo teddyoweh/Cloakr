@@ -7,9 +7,6 @@ use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
-use function Cloakr\Common\error;
-use function Cloakr\Common\info;
-use function Cloakr\Common\warning;
 
 trait SharesViteServer
 {
@@ -28,11 +25,11 @@ trait SharesViteServer
 
     protected function shareViteServer($hmrServer)
     {
-        info("Vite HMR server detected…", options: OutputInterface::VERBOSITY_VERBOSE);
+        $this->info("Vite HMR server detected…", OutputInterface::VERBOSITY_VERBOSE);
 
         $phpBinary = (new PhpExecutableFinder())->find();
         if (!$phpBinary) {
-            warning('Unable to find PHP binary to run the Vite server. Skipping.');
+            $this->error('Unable to find PHP binary to run the Vite server. Skipping.', OutputInterface::VERBOSITY_VERBOSE);
             return;
         }
 
@@ -73,12 +70,12 @@ trait SharesViteServer
                 $this->sharedViteURL = $matches[1];
                 $this->sharedViteURL = preg_replace('/[^a-zA-Z0-9.\/:-]/', '', $this->sharedViteURL);
 
-                info('Found shared Vite server at: ' . $this->sharedViteURL, options: OutputInterface::VERBOSITY_VERBOSE);
+                $this->info('Found shared Vite server at: ' . $this->sharedViteURL, OutputInterface::VERBOSITY_VERBOSE);
                 $this->replaceViteServer();
             }
         });
         $this->viteProcess->stderr->on('data', function ($output) {
-            error($output);
+            $this->error($output, OutputInterface::VERBOSITY_VERBOSE);
         });
     }
 
@@ -86,7 +83,7 @@ trait SharesViteServer
     {
         $this->checkForViteTimer = app(LoopInterface::class)->addPeriodicTimer(1, function () {
             if ($this->shouldShareVite() && !$this->isSharingVite) {
-                info('Sharing Vite server…', options: OutputInterface::VERBOSITY_VERBOSE);
+                $this->info('Sharing Vite server…', OutputInterface::VERBOSITY_VERBOSE);
                 $this->isSharingVite = true;
                 $this->shareViteServer($this->viteServerHost());
 
@@ -97,7 +94,7 @@ trait SharesViteServer
                     }
 
                     if (file_get_contents(getcwd() . '/public/hot') !== $this->sharedViteURL) {
-                        info('Change detected in Vite server URL…', options: OutputInterface::VERBOSITY_VERBOSE);
+                        $this->info('Change detected in Vite server URL…', OutputInterface::VERBOSITY_VERBOSE);
                         $this->replaceViteServer();
                     }
                 });
@@ -105,7 +102,7 @@ trait SharesViteServer
 
             if (!$this->shouldShareVite() && $this->isSharingVite) {
                 $this->isSharingVite = false;
-                info('Stopping Vite server…', options: OutputInterface::VERBOSITY_VERBOSE);
+                $this->info('Stopping Vite server…', OutputInterface::VERBOSITY_VERBOSE);
                 $this->viteProcess->terminate();
             }
         });
@@ -125,7 +122,7 @@ trait SharesViteServer
 
     protected function replaceViteServer()
     {
-        info('Replacing Vite server URL in public/hot file…', options: OutputInterface::VERBOSITY_VERBOSE);
+        $this->info('Replacing Vite server URL in public/hot file…', OutputInterface::VERBOSITY_VERBOSE);
 
         $this->originalViteServer = file_get_contents(getcwd() . '/public/hot');
 

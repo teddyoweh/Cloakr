@@ -25,7 +25,7 @@ class CreateCustomPluginCommand extends Command
 
         banner();
 
-        info('Check out the documentation at ... to learn how to create your custom request plugin.'); // TODO: add link
+        info('Check out the <a href="https://cloakr.dev/docs/advanced-usage/request-plugins">documentation</a> to learn how request plugins work.');
 
         $pluginName = text(
             label: 'What is the name of the plugin?',

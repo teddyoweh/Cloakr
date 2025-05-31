@@ -35,7 +35,7 @@ class ManagePluginsCommand extends Command
         banner();
 
         info('Request plugins allow you to highlight important parts about incoming requests in the CLI and client dashboard.');
-        info("You can learn more about them in the <a href='https://cloakr.dev/docs'>documentation</a>."); // TODO: add proper link
+        info("You can learn more about them in the <a href='https://cloakr.dev/docs/advanced-usage/request-plugins'>documentation</a>.");
 
 
         // Build key-based list for easier Windows support

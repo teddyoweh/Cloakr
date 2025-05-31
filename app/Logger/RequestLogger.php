@@ -54,9 +54,8 @@ class RequestLogger
             $this->frontendLogger->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
 
             $this->cliLogger->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
-        }
-        catch (\Throwable $e) {
-
+        } catch (\Throwable $e) {
+            //
         }
     }
 

@@ -124,7 +124,7 @@ class LoggedRequest implements \JsonSerializable
         return [
             'request_id' => $this->id,
             'subdomain' => $this->detectSubdomain(),
-            'raw_request' => $this->isBinary($this->rawRequest) ? 'BINARY' : $this->rawRequest,
+            'raw_request' => $this->rawRequest,
             'request_method' => $this->parsedRequest->getMethod(),
             'request_uri' => $this->parsedRequest->getUriString(),
             'start_time' => $this->startTime->getTimestampMs(),

@@ -23,6 +23,8 @@ trait SharesViteServer
 
     protected $sharedViteURL = '';
 
+    protected $sharedDirectory = '';
+
     protected function shareViteServer($hmrServer)
     {
         $this->info("Vite HMR server detected…", OutputInterface::VERBOSITY_VERBOSE);
@@ -79,8 +81,10 @@ trait SharesViteServer
         });
     }
 
-    protected function checkForVite()
+    protected function checkForVite($directory)
     {
+        $this->sharedDirectory = $directory;
+
         $this->checkForViteTimer = app(LoopInterface::class)->addPeriodicTimer(1, function () {
             if ($this->shouldShareVite() && !$this->isSharingVite) {
                 $this->info('Sharing Vite server…', OutputInterface::VERBOSITY_VERBOSE);
@@ -88,12 +92,12 @@ trait SharesViteServer
                 $this->shareViteServer($this->viteServerHost());
 
                 $this->watchHotFileTimer = app(LoopInterface::class)->addPeriodicTimer(1, function () {
-                    $hotFile = getcwd() . '/public/hot';
+                    $hotFile = $this->getViteHotFile();
                     if (!file_exists($hotFile)) {
                         return;
                     }
 
-                    if (file_get_contents(getcwd() . '/public/hot') !== $this->sharedViteURL) {
+                    if (file_get_contents($this->getViteHotFile()) !== $this->sharedViteURL) {
                         $this->info('Change detected in Vite server URL…', OutputInterface::VERBOSITY_VERBOSE);
                         $this->replaceViteServer();
                     }
@@ -110,12 +114,12 @@ trait SharesViteServer
 
     protected function shouldShareVite(): bool
     {
-        return file_exists(getcwd() . '/public/hot');
+        return file_exists($this->getViteHotFile());
     }
 
     protected function viteServerHost(): string
     {
-        $host = file_get_contents(getcwd() . '/public/hot');
+        $host = file_get_contents($this->getViteHotFile());
         $host = str_replace('[::1]', 'localhost', $host);
         return $host;
     }
@@ -124,9 +128,9 @@ trait SharesViteServer
     {
         $this->info('Replacing Vite server URL in public/hot file…', OutputInterface::VERBOSITY_VERBOSE);
 
-        $this->originalViteServer = file_get_contents(getcwd() . '/public/hot');
+        $this->originalViteServer = file_get_contents($this->getViteHotFile());
 
-        $viteServerFile = getcwd() . '/public/hot';
+        $viteServerFile = $this->getViteHotFile();
         file_put_contents($viteServerFile, $this->sharedViteURL);
 
         if (!defined('SIGINT')) {
@@ -142,10 +146,15 @@ trait SharesViteServer
 
     protected function revertViteServerFile()
     {
-        $viteServerFile = getcwd() . '/public/hot';
+        $viteServerFile = $this->getViteHotFile();
 
         if (file_exists($viteServerFile)) {
             file_put_contents($viteServerFile, $this->originalViteServer);
         }
+    }
+
+    protected function getViteHotFile(): string
+    {
+        return $this->sharedDirectory . '/public/hot';
     }
 }

@@ -13,7 +13,7 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 {
     use SharesViteServer;
 
-    protected $signature = 'share-cwd {host?} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--qr} {--qr-code}';
+    protected $signature = 'share-cwd {host?} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--no-vite-detection} {--qr} {--qr-code}';
 
     protected ?string $configPath = null;
 
@@ -54,7 +54,9 @@ class ShareCurrentWorkingDirectoryCommand extends ShareCommand
 
         $this->input->setOption('basicAuth', $authString);
 
-        $this->checkForVite();
+        if (!$this->option('no-vite-detection')) {
+            $this->checkForVite(getcwd());
+        }
 
         parent::handle();
     }

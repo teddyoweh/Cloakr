@@ -10,7 +10,7 @@ class InsertRequestPluginsNodeVisitor extends NodeVisitorAbstract
 {
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Expr\ArrayItem && $node->key && $node->key->value === 'platform_url') {
+        if ($node instanceof Node\Expr\ArrayItem && $node->key && $node->key->value === 'memory_limit') {
             $requestPluginsNode = new Node\Expr\ArrayItem(
                 new Node\Expr\Array_(
                     [

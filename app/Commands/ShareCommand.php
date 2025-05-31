@@ -3,6 +3,8 @@
 namespace Cloakr\Client\Commands;
 
 
+use Cloakr\Client\Commands\Concerns\DetectsLocalDevelopmentSites;
+use Cloakr\Client\Commands\Concerns\SharesViteServer;
 use Cloakr\Client\Factory;
 use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -21,9 +23,10 @@ use function Termwind\terminal;
 
 class ShareCommand extends ServerAwareCommand
 {
+    use DetectsLocalDevelopmentSites;
+    use SharesViteServer;
 
-
-    protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--qr} {--qr-code}';
+    protected $signature = 'share {host} {--subdomain=} {--auth=} {--basicAuth=} {--dns=} {--domain=} {--prevent-cors} {--no-vite-detection} {--qr} {--qr-code}';
 
     protected $description = 'Share a local url with a remote cloakr server';
 
@@ -31,6 +34,8 @@ class ShareCommand extends ServerAwareCommand
 
     public function handle()
     {
+        $this->loadConfigurationFiles();
+
         terminal()->clear();
 
         banner();
@@ -89,6 +94,12 @@ class ShareCommand extends ServerAwareCommand
         }
 
 
+        if (!$this->option('no-vite-detection')) {
+            $localSitePath = $this->detectSharedSitePathFromHostname($this->argument('host'));
+            if (!is_null($localSitePath)) {
+                $this->checkForVite($localSitePath);
+            }
+        }
 
         (new Factory())
             ->setLoop(app(LoopInterface::class))

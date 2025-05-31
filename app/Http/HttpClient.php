@@ -52,8 +52,8 @@ class HttpClient
 
         $request = $this->passRequestThroughModifiers(Message::parseRequest($requestData), $proxyConnection);
 
-        transform($request, function ($request) use ($proxyConnection) {
-            $this->sendRequestToApplication($request, $proxyConnection);
+        return transform($request, function ($request) use ($proxyConnection) {
+            return $this->sendRequestToApplication($request, $proxyConnection);
         });
     }
 
@@ -89,7 +89,7 @@ class HttpClient
             $uri = $uri->withScheme('https');
         }
 
-        (new Browser($this->loop, $this->createConnector()))
+        return (new Browser($this->loop, $this->createConnector()))
             ->withFollowRedirects(false)
             ->withRejectErrorResponse(false)
             ->requestStreaming(
@@ -107,22 +107,26 @@ class HttpClient
 
                 $this->sendChunkToServer($responseBuffer, $proxyConnection);
 
-                /* @var $body \React\Stream\ReadableStreamInterface */
+                /* @var $body \React\Stream\DuplexStreamInterface */
                 $body = $response->getBody();
 
                 $this->logResponse(Message::toString($response));
 
-                $body->on('data', function ($chunk) use ($proxyConnection, &$responseBuffer) {
-                    $responseBuffer .= $chunk;
+                if (! $body->isWritable()) {
+                    $body->on('data', function ($chunk) use ($proxyConnection, &$responseBuffer) {
+                        $responseBuffer .= $chunk;
 
-                    $this->sendChunkToServer($chunk, $proxyConnection);
-                });
+                        $this->sendChunkToServer($chunk, $proxyConnection);
+                    });
+                }
 
                 $body->on('close', function () use ($proxyConnection, &$responseBuffer) {
                     $this->logResponse($responseBuffer);
 
                     optional($proxyConnection)->close();
                 });
+
+                return $response;
             })
             ->catch(function ($e) {
                 // Ignore possible errors

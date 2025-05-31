@@ -56,7 +56,7 @@ class RequestLogger
             $this->cliLogger->synchronizeResponse($loggedRequest, $loggedResponse, $rawResponse);
         }
         catch (\Throwable $e) {
-            dd($e->getMessage());
+
         }
     }
 

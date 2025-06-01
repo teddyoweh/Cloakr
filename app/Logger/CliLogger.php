@@ -119,11 +119,10 @@ class CliLogger implements LoggerContract
     }
 
     public function renderError($text): void {
-        render("<div class='mx-2 w-full px-3 bg-red-100 text-red-600'> $text </div>");
+        render("<div class='mx-2 px-3 bg-red-100 text-red-600'> $text </div>");
     }
 
     public function renderConnectionTable($data): void {
-
 
         $template = <<<HTML
     <div class="flex ml-2 mr-6">

@@ -20,12 +20,7 @@ For installation instructions of your own server, in-depth usage and deployment 
 
 ### Security
 
-If you discover any security related issues, please email marcel@beyondco.de instead of using the issue tracker.
-
-## Credits
-
-- [Marcel Pociot](https://github.com/mpociot)
-- [All Contributors](../../contributors)
+If you discover any security related issues, please email claokr@cloakrco.de instead of using the issue tracker.
 
 ## License
 

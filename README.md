@@ -1,10 +1,6 @@
-[![https://cloakr.dev/?ref=github](https://cloakr.dev/images/cloakr/og_card.png)](https://cloakr.dev/?ref=github)
+[![https://cloakr.dev/?ref=github]()](https://cloakr.dev)
 
 # Cloakr
-
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/beyondcode/cloakr.svg?style=flat-square)](https://packagist.org/packages/beyondcode/cloakr)
-[![Quality Score](https://img.shields.io/scrutinizer/g/beyondcode/cloakr.svg?style=flat-square)](https://scrutinizer-ci.com/g/beyondcode/cloakr)
-[![Total Downloads](https://img.shields.io/packagist/dt/beyondcode/cloakr.svg?style=flat-square)](https://packagist.org/packages/beyondcode/cloakr)
 
 An open-source ngrok alternative - written in PHP.
 
@@ -16,7 +12,7 @@ You can use a managed version with our proprietary platform and our free (EU) te
 
 ## Documentation
 
-For installation instructions of your own server, in-depth usage and deployment details, please take a look at the [official documentation](https://cloakr.dev/docs).
+For installation instructions of your own server, in-depth usage and deployment details, please take a look at the [official documentation](https://www.cloakr.dev/docs/introduction.html).
 
 ### Security
 
